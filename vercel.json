@@ -4,25 +4,25 @@
     "outputDirectory": "public",
     "functions": {
         "api/index.php": {
-            "runtime": "vercel-php@0.7.3"
+            "runtime": "vercel-php@0.6.0"
         }
     },
     "routes": [
         {
             "src": "/build/(.*)",
-            "dest": "/public/build/$1"
+            "dest": "/build/$1"
         },
         {
             "src": "/storage/(.*)",
-            "dest": "/public/storage/$1"
+            "dest": "/storage/$1"
         },
         {
             "src": "/favicon.ico",
-            "dest": "/public/favicon.ico"
+            "dest": "/favicon.ico"
         },
         {
             "src": "/(css|js|images|svg|fonts)/(.*)",
-            "dest": "/public/$1/$2"
+            "dest": "/$1/$2"
         },
         {
             "src": "/(.*)",
@@ -30,6 +30,16 @@
         }
     ],
     "env": {
+        "APP_NAME": "Kelurahan Patokan",
+        "APP_ENV": "production",
+        "APP_KEY": "base64:tvfNK8KsjDbR3BF5E0TYrzX0b6rnXWMXvQU9QeIgfAU=",
+        "APP_DEBUG": "true",
+        "APP_URL": "https://webkel-patokan.vercel.app",
+        "LOG_CHANNEL": "stderr",
+        "SESSION_DRIVER": "cookie",
+        "CACHE_STORE": "array",
+        "FILESYSTEM_DISK": "public",
+        "QUEUE_CONNECTION": "sync",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
