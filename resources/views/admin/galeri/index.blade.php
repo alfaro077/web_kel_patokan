@@ -162,12 +162,16 @@
 
                     <div class="flex items-center gap-1">
                         @php
-                            $activeList = $item->type === 'foto' 
-                                ? $activePhotos->reject(fn($g) => $g->id === $item->id)->pluck('title')->implode(', ')
-                                : $activeVideos->reject(fn($g) => $g->id === $item->id)->pluck('title')->implode(', ');
+                            $otherActiveSameType = $item->type === 'foto' 
+                                ? $activePhotos->reject(fn($g) => $g->id === $item->id)->values()
+                                : $activeVideos->reject(fn($g) => $g->id === $item->id)->values();
+
+                            $activeToReplaceTitle = ($otherActiveSameType->count() >= 2)
+                                ? $otherActiveSameType->first()->title
+                                : '';
                         @endphp
                         <!-- Toggle Homepage Button -->
-                        <form action="{{ route('admin.galeri.toggle_homepage', $item->id) }}" method="POST" onsubmit="confirmToggleHomepage(event, this, {{ $item->show_on_homepage ? 'true' : 'false' }}, {{ json_encode($item->title) }}, {{ json_encode($activeList) }}, '{{ $item->type }}')">
+                        <form action="{{ route('admin.galeri.toggle_homepage', $item->id) }}" method="POST" onsubmit="confirmToggleHomepage(event, this, {{ $item->show_on_homepage ? 'true' : 'false' }}, {{ json_encode($item->title) }}, {{ json_encode($activeToReplaceTitle) }}, '{{ $item->type }}')">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="p-1.5 rounded-lg transition {{ $item->show_on_homepage ? 'text-amber-500 hover:bg-amber-100' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200' }}" title="{{ $item->show_on_homepage ? 'Hapus dari Beranda' : 'Tampilkan di Beranda' }}">
@@ -584,13 +588,14 @@ function confirmToggleHomepage(e, form, isCurrentlyActive, title, activeTitlesSt
             Swal.fire({
                 title: 'Tampilkan di Beranda?',
                 html: `<div class="text-left text-xs sm:text-sm space-y-3">
-                    <p class="text-slate-600">Mengaktifkan <b>${mediaTypeLabel}</b> baru ini akan <b>menonaktifkan</b> dokumentasi ${mediaTypeLabel.toLowerCase()} yang sebelumnya tampil di beranda:</p>
+                    <p class="text-slate-600">Kapasitas <b>${mediaTypeLabel.toLowerCase()}</b> beranda (maksimal 2) sudah penuh.</p>
+                    <p class="text-slate-600">Mengaktifkan <b>${mediaTypeLabel}</b> baru ini akan <b>menonaktifkan</b> item terlama yang tampil sebelumnya:</p>
                     <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs font-semibold">
-                        ⚠️ <b>Sebelumnya Tampil:</b><br>"${activeTitlesStr}"
+                        ⚠️ <b>Akan Dinonaktifkan:</b><br>"${activeTitlesStr}"
                     </div>
-                    <p class="text-slate-600">Dokumentasi yang akan <b>ditampilkan di beranda</b>:</p>
+                    <p class="text-slate-600">Item baru yang akan <b>ditampilkan di beranda</b>:</p>
                     <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 font-bold text-xs">
-                        ✨ <b>Baru:</b><br>"${title}"
+                        ✨ <b>Aktif Baru:</b><br>"${title}"
                     </div>
                 </div>`,
                 icon: 'question',
