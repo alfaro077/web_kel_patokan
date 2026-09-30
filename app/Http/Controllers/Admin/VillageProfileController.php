@@ -714,28 +714,34 @@ class VillageProfileController extends Controller
     {
         $existingData = self::getProfileData();
         $cats = $existingData["apbd_categories"] ?? ["incomes" => [], "allocations" => [], "financings" => []];
-        $catName = $request->input("category_name");
-        if ($catName && isset($cats[$type])) {
+        $catName = trim($request->input("category") ?? $request->input("category_name") ?? '');
+        if ($catName !== '' && isset($cats[$type])) {
             if (!in_array($catName, $cats[$type])) {
                 $cats[$type][] = $catName;
                 $existingData["apbd_categories"] = $cats;
-                return $this->respondApbd($existingData, "Kategori berhasil ditambahkan.");
+                return $this->respondApbd($existingData, "Kategori '{$catName}' berhasil ditambahkan.");
+            } else {
+                return response()->json([
+                    "success" => true,
+                    "message" => "Kategori '{$catName}' sudah ada.",
+                    "categories" => $cats
+                ]);
             }
         }
-        return response()->json(["success" => false, "message" => "Kategori gagal ditambahkan."], 400);
+        return response()->json(["success" => false, "message" => "Kategori gagal ditambahkan. Nama kategori tidak boleh kosong."], 400);
     }
 
     public function destroyApbdCategory(Request $request, $type)
     {
         $existingData = self::getProfileData();
         $cats = $existingData["apbd_categories"] ?? ["incomes" => [], "allocations" => [], "financings" => []];
-        $catName = $request->input("category_name");
-        if ($catName && isset($cats[$type])) {
+        $catName = trim($request->input("category") ?? $request->input("category_name") ?? '');
+        if ($catName !== '' && isset($cats[$type])) {
             $idx = array_search($catName, $cats[$type]);
             if ($idx !== false) {
                 array_splice($cats[$type], $idx, 1);
                 $existingData["apbd_categories"] = $cats;
-                return $this->respondApbd($existingData, "Kategori berhasil dihapus.");
+                return $this->respondApbd($existingData, "Kategori '{$catName}' berhasil dihapus.");
             }
         }
         return response()->json(["success" => false, "message" => "Kategori gagal dihapus."], 400);
