@@ -28,7 +28,10 @@ class GalleryController extends Controller
         $galleries = $query->paginate(12)->withQueryString();
         $categories = \App\Models\Category::where('type', 'galeri')->get();
 
-        return view('admin.galeri.index', compact('galleries', 'categories'));
+        $activePhotos = Gallery::where('type', 'foto')->where('show_on_homepage', true)->get();
+        $activeVideos = Gallery::where('type', 'video')->where('show_on_homepage', true)->get();
+
+        return view('admin.galeri.index', compact('galleries', 'categories', 'activePhotos', 'activeVideos'));
     }
 
     /**
@@ -93,10 +96,10 @@ class GalleryController extends Controller
         }
 
         if ($request->has('show_on_homepage')) {
-            $currentCount = Gallery::where('show_on_homepage', true)->count();
-            if ($currentCount >= 5) {
-                return back()->withErrors(['show_on_homepage' => 'Gagal mengunggah: Maksimal 5 album/video yang dapat ditampilkan di beranda. Silakan nonaktifkan album lain terlebih dahulu.'])->withInput();
-            }
+            // Deactivate previous active items of the same type
+            Gallery::where('type', $request->input('type'))
+                ->where('show_on_homepage', true)
+                ->update(['show_on_homepage' => false]);
         }
 
         $gallery = Gallery::create([
@@ -188,11 +191,12 @@ class GalleryController extends Controller
             }
         }
 
-        if ($request->has('show_on_homepage') && !$gallery->show_on_homepage) {
-            $currentCount = Gallery::where('show_on_homepage', true)->count();
-            if ($currentCount >= 5) {
-                return back()->withErrors(['show_on_homepage' => 'Gagal memperbarui: Maksimal 5 album/video yang dapat ditampilkan di beranda. Silakan nonaktifkan album lain terlebih dahulu.'])->withInput();
-            }
+        if ($request->has('show_on_homepage')) {
+            // Deactivate previous active items of the same type except current gallery
+            Gallery::where('type', $request->input('type'))
+                ->where('id', '!=', $gallery->id)
+                ->where('show_on_homepage', true)
+                ->update(['show_on_homepage' => false]);
         }
 
         $gallery->update([
@@ -278,15 +282,23 @@ class GalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
 
         if (!$gallery->show_on_homepage) {
-            $currentCount = Gallery::where('show_on_homepage', true)->count();
-            if ($currentCount >= 5) {
-                return back()->with('error', 'Maksimal 5 album atau video yang dapat ditampilkan di beranda. Silakan hapus/nonaktifkan album lain dari beranda terlebih dahulu.');
-            }
+            // Nonaktifkan galeri aktif sebelumnya dengan tipe media yang sama
+            Gallery::where('type', $gallery->type)
+                ->where('id', '!=', $gallery->id)
+                ->where('show_on_homepage', true)
+                ->update(['show_on_homepage' => false]);
+
+            $gallery->show_on_homepage = true;
+            $gallery->save();
+
+            $typeLabel = $gallery->type === 'foto' ? 'Album foto' : 'Video dokumentasi';
+            return back()->with('status', $typeLabel . ' "' . $gallery->title . '" berhasil ditampilkan di beranda.');
+        } else {
+            $gallery->show_on_homepage = false;
+            $gallery->save();
+
+            return back()->with('status', 'Status tampil di beranda berhasil dinonaktifkan.');
         }
-
-        $gallery->show_on_homepage = !$gallery->show_on_homepage;
-        $gallery->save();
-
-        return back()->with('status', 'Status tampil di beranda berhasil diubah.');
     }
+}
 }

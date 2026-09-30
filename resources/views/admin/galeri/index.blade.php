@@ -161,8 +161,13 @@
                     </span>
 
                     <div class="flex items-center gap-1">
+                        @php
+                            $activeList = $item->type === 'foto' 
+                                ? $activePhotos->reject(fn($g) => $g->id === $item->id)->pluck('title')->implode(', ')
+                                : $activeVideos->reject(fn($g) => $g->id === $item->id)->pluck('title')->implode(', ');
+                        @endphp
                         <!-- Toggle Homepage Button -->
-                        <form action="{{ route('admin.galeri.toggle_homepage', $item->id) }}" method="POST">
+                        <form action="{{ route('admin.galeri.toggle_homepage', $item->id) }}" method="POST" onsubmit="confirmToggleHomepage(event, this, {{ $item->show_on_homepage ? 'true' : 'false' }}, {{ json_encode($item->title) }}, {{ json_encode($activeList) }}, '{{ $item->type }}')">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="p-1.5 rounded-lg transition {{ $item->show_on_homepage ? 'text-amber-500 hover:bg-amber-100' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200' }}" title="{{ $item->show_on_homepage ? 'Hapus dari Beranda' : 'Tampilkan di Beranda' }}">
@@ -548,5 +553,131 @@
     </div>
 
 </div>
+
+<script>
+function confirmToggleHomepage(e, form, isCurrentlyActive, title, activeTitlesStr, type) {
+    e.preventDefault();
+    const mediaTypeLabel = type === 'foto' ? 'Album Foto' : 'Video Dokumentasi';
+
+    if (isCurrentlyActive) {
+        Swal.fire({
+            title: 'Nonaktifkan dari Beranda?',
+            html: `Apakah Anda yakin ingin menghapus ${mediaTypeLabel.toLowerCase()} <b>"${title}"</b> dari tampilan beranda utama?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Nonaktifkan',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-3xl shadow-2xl border border-slate-100 p-6',
+                confirmButton: 'px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg shadow-rose-600/30',
+                cancelButton: 'px-5 py-2.5 rounded-xl font-bold text-xs'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitToggleForm(form);
+            }
+        });
+    } else {
+        if (activeTitlesStr && activeTitlesStr.trim() !== '') {
+            Swal.fire({
+                title: 'Tampilkan di Beranda?',
+                html: `<div class="text-left text-xs sm:text-sm space-y-3">
+                    <p class="text-slate-600">Mengaktifkan <b>${mediaTypeLabel}</b> baru ini akan <b>menonaktifkan</b> dokumentasi ${mediaTypeLabel.toLowerCase()} yang sebelumnya tampil di beranda:</p>
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs font-semibold">
+                        ⚠️ <b>Sebelumnya Tampil:</b><br>"${activeTitlesStr}"
+                    </div>
+                    <p class="text-slate-600">Dokumentasi yang akan <b>ditampilkan di beranda</b>:</p>
+                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 font-bold text-xs">
+                        ✨ <b>Baru:</b><br>"${title}"
+                    </div>
+                </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Gantikan & Tampilkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-3xl shadow-2xl border border-slate-100 p-6',
+                    confirmButton: 'px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg shadow-emerald-600/30',
+                    cancelButton: 'px-5 py-2.5 rounded-xl font-bold text-xs'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitToggleForm(form);
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Tampilkan di Beranda?',
+                html: `Apakah Anda yakin ingin menampilkan ${mediaTypeLabel.toLowerCase()} <b>"${title}"</b> di beranda utama?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Tampilkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-3xl shadow-2xl border border-slate-100 p-6',
+                    confirmButton: 'px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg shadow-emerald-600/30',
+                    cancelButton: 'px-5 py-2.5 rounded-xl font-bold text-xs'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitToggleForm(form);
+                }
+            });
+        }
+    }
+}
+
+async function submitToggleForm(form) {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalContent = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-amber-500"></i>';
+    }
+
+    try {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: form.method,
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+
+        if (response.ok) {
+            const htmlResponse = await fetch(window.location.href).then(res => res.text());
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlResponse, 'text/html');
+            const newGrid = doc.querySelector('#gallery-grid').innerHTML;
+            document.querySelector('#gallery-grid').innerHTML = newGrid;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Status beranda galeri berhasil diperbarui.',
+                timer: 1800,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-3xl shadow-2xl border border-slate-100 p-6'
+                }
+            });
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan saat memperbarui status beranda.' });
+        }
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalContent;
+        }
+    }
+}
+</script>
 @endsection
 
