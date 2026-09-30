@@ -17,12 +17,12 @@ class EnsureStaff
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('staff.login');
+            return redirect()->route('login');
         }
 
         if (!Auth::user()->isStaff()) {
             Auth::logout();
-            return redirect()->route('staff.login')->withErrors(['login' => 'Akses ditolak: Hanya untuk akun Staf Pelayanan.']);
+            return redirect()->route('login')->withErrors(['login' => 'Akses ditolak: Hanya untuk akun Staf Pelayanan.']);
         }
 
         return $next($request);

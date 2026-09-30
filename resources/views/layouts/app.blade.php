@@ -22,8 +22,8 @@
     <title>@yield('title', $systemSettings['app_name'] . ' - ' . ($systemSettings['app_subtitle'] ?? 'Pemerintah Desa'))</title>
 
     <!-- Favicon / Logo Web Title -->
-    <link rel="icon" type="image/png" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : asset('images/logo.png') }}">
-    <link rel="shortcut icon" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : asset('favicon.ico') }}">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('meta_description', 'Portal Resmi Pemerintah Kelurahan Patokan, Kecamatan Kraksaan, Kabupaten Probolinggo. Layanan publik mandiri, pengajuan surat online, berita, dan transparansi.')">
@@ -42,7 +42,7 @@
     @if(file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     @endif
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -93,5 +93,6 @@
     <!-- FOOTER PARTIAL -->
     @include('layouts.partials.footer')
 
+    @stack('scripts')
 </body>
 </html>

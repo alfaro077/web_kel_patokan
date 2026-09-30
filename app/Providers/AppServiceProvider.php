@@ -18,18 +18,19 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(\Illuminate\Routing\UrlGenerator $url): void
     {
+        // Force HTTPS if using ngrok or in production
+        if (str_contains(config('app.url'), 'https://')) {
+            $url->forceScheme('https');
+        }
+
         // Removed pending count global variable since letter request is deprecated
 
         // Share village profile and system settings globally for headers, footers, and admin sidebars
         View::composer('*', function ($view) {
             // We use * because it's needed in both public app layout and admin layout
-            $profilePath = storage_path('app/village_profile.json');
-            $villageProfile = [];
-            if (file_exists($profilePath)) {
-                $villageProfile = json_decode(file_get_contents($profilePath), true) ?? [];
-            }
+            $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
             $view->with('villageProfile', $villageProfile);
 
             // Load System Settings

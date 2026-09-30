@@ -207,11 +207,6 @@ class VillageProfileController extends Controller
         return view('admin.beranda.kontak', compact('profile'));
     }
 
-    public function lokasi()
-    {
-        $profile = self::getProfileData();
-        return view('admin.beranda.lokasi', compact('profile'));
-    }
 
     public function footer()
     {
@@ -295,16 +290,16 @@ class VillageProfileController extends Controller
             $existingData['whatsapp'] = $request->input('whatsapp', '');
             $existingData['whatsapp_service_text'] = $request->input('whatsapp_service_text', '');
             $existingData['email'] = $request->input('email', '');
-            $statusMsg = 'Informasi Kontak dan Jam Operasional berhasil diperbarui.';
-
-        } elseif ($section === 'lokasi') {
+            
+            // Lokasi
             $existingData['address'] = $request->input('address', '');
             $mapEmbed = $request->input('map_embed', '');
             if (preg_match('/src="([^"]+)"/', $mapEmbed, $matches)) {
                 $mapEmbed = $matches[1];
             }
             $existingData['map_embed'] = $mapEmbed;
-            $statusMsg = 'Alamat dan Peta Lokasi berhasil diperbarui.';
+            
+            $statusMsg = 'Informasi Kontak, Jam Operasional, dan Lokasi berhasil diperbarui.';
 
         } elseif ($section === 'footer') {
             $existingData['footer_description'] = $request->input('footer_description', '');
@@ -401,6 +396,16 @@ class VillageProfileController extends Controller
             $demographics['educations'] = $educations;
 
             $existingData['demographics'] = $demographics;
+            
+            // Auto-sync Total Penduduk stat cards
+            if (isset($existingData['stats']) && is_array($existingData['stats'])) {
+                foreach ($existingData['stats'] as &$stat) {
+                    if (stripos($stat['title'], 'penduduk') !== false) {
+                        $stat['value'] = $totalStr;
+                    }
+                }
+            }
+            
             $statusMsg = 'Data Demografi Lengkap berhasil diperbarui.';
 
         } elseif ($section === 'kemitraan') {
@@ -471,70 +476,273 @@ class VillageProfileController extends Controller
 
         File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => $statusMsg]);
+        }
+
         return back()->with('status', $statusMsg);
     }
 
-    public function storeApbd(Request $request)
+    private function respondApbd($existingData, $msg) {
+        File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                "success" => true, 
+                "message" => $msg, 
+                "apbd" => array_values($existingData["apbd"] ?? []),
+                "categories" => $existingData["apbd_categories"] ?? []
+            ]);
+        }
+        return back()->with("success", $msg);
+    }
+
+    public function storeApbdYear(Request $request)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData['apbd'] ?? self::getDefaultApbd();
-        $allocations = $apbd['allocations'] ?? [];
-
-        $allocations[] = [
-            'name' => $request->input('apbd_alloc_name'),
-            'amount' => $request->input('apbd_alloc_amount'),
-            'pct' => $request->input('apbd_alloc_pct'),
-            'desc' => $request->input('apbd_alloc_desc', '')
+        $apbd = $existingData["apbd"] ?? [];
+        
+        $newYear = [
+            "year" => $request->input("year"),
+            "total_budget" => $request->input("total_budget", "0"),
+            "realized_budget" => $request->input("realized_budget", "0"),
+            "realized_pct" => $request->input("realized_pct", "0"),
+            "description" => $request->input("description", ""),
+            "thumbnail" => "",
+            "allocations" => [],
+            "incomes" => [],
+            "financings" => []
         ];
 
-        $apbd['allocations'] = $allocations;
-        $existingData['apbd'] = $apbd;
-        File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        if ($request->hasFile("thumbnail")) {
+            $newYear["thumbnail"] = "/storage/" . $request->file("thumbnail")->store("apbd", "public");
+        }
 
-        return back()->with('success', 'Bidang alokasi APBD baru berhasil ditambahkan.');
+        array_unshift($apbd, $newYear);
+        $existingData["apbd"] = $apbd;
+        return $this->respondApbd($existingData, "Tahun APBD baru berhasil ditambahkan.");
     }
 
-    public function updateApbd(Request $request, $index)
+    public function updateApbdYear(Request $request, $yearIndex)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData['apbd'] ?? self::getDefaultApbd();
-        $allocations = $apbd['allocations'] ?? [];
+        $apbd = $existingData["apbd"] ?? [];
 
-        if (isset($allocations[$index])) {
-            $allocations[$index] = [
-                'name' => $request->input('apbd_alloc_name'),
-                'amount' => $request->input('apbd_alloc_amount'),
-                'pct' => $request->input('apbd_alloc_pct'),
-                'desc' => $request->input('apbd_alloc_desc', '')
+        if (isset($apbd[$yearIndex])) {
+            $apbd[$yearIndex]["year"] = $request->input("year", $apbd[$yearIndex]["year"]);
+            $apbd[$yearIndex]["total_budget"] = $request->input("total_budget", $apbd[$yearIndex]["total_budget"]);
+            $apbd[$yearIndex]["realized_budget"] = $request->input("realized_budget", $apbd[$yearIndex]["realized_budget"]);
+            $apbd[$yearIndex]["realized_pct"] = $request->input("realized_pct", $apbd[$yearIndex]["realized_pct"]);
+            $apbd[$yearIndex]["description"] = $request->input("description", $apbd[$yearIndex]["description"] ?? "");
+            
+            if ($request->hasFile("thumbnail")) {
+                if (!empty($apbd[$yearIndex]["thumbnail"])) {
+                    $oldPath = str_replace("/storage/", "", $apbd[$yearIndex]["thumbnail"]);
+                    if (Storage::disk("public")->exists($oldPath)) {
+                        Storage::disk("public")->delete($oldPath);
+                    }
+                }
+                $apbd[$yearIndex]["thumbnail"] = "/storage/" . $request->file("thumbnail")->store("apbd", "public");
+            }
+
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Tahun APBD berhasil diperbarui.");
+        }
+        return response()->json(["success" => false, "message" => "Tahun APBD tidak ditemukan."], 404);
+    }
+
+    public function destroyApbdYear($yearIndex)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+
+        if (isset($apbd[$yearIndex])) {
+            if (!empty($apbd[$yearIndex]["thumbnail"])) {
+                $oldPath = str_replace("/storage/", "", $apbd[$yearIndex]["thumbnail"]);
+                if (Storage::disk("public")->exists($oldPath)) {
+                    Storage::disk("public")->delete($oldPath);
+                }
+            }
+            array_splice($apbd, $yearIndex, 1);
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Tahun APBD berhasil dihapus.");
+        }
+        return response()->json(["success" => false, "message" => "Tahun APBD tidak ditemukan."], 404);
+    }
+
+    public function storeApbdIncome(Request $request, $yearIndex)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex])) {
+            $apbd[$yearIndex]["incomes"] = $apbd[$yearIndex]["incomes"] ?? [];
+            $apbd[$yearIndex]["incomes"][] = [
+                "category" => $request->input("apbd_income_category", ""),
+                "name" => $request->input("apbd_income_name", ""),
+                "anggaran" => $request->input("apbd_income_anggaran", "0"),
+                "realisasi" => $request->input("apbd_income_realisasi", "0")
             ];
-
-            $apbd['allocations'] = $allocations;
-            $existingData['apbd'] = $apbd;
-            File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-            return back()->with('success', 'Data bidang alokasi berhasil diperbarui.');
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Pendapatan berhasil ditambahkan.");
         }
-
-        return back()->withErrors(['Bidang alokasi tidak ditemukan.']);
+        return response()->json(["success" => false, "message" => "Tahun APBD tidak ditemukan."], 404);
     }
 
-    public function destroyApbd($index)
+    public function updateApbdIncome(Request $request, $yearIndex, $index)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData['apbd'] ?? self::getDefaultApbd();
-        $allocations = $apbd['allocations'] ?? [];
-
-        if (isset($allocations[$index])) {
-            array_splice($allocations, $index, 1);
-            $apbd['allocations'] = $allocations;
-            $existingData['apbd'] = $apbd;
-            File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-            return back()->with('success', 'Bidang alokasi berhasil dihapus.');
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex]["incomes"][$index])) {
+            $apbd[$yearIndex]["incomes"][$index] = [
+                "category" => $request->input("apbd_income_category", ""),
+                "name" => $request->input("apbd_income_name", ""),
+                "anggaran" => $request->input("apbd_income_anggaran", "0"),
+                "realisasi" => $request->input("apbd_income_realisasi", "0")
+            ];
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Pendapatan berhasil diperbarui.");
         }
-
-        return back()->withErrors(['Bidang alokasi tidak ditemukan.']);
+        return response()->json(["success" => false, "message" => "Data tidak ditemukan."], 404);
     }
+
+    public function destroyApbdIncome($yearIndex, $index)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex]["incomes"][$index])) {
+            array_splice($apbd[$yearIndex]["incomes"], $index, 1);
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Pendapatan berhasil dihapus.");
+        }
+        return response()->json(["success" => false, "message" => "Data tidak ditemukan."], 404);
+    }
+
+    public function storeApbd(Request $request, $yearIndex)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex])) {
+            $apbd[$yearIndex]["allocations"] = $apbd[$yearIndex]["allocations"] ?? [];
+            $apbd[$yearIndex]["allocations"][] = [
+                "category" => $request->input("apbd_alloc_category", ""),
+                "name" => $request->input("apbd_alloc_name", ""),
+                "anggaran" => $request->input("apbd_alloc_anggaran", "0"),
+                "realisasi" => $request->input("apbd_alloc_realisasi", "0")
+            ];
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Belanja berhasil ditambahkan.");
+        }
+        return response()->json(["success" => false, "message" => "Tahun APBD tidak ditemukan."], 404);
+    }
+
+    public function updateApbd(Request $request, $yearIndex, $index)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex]["allocations"][$index])) {
+            $apbd[$yearIndex]["allocations"][$index] = [
+                "category" => $request->input("apbd_alloc_category", ""),
+                "name" => $request->input("apbd_alloc_name", ""),
+                "anggaran" => $request->input("apbd_alloc_anggaran", "0"),
+                "realisasi" => $request->input("apbd_alloc_realisasi", "0")
+            ];
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Belanja berhasil diperbarui.");
+        }
+        return response()->json(["success" => false, "message" => "Data tidak ditemukan."], 404);
+    }
+
+    public function destroyApbd($yearIndex, $index)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex]["allocations"][$index])) {
+            array_splice($apbd[$yearIndex]["allocations"], $index, 1);
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Belanja berhasil dihapus.");
+        }
+        return response()->json(["success" => false, "message" => "Data tidak ditemukan."], 404);
+    }
+
+    public function storeApbdFinancing(Request $request, $yearIndex)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex])) {
+            $apbd[$yearIndex]["financings"] = $apbd[$yearIndex]["financings"] ?? [];
+            $apbd[$yearIndex]["financings"][] = [
+                "category" => $request->input("apbd_financing_category", ""),
+                "name" => $request->input("apbd_financing_name", ""),
+                "anggaran" => $request->input("apbd_financing_anggaran", "0"),
+                "realisasi" => $request->input("apbd_financing_realisasi", "0")
+            ];
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Pembiayaan berhasil ditambahkan.");
+        }
+        return response()->json(["success" => false, "message" => "Tahun APBD tidak ditemukan."], 404);
+    }
+
+    public function updateApbdFinancing(Request $request, $yearIndex, $index)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex]["financings"][$index])) {
+            $apbd[$yearIndex]["financings"][$index] = [
+                "category" => $request->input("apbd_financing_category", ""),
+                "name" => $request->input("apbd_financing_name", ""),
+                "anggaran" => $request->input("apbd_financing_anggaran", "0"),
+                "realisasi" => $request->input("apbd_financing_realisasi", "0")
+            ];
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Pembiayaan berhasil diperbarui.");
+        }
+        return response()->json(["success" => false, "message" => "Data tidak ditemukan."], 404);
+    }
+
+    public function destroyApbdFinancing($yearIndex, $index)
+    {
+        $existingData = self::getProfileData();
+        $apbd = $existingData["apbd"] ?? [];
+        if (isset($apbd[$yearIndex]["financings"][$index])) {
+            array_splice($apbd[$yearIndex]["financings"], $index, 1);
+            $existingData["apbd"] = $apbd;
+            return $this->respondApbd($existingData, "Data Pembiayaan berhasil dihapus.");
+        }
+        return response()->json(["success" => false, "message" => "Data tidak ditemukan."], 404);
+    }
+
+    public function storeApbdCategory(Request $request, $type)
+    {
+        $existingData = self::getProfileData();
+        $cats = $existingData["apbd_categories"] ?? ["incomes" => [], "allocations" => [], "financings" => []];
+        $catName = $request->input("category_name");
+        if ($catName && isset($cats[$type])) {
+            if (!in_array($catName, $cats[$type])) {
+                $cats[$type][] = $catName;
+                $existingData["apbd_categories"] = $cats;
+                return $this->respondApbd($existingData, "Kategori berhasil ditambahkan.");
+            }
+        }
+        return response()->json(["success" => false, "message" => "Kategori gagal ditambahkan."], 400);
+    }
+
+    public function destroyApbdCategory(Request $request, $type)
+    {
+        $existingData = self::getProfileData();
+        $cats = $existingData["apbd_categories"] ?? ["incomes" => [], "allocations" => [], "financings" => []];
+        $catName = $request->input("category_name");
+        if ($catName && isset($cats[$type])) {
+            $idx = array_search($catName, $cats[$type]);
+            if ($idx !== false) {
+                array_splice($cats[$type], $idx, 1);
+                $existingData["apbd_categories"] = $cats;
+                return $this->respondApbd($existingData, "Kategori berhasil dihapus.");
+            }
+        }
+        return response()->json(["success" => false, "message" => "Kategori gagal dihapus."], 400);
+    }
+
+
+
 
     public function storeStatistik(Request $request, $type)
     {
@@ -560,6 +768,9 @@ class VillageProfileController extends Controller
         $existingData['demographics'] = $demographics;
         File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Data statistik berhasil ditambahkan.']);
+        }
         return back()->with('success', 'Data statistik berhasil ditambahkan.');
     }
 
@@ -588,6 +799,9 @@ class VillageProfileController extends Controller
             $existingData['demographics'] = $demographics;
             File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Data statistik berhasil diperbarui.']);
+            }
             return back()->with('success', 'Data statistik berhasil diperbarui.');
         }
 
@@ -607,9 +821,94 @@ class VillageProfileController extends Controller
             $existingData['demographics'] = $demographics;
             File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Data statistik berhasil dihapus.']);
+            }
             return back()->with('success', 'Data statistik berhasil dihapus.');
         }
 
         return back()->withErrors(['Data tidak ditemukan.']);
+    }
+
+    public function storeBasicStat(Request $request)
+    {
+        $existingData = self::getProfileData();
+        $stats = $existingData['stats'] ?? self::getDefaultStats();
+
+        $stats[] = [
+            'icon' => $request->input('icon', 'fas fa-chart-bar'),
+            'title' => $request->input('title', 'Kartu Baru'),
+            'value' => $request->input('value', '0'),
+            'color' => $request->input('color', 'emerald'),
+            'is_active' => true,
+        ];
+        
+        $existingData['stats'] = $stats;
+        File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Kartu statistik berhasil ditambahkan.']);
+        }
+        return back()->with('success', 'Kartu statistik berhasil ditambahkan.');
+    }
+
+    public function destroyBasicStat($index)
+    {
+        $existingData = self::getProfileData();
+        $stats = $existingData['stats'] ?? self::getDefaultStats();
+
+        if (isset($stats[$index])) {
+            array_splice($stats, $index, 1);
+            $existingData['stats'] = $stats;
+            File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Kartu statistik berhasil dihapus.']);
+            }
+            return back()->with('success', 'Kartu statistik berhasil dihapus.');
+        }
+
+        return back()->withErrors(['Data tidak ditemukan.']);
+    }
+
+    public function updateBasicStat(Request $request, $index)
+    {
+        $existingData = self::getProfileData();
+        $stats = $existingData['stats'] ?? self::getDefaultStats();
+
+        if (isset($stats[0]) && is_array($stats[0])) {
+            if (isset($stats[$index])) {
+                $stats[$index]['title'] = $request->input('title');
+                $stats[$index]['value'] = $request->input('value');
+                $stats[$index]['icon'] = $request->input('icon', 'fas fa-chart-bar');
+                $stats[$index]['color'] = $request->input('color', 'emerald');
+            }
+        }
+        
+        $existingData['stats'] = $stats;
+        File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Kartu statistik berhasil diperbarui.']);
+        }
+        return back()->with('success', 'Kartu statistik berhasil diperbarui.');
+    }
+
+    public function toggleBasicStat($index)
+    {
+        $existingData = self::getProfileData();
+        $stats = $existingData['stats'] ?? self::getDefaultStats();
+
+        if (isset($stats[0]) && is_array($stats[0]) && isset($stats[$index])) {
+            $stats[$index]['is_active'] = !($stats[$index]['is_active'] ?? false);
+        }
+        
+        $existingData['stats'] = $stats;
+        File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Status kartu statistik berhasil diubah.']);
+        }
+        return back()->with('success', 'Status kartu statistik berhasil diubah.');
     }
 }

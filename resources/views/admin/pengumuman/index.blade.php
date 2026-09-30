@@ -5,7 +5,45 @@
 @section('header-subtitle', 'Pengaturan teks berjalan marquee di header dan banner pengumuman mendesak portal publik')
 
 @section('content')
-<div class="space-y-6" x-data="{ createModalOpen: false, editModalOpen: false, selectedAnn: null }">
+<div class="space-y-6" x-data="{ createModalOpen: false, editModalOpen: false, selectedAnn: null,
+    async submitForm(e, modalName) {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type=\'submit\']');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>Menyimpan...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlResponse, 'text/html');
+                const newGrid = doc.querySelector('#data-container').innerHTML;
+                document.querySelector('#data-container').innerHTML = newGrid;
+                
+                if(modalName) this[modalName] = false;
+                Swal.fire({
+                    icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false
+                });
+                if(modalName === 'createModalOpen') form.reset();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+}">
 
     <!-- Header Action Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -25,7 +63,7 @@
     </div>
 
     <!-- Data Table Container -->
-    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="data-container" class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         
         <div class="overflow-x-auto min-w-full">
             <table class="w-full text-left border-collapse min-w-[750px]">
@@ -94,7 +132,7 @@
 
                             <!-- Status Toggle -->
                             <td class="py-3.5 px-4 sm:px-5 text-center whitespace-nowrap">
-                                <form action="{{ route('admin.pengumuman.toggle', $ann->id) }}" method="POST">
+                                <form action="{{ route('admin.pengumuman.toggle', $ann->id) }}" method="POST" @submit.prevent="submitForm($event)">
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit" 
@@ -111,13 +149,15 @@
                                     Edit
                                 </button>
 
-                                <form action="{{ route('admin.pengumuman.destroy', $ann->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pengumuman ini?')">
+                                @if(auth()->user()->isAdmin())
+                                <form action="{{ route('admin.pengumuman.destroy', $ann->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Hapus pengumuman ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] rounded-lg transition border border-rose-200">
                                         Hapus
                                     </button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -143,7 +183,7 @@
             <div x-show="createModalOpen"  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"></div>
 
             <div x-show="createModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.pengumuman.store') }}" method="POST">
+                <form action="{{ route('admin.pengumuman.store') }}" method="POST" @submit.prevent="submitForm($event, 'createModalOpen')">
                     @csrf
                     <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
                         <h3 class="text-base font-bold">Tambah Pengumuman / Running Text</h3>
@@ -168,8 +208,20 @@
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kategori Pengumuman *</label>
-                            <select name="category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block font-bold text-slate-700 uppercase tracking-wider text-xs">Kategori Pengumuman <span class="text-rose-500">*</span></label>
+                                <div class="flex items-center gap-1.5 text-xs font-bold">
+                                    <button type="button" onclick="manageCategoryInline('add', 'pengumuman', 'create_pengumuman_category_id')" class="text-emerald-600 hover:text-emerald-700 transition flex items-center gap-0.5">
+                                        <span>+ Tambah</span>
+                                    </button>
+                                    <span class="text-slate-300">|</span>
+                                    <button type="button" onclick="manageCategoryInline('delete', 'pengumuman', 'create_pengumuman_category_id')" class="text-rose-600 hover:text-rose-700 transition flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        <span>Hapus</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <select id="create_pengumuman_category_id" data-category-type="pengumuman" name="category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -211,7 +263,7 @@
 
             <div x-show="editModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
                 <template x-if="selectedAnn">
-                    <form :action="'{{ url('admin/pengumuman') }}/' + selectedAnn.id" method="POST">
+                    <form :action="'{{ url('admin/pengumuman') }}/' + selectedAnn.id" method="POST" @submit.prevent="submitForm($event, 'editModalOpen')">
                         @csrf
                         @method('PUT')
                         <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
@@ -237,8 +289,20 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kategori Pengumuman *</label>
-                                <select name="category_id" x-model="selectedAnn.category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block font-bold text-slate-700 uppercase tracking-wider text-xs">Kategori Pengumuman <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center gap-1.5 text-xs font-bold">
+                                        <button type="button" onclick="manageCategoryInline('add', 'pengumuman', 'edit_pengumuman_category_id')" class="text-emerald-600 hover:text-emerald-700 transition flex items-center gap-0.5">
+                                            <span>+ Tambah</span>
+                                        </button>
+                                        <span class="text-slate-300">|</span>
+                                        <button type="button" onclick="manageCategoryInline('delete', 'pengumuman', 'edit_pengumuman_category_id')" class="text-rose-600 hover:text-rose-700 transition flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <select id="edit_pengumuman_category_id" data-category-type="pengumuman" name="category_id" x-model="selectedAnn.category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>

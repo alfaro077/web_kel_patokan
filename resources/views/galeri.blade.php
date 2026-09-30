@@ -9,11 +9,13 @@
 
 @php
     $jsonGalleries = $galleries->map(function($g) {
-        $images = [['url' => $g->image_url]]; // cover image is first
-        if ($g->images) {
+        $images = [];
+        if ($g->images && $g->images->count() > 0) {
             foreach ($g->images as $img) {
                 $images[] = ['url' => asset('storage/' . $img->image_path)];
             }
+        } elseif ($g->image_url) {
+            $images[] = ['url' => $g->image_url];
         }
         return [
             'id' => $g->id,
@@ -27,55 +29,29 @@
     })->values();
 @endphp
 
-<section class="w-full py-8 sm:py-12 bg-slate-50 border-t border-slate-200 relative min-h-screen"
-         x-data="{
-            modalOpen: false,
-            videoModalOpen: false,
-            activeVideo: null,
-            activeAlbum: null,
-            currentIndex: 0,
-            items: {{ json_encode($jsonGalleries ?? []) }},
-            openModal(index) {
-                this.activeAlbum = this.items[index];
-                this.currentIndex = 0;
-                this.modalOpen = true;
-                document.body.style.overflow = 'hidden';
-            },
-            closeModal() {
-                this.modalOpen = false;
-                this.activeAlbum = null;
-                document.body.style.overflow = 'auto';
-            },
-            nextPhoto() {
-                if(this.activeAlbum && this.activeAlbum.images) {
-                    this.currentIndex = (this.currentIndex + 1) % this.activeAlbum.images.length;
-                }
-            },
-            prevPhoto() {
-                if(this.activeAlbum && this.activeAlbum.images) {
-                    this.currentIndex = (this.currentIndex - 1 + this.activeAlbum.images.length) % this.activeAlbum.images.length;
-                }
-            }
-         }"
-         @keydown.escape.window="closeModal()"
-         @keydown.right.window="if(modalOpen) nextPhoto()"
-         @keydown.left.window="if(modalOpen) prevPhoto()">
+<!-- Hero Section -->
+<div class="relative bg-emerald-900 overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+            Galeri & Dokumentasi Kegiatan
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+            Dokumentasi foto kegiatan pembangunan, pelayanan publik, gotong royong, dan posyandu Kelurahan Patokan.
+        </p>
+    </div>
+    
+    <!-- Decorative bottom edge -->
+    <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+</div>
 
+<!-- Main Content -->
+<div class="bg-white py-12 sm:py-16 relative" x-data="galleryPage()">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {{-- Header Top --}}
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">Galeri & Dokumentasi Kegiatan</h1>
-                <p class="text-sm text-slate-500">Dokumentasi foto kegiatan pembangunan, pelayanan publik, gotong royong, dan posyandu Kelurahan Patokan.</p>
-            </div>
-            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm shrink-0">
-                <i class="fas fa-arrow-left text-slate-400"></i>
-                <span>Kembali ke Beranda</span>
-            </a>
-        </div>
-
-        {{-- Tabs Foto / Video --}}
+{{-- Tabs Foto / Video --}}
         <div class="flex items-center gap-4 mb-6 border-b border-slate-200 px-2">
             <a href="{{ route('galeri', ['type' => 'foto']) }}" class="px-4 py-3 text-sm font-bold transition-all {{ $type === 'foto' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-500 hover:text-slate-700 hover:border-b-2 hover:border-slate-300' }}">
                 <i class="fas fa-camera mr-2"></i>Album Foto
@@ -149,7 +125,7 @@
                                                 <i class="fas fa-images text-base"></i>
                                             </div>
                                             <span class="text-xs font-bold bg-slate-900/80 px-3 py-1 rounded-full border border-white/20">
-                                                Buka Album ({{ $gal->images->count() + 1 }} Foto)
+                                                Buka Album ({{ $gal->images->count() > 0 ? $gal->images->count() : 1 }} Foto)
                                             </span>
                                         </div>
                                     </div>
@@ -291,15 +267,23 @@
                 </button>
             </div>
 
-            {{-- Modal Footer (Dilengkapi tombol unduh agar seragam dengan beranda) --}}
-            <div class="p-6 h-36 flex flex-col justify-between shrink-0 bg-slate-900 border-t border-slate-800">
-                <div>
-                    <h3 x-text="activeAlbum?.title" class="font-bold text-base text-white line-clamp-1"></h3>
-                    <p x-text="activeAlbum?.caption || activeAlbum?.created_at" class="text-xs text-slate-400 line-clamp-2 mt-1"></p>
+            {{-- Modal Footer --}}
+            <div class="p-6 shrink-0 bg-slate-900 border-t border-slate-800 space-y-3">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="min-w-0 flex-1">
+                        <h3 x-text="activeAlbum?.title" class="font-bold text-base text-white line-clamp-1"></h3>
+                        <p x-text="activeAlbum?.caption || activeAlbum?.created_at" class="text-xs text-slate-400 line-clamp-2 mt-1"></p>
+                    </div>
+                    
+                    <a :href="activeAlbum?.images[currentIndex]?.url || '#'" download target="_blank"
+                       class="px-4 py-2.5 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition shadow-md">
+                        <i class="fas fa-download"></i>
+                        <span>Unduh Foto</span>
+                    </a>
                 </div>
-                <div class="flex justify-between items-center mt-2">
-                    <!-- Thumbnails for multiple images -->
-                    <div class="flex gap-2 overflow-x-auto no-scrollbar max-w-sm">
+
+                <template x-if="activeAlbum?.images?.length > 1">
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar pt-1">
                         <template x-for="(img, idx) in activeAlbum?.images" :key="idx">
                             <button @click="currentIndex = idx" 
                                     class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border-2 transition"
@@ -308,13 +292,7 @@
                             </button>
                         </template>
                     </div>
-                    
-                    <a :href="activeAlbum?.images[currentIndex]?.url || '#'" download target="_blank"
-                       class="px-4 py-2 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition">
-                        <i class="fas fa-download"></i>
-                        <span>Unduh Foto</span>
-                    </a>
-                </div>
+                </template>
             </div>
 
         </div>
@@ -373,6 +351,49 @@
 
         </div>
     </div>
-</section>
+</div>
 
+@push('scripts')
+<script>
+    (function() {
+        function initGalleryPage() {
+            if (typeof Alpine !== 'undefined') {
+                Alpine.data('galleryPage', () => ({
+                    galleries: {!! json_encode($jsonGalleries ?? []) !!},
+                    modalOpen: false,
+                    activeAlbum: null,
+                    currentIndex: 0,
+                    videoModalOpen: false,
+                    activeVideo: null,
+                    openModal(index) {
+                        this.activeAlbum = this.galleries[index];
+                        this.currentIndex = 0;
+                        this.modalOpen = true;
+                    },
+                    closeModal() {
+                        this.modalOpen = false;
+                        setTimeout(() => { this.activeAlbum = null; }, 300);
+                    },
+                    nextPhoto() {
+                        if (this.activeAlbum && this.activeAlbum.images) {
+                            this.currentIndex = (this.currentIndex + 1) % this.activeAlbum.images.length;
+                        }
+                    },
+                    prevPhoto() {
+                        if (this.activeAlbum && this.activeAlbum.images) {
+                            this.currentIndex = (this.currentIndex - 1 + this.activeAlbum.images.length) % this.activeAlbum.images.length;
+                        }
+                    }
+                }));
+            }
+        }
+
+        if (typeof Alpine !== 'undefined') {
+            initGalleryPage();
+        } else {
+            document.addEventListener('alpine:init', initGalleryPage);
+        }
+    })();
+</script>
+@endpush
 @endsection

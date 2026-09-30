@@ -3,17 +3,29 @@
 @section('title', 'Lokasi Kantor - ' . ($villageProfile['village_name'] ?? 'Kelurahan Patokan'))
 
 @section('content')
-<!-- Page Header -->
-<div class="bg-emerald-900 py-16 relative overflow-hidden">
-    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">Lokasi & Alamat Kantor</h1>
-        <p class="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base">Informasi alamat lengkap dan peta lokasi kantor {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}.</p>
+<!-- Hero Section -->
+<div class="relative bg-emerald-900 overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
     </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+            Lokasi & Alamat Kantor
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+            Informasi alamat lengkap dan peta lokasi kantor {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}.
+        </p>
+    </div>
+    
+    <!-- Decorative bottom edge -->
+    <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+<!-- Main Content -->
+<div class="bg-white py-12 sm:py-16 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         
         <!-- Left: Peta Lokasi (Takes 7 cols) -->
         <div class="lg:col-span-7 bg-white p-2 rounded-3xl shadow-sm border border-slate-200">

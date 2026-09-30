@@ -5,7 +5,45 @@
 @section('header-subtitle', 'Kelola semua kategori untuk Berita, Galeri Kegiatan, dan Pengumuman dari satu tempat')
 
 @section('content')
-<div class="space-y-6" x-data="{ createModalOpen: false, editModalOpen: false, selectedCategory: null }">
+<div class="space-y-6" x-data="{ createModalOpen: false, editModalOpen: false, selectedCategory: null,
+    async submitForm(e, modalName) {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type=\'submit\']');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>Menyimpan...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlResponse, 'text/html');
+                const newGrid = doc.querySelector('#data-container').innerHTML;
+                document.querySelector('#data-container').innerHTML = newGrid;
+                
+                if(modalName) this[modalName] = false;
+                Swal.fire({
+                    icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false
+                });
+                form.reset();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+}">
 
     <!-- Alert Status -->
 
@@ -39,14 +77,10 @@
            class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition {{ $type === 'galeri' ? 'bg-emerald-800 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
             Kategori Galeri
         </a>
-        <a href="{{ route('admin.kategori.index', ['type' => 'dokumen']) }}" 
-           class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition {{ $type === 'dokumen' ? 'bg-emerald-800 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
-            Kategori Dokumen Publik
-        </a>
     </div>
 
     <!-- Data Table Container -->
-    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="data-container" class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         
         <div class="overflow-x-auto min-w-full">
             <table class="w-full text-left border-collapse min-w-[700px]">
@@ -99,7 +133,7 @@
                                     Edit
                                 </button>
 
-                                <form action="{{ route('admin.kategori.destroy', $category->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini? Kategori yang sedang digunakan mungkin tidak dapat dihapus.')">
+                                <form action="{{ route('admin.kategori.destroy', $category->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Apakah Anda yakin ingin menghapus kategori ini? Kategori yang sedang digunakan mungkin tidak dapat dihapus.');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] rounded-lg transition border border-rose-200">
@@ -127,7 +161,7 @@
             <div x-show="createModalOpen"  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"></div>
 
             <div x-show="createModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.kategori.store') }}" method="POST">
+                <form action="{{ route('admin.kategori.store') }}" method="POST" @submit.prevent="submitForm($event, 'createModalOpen')">
                     @csrf
                     <input type="hidden" name="type" value="{{ $type }}">
                     
@@ -181,7 +215,7 @@
 
             <div x-show="editModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
                 <template x-if="selectedCategory">
-                    <form :action="selectedCategory.updateUrl" method="POST">
+                    <form :action="selectedCategory.updateUrl" method="POST" @submit.prevent="submitForm($event, 'editModalOpen')">
                         @csrf
                         @method('PUT')
                         

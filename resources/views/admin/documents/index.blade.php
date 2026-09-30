@@ -6,30 +6,7 @@
 
 @section('content')
 <div class="space-y-6" x-data="documentManagement()">
-
-    <!-- Alert Status -->
-    @if(session('success'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl flex items-center gap-3 text-xs font-semibold shadow-sm">
-            <i class="fas fa-check-circle text-emerald-600"></i>
-            <div>{{ session('success') }}</div>
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl flex items-start gap-3 text-xs font-semibold shadow-sm">
-            <i class="fas fa-times-circle text-rose-600 mt-0.5"></i>
-            <div>
-                <span class="font-bold">Gagal menyimpan data:</span>
-                <ul class="list-disc list-inside mt-1">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
-
-    <!-- Header Action Bar -->
+<!-- Header Action Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
         <div>
             <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -47,7 +24,7 @@
     </div>
 
     <!-- Data Table Container -->
-    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="data-container" class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         
         <div class="overflow-x-auto min-w-full">
             <table class="w-full text-left border-collapse min-w-[750px]">
@@ -71,7 +48,7 @@
 
                             <td class="py-3.5 px-4 sm:px-5 font-bold text-slate-900">
                                 {{ $doc->name }}
-                                <p class="text-[11px] font-normal text-slate-500 mt-1 line-clamp-1">{{ $doc->description }}</p>
+                                <p class="text-[11px] font-normal text-slate-500 mt-1 line-clamp-1">{{ strip_tags($doc->description) }}</p>
                             </td>
 
                             <td class="py-3.5 px-4 sm:px-5 text-center">
@@ -101,7 +78,7 @@
                                     Edit
                                 </button>
 
-                                <form action="{{ route('admin.documents.destroy', $doc->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus dokumen ini?')">
+                                <form action="{{ route('admin.documents.destroy', $doc->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Hapus dokumen ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] rounded-lg transition border border-rose-200">
@@ -133,7 +110,7 @@
             <div  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
 
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-xl w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.documents.store') }}" method="POST" enctype="multipart/form-data">@csrf
+                <form action="{{ route('admin.documents.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'createModalOpen')">@csrf
                     
                     <!-- Header -->
                     <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -165,6 +142,7 @@
                             <textarea name="description" rows="4" placeholder="Tuliskan daftar persyaratan di sini. Pisahkan dengan baris baru (Enter) untuk setiap poin persyaratan..." 
                             x-init="
                                 tinymce.init({
+        toolbar_mode: 'sliding',
                                     target: $el,
                                     plugins: 'lists link image media table code help fullscreen wordcount',
                                     toolbar: 'styles | bold underline removeformat | forecolor backcolor | bullist numlist align | table | link image media | fullscreen code help',
@@ -198,13 +176,43 @@
                             
                             <template x-for="(file, index) in createFiles" :key="file.id">
                                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl">
-                                    <div class="flex-1 w-full">
-                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Nama/Tahun File <span class="text-rose-500">*</span></label>
-                                        <input type="text" name="file_names[]" required placeholder="Misal: Tahun 2023" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white text-xs">
+                                    <div class="flex gap-2 w-full sm:w-auto">
+                                        <div class="flex-1 sm:w-32">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Bulan <span class="text-rose-500">*</span></label>
+                                            <select name="file_months[]" required class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white text-xs">
+                                                <option value="">Pilih...</option>
+                                                <option value="1">Januari</option><option value="2">Februari</option>
+                                                <option value="3">Maret</option><option value="4">April</option>
+                                                <option value="5">Mei</option><option value="6">Juni</option>
+                                                <option value="7">Juli</option><option value="8">Agustus</option>
+                                                <option value="9">September</option><option value="10">Oktober</option>
+                                                <option value="11">November</option><option value="12">Desember</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex-1 sm:w-24">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Tahun <span class="text-rose-500">*</span></label>
+                                            <input type="number" name="file_years[]" required min="2000" max="2099" :value="new Date().getFullYear()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white text-xs">
+                                        </div>
                                     </div>
                                     <div class="flex-1 w-full">
                                         <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">File PDF <span class="text-rose-500">*</span></label>
-                                        <input type="file" name="pdf_documents[]" accept="application/pdf" required class="w-full text-xs">
+                                        <input type="file" name="pdf_documents[]" accept=".pdf,application/pdf" required 
+                                            @change="
+                                                const file = $event.target.files[0];
+                                                if (file && !file.name.toLowerCase().endsWith('.pdf')) {
+                                                    $event.target.value = '';
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Format Tidak Valid!',
+                                                        text: 'Harap pilih file dengan format PDF.',
+                                                        confirmButtonColor: '#10b981',
+                                                        confirmButtonText: 'Pilih Ulang File'
+                                                    }).then(() => {
+                                                        $event.target.click();
+                                                    });
+                                                }
+                                            "
+                                            class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                                     </div>
                                     <div class="mt-4 sm:mt-5 self-end">
                                         <button type="button" @click="createFiles.splice(index, 1)" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors tooltip-trigger" title="Hapus Baris">
@@ -246,7 +254,7 @@
 
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-xl w-full border border-slate-200 my-8">
                 <template x-if="selectedDoc">
-                    <form :action="'{{ url('admin/documents') }}/' + selectedDoc.id" method="POST" enctype="multipart/form-data">
+                    <form :action="'{{ url('admin/documents') }}/' + selectedDoc.id" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'editModalOpen')">
                         @csrf @method('PUT')
                         
                         <!-- Header -->
@@ -280,6 +288,7 @@
                                 x-init="
                                     setTimeout(() => {
                                         tinymce.init({
+        toolbar_mode: 'sliding',
                                             target: $el,
                                             plugins: 'lists link image media table code help fullscreen wordcount',
                                             toolbar: 'styles | bold underline removeformat | forecolor backcolor | bullist numlist align | table | link image media | fullscreen code help',
@@ -346,13 +355,43 @@
                                         <label class="block text-xs font-bold text-slate-700 mb-2">File Baru yang Akan Diunggah</label>
                                         <template x-for="(file, index) in editFiles" :key="file.id">
                                             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-white border border-emerald-200 rounded-xl">
-                                                <div class="flex-1 w-full">
-                                                    <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Nama/Tahun File <span class="text-rose-500">*</span></label>
-                                                    <input type="text" name="file_names[]" required placeholder="Misal: Tahun 2023" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white text-xs">
+                                                <div class="flex gap-2 w-full sm:w-auto">
+                                                    <div class="flex-1 sm:w-32">
+                                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Bulan <span class="text-rose-500">*</span></label>
+                                                        <select name="file_months[]" required class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white text-xs">
+                                                            <option value="">Pilih...</option>
+                                                            <option value="1">Januari</option><option value="2">Februari</option>
+                                                            <option value="3">Maret</option><option value="4">April</option>
+                                                            <option value="5">Mei</option><option value="6">Juni</option>
+                                                            <option value="7">Juli</option><option value="8">Agustus</option>
+                                                            <option value="9">September</option><option value="10">Oktober</option>
+                                                            <option value="11">November</option><option value="12">Desember</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="flex-1 sm:w-24">
+                                                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Tahun <span class="text-rose-500">*</span></label>
+                                                        <input type="number" name="file_years[]" required min="2000" max="2099" :value="new Date().getFullYear()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white text-xs">
+                                                    </div>
                                                 </div>
                                                 <div class="flex-1 w-full">
                                                     <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">File PDF <span class="text-rose-500">*</span></label>
-                                                    <input type="file" name="pdf_documents[]" accept="application/pdf" required class="w-full text-xs">
+                                                    <input type="file" name="pdf_documents[]" accept=".pdf,application/pdf" required 
+                                                        @change="
+                                                            const file = $event.target.files[0];
+                                                            if (file && !file.name.toLowerCase().endsWith('.pdf')) {
+                                                                $event.target.value = '';
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'Format Tidak Valid!',
+                                                                    text: 'Harap pilih file dengan format PDF.',
+                                                                    confirmButtonColor: '#10b981',
+                                                                    confirmButtonText: 'Pilih Ulang File'
+                                                                }).then(() => {
+                                                                    $event.target.click();
+                                                                });
+                                                            }
+                                                        "
+                                                        class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                                                 </div>
                                                 <div class="mt-4 sm:mt-5 self-end">
                                                     <button type="button" @click="editFiles.splice(index, 1)" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors tooltip-trigger" title="Batal Tambah">
@@ -421,15 +460,56 @@ function documentManagement() {
             .then(data => {
                 if(data.success) {
                     this.selectedDoc.files = this.selectedDoc.files.filter(f => f.id !== id);
-                    // Update main table count visually
-                    window.location.reload(); 
+                    fetch(window.location.href).then(res => res.text()).then(htmlResponse => {
+                        const doc = new DOMParser().parseFromString(htmlResponse, 'text/html');
+                        document.querySelector('#data-container').innerHTML = doc.querySelector('#data-container').innerHTML;
+                    });
                 } else {
                     alert('Gagal menghapus file.');
                 }
             });
+        },
+        async submitForm(e, modalName) {
+            if (typeof tinymce !== 'undefined') tinymce.triggerSave();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type=\'submit\']');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>Menyimpan...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                
+                if (response.ok) {
+                    const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlResponse, 'text/html');
+                    const newGrid = doc.querySelector('#data-container').innerHTML;
+                    document.querySelector('#data-container').innerHTML = newGrid;
+                    
+                    if(modalName) this[modalName] = false;
+                    Swal.fire({
+                        icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false
+                    });
+                    if(modalName === 'createModalOpen') form.reset();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
         }
     };
 }
 </script>
 
 @endsection
+

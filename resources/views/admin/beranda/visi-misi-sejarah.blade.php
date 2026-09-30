@@ -5,9 +5,10 @@
 @section('header-subtitle', 'Mengatur teks visi misi, dan sejarah kelurahan.')
 
 @section('content')
+<div id="data-container">
 <div class="space-y-6">
 
-    <form action="{{ route('admin.beranda.update') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+    <form action="{{ route('admin.beranda.update') }}" method="POST" enctype="multipart/form-data" @submit.prevent="tinymce.triggerSave(); window.submitAjax($event)" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
         @csrf
         <input type="hidden" name="section" value="visi_misi_sejarah">
         <div class="border-b border-slate-100 pb-3">
@@ -28,15 +29,6 @@
                 <h4 class="text-sm font-bold text-slate-800 mb-4">Pengaturan Sejarah Kelurahan</h4>
             </div>
             <div>
-                <label class="block font-bold text-slate-700 mb-1.5">Gambar Banner Sejarah (Opsional)</label>
-                <input type="file" name="history_hero_image" accept="image/jpeg, image/png, image/webp" @change="const file = $event.target.files[0]; if(file) { $dispatch('open-cropper', { file: file, aspectRatio: 16/9, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], file.name, {type: file.type})); $event.target.files = dt.files; } }) }" class="w-full p-2 border border-slate-300 rounded-lg text-xs bg-white">
-                @if(!empty($profile['history_hero_image']))
-                    <div class="mt-2">
-                        <img src="{{ asset('storage/' . $profile['history_hero_image']) }}" class="w-full sm:w-1/2 h-auto object-cover rounded-lg border border-slate-200 shadow-sm" alt="Banner Sejarah Saat Ini">
-                    </div>
-                @endif
-            </div>
-            <div>
                 <label class="block font-bold text-slate-700 mb-1.5">Teks Sejarah Kelurahan (Opsional)</label>
                 <textarea name="history_text" id="history_editor" rows="8" class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-600">{{ old('history_text', $profile['history_text'] ?? '') }}</textarea>
             </div>
@@ -51,9 +43,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
     tinymce.init({
+        toolbar_mode: 'sliding',
         selector: '#visi_editor, #misi_editor, #history_editor',
         plugins: 'lists link image media table code help fullscreen wordcount',
-        toolbar: 'styles | bold underline removeformat | forecolor backcolor | bullist numlist align | table | link image media | fullscreen code help',
+        toolbar: 'styles | bold italic underline removeformat | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | table | link image media | fullscreen code help',
         menubar: false,
         height: 350,
         placeholder: 'Ketik konten di sini (bisa sisipkan gambar/tabel)...',
@@ -70,4 +63,6 @@
         }
     });
 </script>
+</div>
 @endsection
+

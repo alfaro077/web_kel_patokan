@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- Alpine.js logic -->
-<section class="w-full py-6 sm:py-8 bg-slate-50 min-h-screen"
+<div class="w-full bg-slate-50 min-h-screen"
          x-data="{ 
             viewMode: 'detail',
             services: {{ \Illuminate\Support\Js::from($services) }},
@@ -22,11 +22,9 @@
             },
             getRequirements(service) {
                 if (!service || !service.required_documents) return [];
-                // Jika sudah berbentuk array
                 if (Array.isArray(service.required_documents)) {
                     return service.required_documents;
                 }
-                // Jika string dipisah koma atau newline
                 if (typeof service.required_documents === 'string') {
                     return service.required_documents
                         .split(/,|\n/)
@@ -44,21 +42,28 @@
          }"
          @hashchange.window="activeId = parseInt(new URLSearchParams(window.location.search).get('id')) || activeId; viewMode = 'detail'"
          x-init="$watch('activeId', value => { viewMode = 'detail'; window.history.replaceState(null, null, '?id=' + value); })">
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">Standar Pelayanan Publik & SOP</h1>
-                <p class="text-xs sm:text-sm text-slate-500">Pilih dokumen layanan pada daftar di sebelah kanan untuk melihat SOP.</p>
-            </div>
-            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-sm shrink-0">
-                <i class="fas fa-arrow-left"></i>
-                <span>Kembali ke Beranda</span>
-            </a>
-        </div>
 
+    <!-- Hero Section -->
+    <div class="relative bg-emerald-900 overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+                Standar Pelayanan Publik & SOP
+            </h1>
+            <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+                Pilih dokumen layanan pada daftar di sebelah kanan untuk melihat SOP.
+            </p>
+        </div>
+        
+        <!-- Decorative bottom edge -->
+        <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <template x-if="services.length === 0">
             <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
                 <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-200">
@@ -70,13 +75,13 @@
         </template>
 
         <template x-if="services.length > 0">
-            <div class="flex flex-col lg:flex-row gap-6 items-start w-full">
+            <div class="flex flex-col lg:flex-row gap-6 items-stretch w-full">
                 
                 <!-- KOLOM KIRI: Detail Layanan & PDF Viewer (8 Kolom) -->
-                <div class="w-full lg:w-[68%] space-y-5">
+                <div class="w-full lg:w-[68%]">
                     
                     <!-- Card Utama -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
                         
                         <!-- Toolbar Atas (Gaya Gambar ke-2) -->
                         <div class="bg-white px-5 py-3.5 border-b border-slate-100 flex items-center justify-between gap-3">
@@ -93,44 +98,41 @@
                                 <button type="button" x-show="viewMode === 'pdf'" @click="viewMode = 'detail'" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
                                     <i class="fas fa-arrow-left"></i> Info Detail
                                 </button>
-                                <!-- <button type="button" @click="copyLink()" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold rounded-lg transition flex items-center gap-1.5">
-                                    <i class="fas fa-link"></i> Salin Tautan
-                                </button>
-                                <a :href="getPdfUrl(activeService) || '{{ asset('docs/sop-pelayanan.pdf') }}'" target="_blank" download class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm">
-                                    <i class="fas fa-download"></i> Unduh
-                                </a> -->
                             </div>
                         </div>
 
                         <!-- Mode 1: Detail Info -->
-                        <div x-show="viewMode === 'detail'" class="p-6 space-y-6 bg-white">
+                        <div x-show="viewMode === 'detail'" class="p-5 sm:p-6 flex flex-col flex-1 min-h-[420px] bg-white">
                             <!-- Persyaratan -->
-                            <div>
-                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                            <div class="flex flex-col flex-1 min-h-0 mb-6">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2 shrink-0">
                                     <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] font-bold">1</span>
                                     <span>Persyaratan Dokumen</span>
                                 </h4>
-                                <template x-if="getRequirements(activeService).length > 0">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <template x-for="(doc, idx) in getRequirements(activeService)" :key="idx">
-                                            <div class="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-xl px-3.5 py-3">
-                                                <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                                                    <i class="fas fa-check text-[10px]"></i>
+                                
+                                <div class="flex-1 overflow-y-auto custom-scrollbar pr-1.5 min-h-0">
+                                    <template x-if="getRequirements(activeService).length > 0">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pb-2">
+                                            <template x-for="(doc, idx) in getRequirements(activeService)" :key="idx">
+                                                <div class="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-xl px-3.5 py-3">
+                                                    <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                                        <i class="fas fa-check text-[10px]"></i>
+                                                    </div>
+                                                    <span class="text-xs font-medium text-slate-700 leading-snug" x-text="doc"></span>
                                                 </div>
-                                                <span class="text-xs font-medium text-slate-700 leading-snug" x-text="doc"></span>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                                <template x-if="getRequirements(activeService).length === 0">
-                                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs text-slate-400 italic text-center">
-                                        Tidak ada berkas persyaratan khusus.
-                                    </div>
-                                </template>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="getRequirements(activeService).length === 0">
+                                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs text-slate-400 italic text-center">
+                                            Tidak ada berkas persyaratan khusus.
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
 
                             <!-- Ketentuan Pelayanan -->
-                            <div>
+                            <div class="shrink-0 mb-5">
                                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
                                     <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] font-bold">2</span>
                                     <span>Ketentuan Pelayanan</span>
@@ -173,39 +175,24 @@
                                         title="Pratinjau Dokumen SOP"></iframe>
                             </template>
                         </div>
-
                     </div>
-
-                    <!-- Banner Maklumat Bebas Biaya -->
-                    <div class="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-sm">
-                            <i class="fas fa-bullhorn"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-emerald-950 text-xs sm:text-sm mb-1">Maklumat Pelayanan Bebas Biaya (GRATIS)</h4>
-                            <p class="text-xs text-emerald-800/90 leading-relaxed">
-                                Seluruh pengurusan surat keterangan dan administrasi kependudukan di Kelurahan Patokan tidak dipungut biaya apapun (GRATIS). Pastikan Anda membawa berkas persyaratan lengkap saat datang ke kantor kelurahan.
-                            </p>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- KOLOM KANAN: Daftar SOP & Bantuan (4 Kolom) -->
-                <div class="w-full lg:w-[32%] space-y-5">
+                <div class="w-full lg:w-[32%]">
                     
                     <!-- Card Daftar SOP -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
                         <div class="bg-white px-4 py-3.5 border-b border-slate-100 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Daftar Standar Pelayanan & SOP</h3>
                             </div>
-                            <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-100" x-text="services.length + ' Dokumen'"></span>
+                            <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-100" x-text="services.length + ' Layanan'"></span>
                         </div>
                         
                         <!-- List Group Navigasi -->
-                        <div class="max-h-[380px] overflow-y-auto p-2 space-y-1.5 custom-scrollbar">
+                        <div class="flex-1 overflow-y-auto p-2 space-y-1.5 custom-scrollbar min-h-0">
                             <template x-for="(srv, index) in services" :key="srv.id">
                                 <button type="button" @click="activeId = srv.id"
                                         class="w-full text-left p-2.5 rounded-xl transition flex items-start gap-2.5 focus:outline-none"
@@ -223,30 +210,14 @@
                         </div>
                     </div>
 
-                    <!-- Card Bantuan WhatsApp -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="bg-emerald-50 w-7 h-7 rounded-lg flex items-center justify-center shrink-0">
-                                <i class="fab fa-whatsapp text-emerald-600 text-[15px]"></i>
-                            </div>
-                            <h3 class="font-bold text-slate-800 text-xs">Bantuan & Informasi</h3>
-                        </div>
-                        <p class="text-[11px] text-slate-500 leading-relaxed mb-3">
-                            Butuh informasi mengenai persyaratan kelurahan? Silakan tanyakan melalui kontak resmi WhatsApp.
-                        </p>
-                        <a href="https://wa.me/6281234567890" target="_blank" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2">
-                            <i class="fab fa-whatsapp text-sm"></i>
-                            <span>Hubungi WhatsApp</span>
-                        </a>
-                    </div>
-
                 </div>
 
             </div>
         </template>
-        
+
+
     </div>
-</section>
+</div>
 
 <style>
 /* Custom Scrollbar for SOP List */

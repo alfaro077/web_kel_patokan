@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard Admin') - SIMPEL KELURAHAN PATOKAN</title>
+    <title>@yield('title', 'Dashboard Admin') - {{ $systemSettings['app_name'] ?? 'SIMPEL KELURAHAN' }}</title>
+    <link rel="icon" type="image/png" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : asset('favicon.ico') }}">
     
     <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS CDN & Alpine.js -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @if(file_exists(public_path('build/manifest.json')))
@@ -107,10 +109,11 @@
                         </a>
                     </div>
 
-                    <!-- SECTION 2: PROFIL KELURAHAN -->
-                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.identitas_sambutan') || request()->routeIs('admin.beranda.sotk') || request()->routeIs('admin.beranda.kemitraan') ? 'true' : 'false' }} }">
+                    <!-- SECTION 2: PROFIL & DATA KELURAHAN -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.identitas_sambutan') || request()->routeIs('admin.beranda.visi_misi_sejarah') || request()->routeIs('admin.beranda.sotk') || request()->routeIs('admin.struktur_organisasi.*') || request()->routeIs('admin.beranda.lembaga') || request()->routeIs('admin.beranda.kemitraan') || request()->routeIs('admin.beranda.statistik') ? 'true' : 'false' }} }">
                         <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
-                            <span>Profil Kelurahan</span>
+                            <span>Profil & Data Kelurahan</span>
                             <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="open" x-collapse class="space-y-1 mt-1">
@@ -120,10 +123,22 @@
                                 <span class="truncate">Identitas & Sambutan</span>
                             </a>
 
-                            <a href="{{ route('admin.beranda.sotk') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.sotk') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.sotk') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <a href="{{ route('admin.beranda.visi_misi_sejarah') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.visi_misi_sejarah') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.visi_misi_sejarah') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                <span class="truncate">Visi, Misi & Sejarah</span>
+                            </a>
+
+                            <a href="{{ route('admin.struktur_organisasi.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.struktur_organisasi.*') || request()->routeIs('admin.beranda.sotk') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.struktur_organisasi.*') || request()->routeIs('admin.beranda.sotk') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 <span class="truncate">Struktur Organisasi (SOTK)</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.lembaga') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.lembaga') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.lembaga') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <span class="truncate">Lembaga Kemasyarakatan</span>
                             </a>
 
                             <a href="{{ route('admin.beranda.kemitraan') }}" 
@@ -131,13 +146,21 @@
                                 <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.kemitraan') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                                 <span class="truncate">Kemitraan Instansi</span>
                             </a>
+
+                            <a href="{{ route('admin.beranda.statistik') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.statistik') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.statistik') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                <span class="truncate">Statistik & Demografi</span>
+                            </a>
                         </div>
                     </div>
+                    @endif
 
-                    <!-- SECTION 3: LAYANAN PUBLIK -->
+                    <!-- SECTION 3: LAYANAN & TRANSPARANSI -->
+                    @if(auth()->user()->isAdmin())
                     <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.jenis-layanan.*') || request()->routeIs('admin.layanan-publik.*') || request()->routeIs('admin.documents.*') || request()->routeIs('admin.beranda.maklumat') || request()->routeIs('admin.beranda.transparansi') ? 'true' : 'false' }} }">
                         <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
-                            <span>Layanan Publik</span>
+                            <span>Layanan & Transparansi</span>
                             <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="open" x-collapse class="space-y-1 mt-1">
@@ -166,9 +189,10 @@
                             </a>
                         </div>
                     </div>
+                    @endif
 
                     <!-- SECTION 4: KONTEN & PUBLIKASI -->
-                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.berita.*') || request()->routeIs('admin.pengumuman.*') || request()->routeIs('admin.galeri.*') || request()->routeIs('admin.pages.*') ? 'true' : 'false' }} }">
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.berita.*') || request()->routeIs('admin.pengumuman.*') || request()->routeIs('admin.galeri.*') || request()->routeIs('admin.agenda.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
                             <span>Konten & Publikasi</span>
                             <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -186,24 +210,25 @@
                                 <span>Pengumuman & Marquee</span>
                             </a>
 
+                            <a href="{{ route('admin.agenda.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.agenda.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.agenda.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span>Agenda Kegiatan</span>
+                            </a>
+
                             <a href="{{ route('admin.galeri.index') }}" 
                                class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.galeri.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <svg class="w-4 h-4 {{ request()->routeIs('admin.galeri.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                 <span>Galeri Foto & Video</span>
                             </a>
-
-                            <a href="{{ route('admin.pages.index') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.pages.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.pages.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                                <span class="truncate">Halaman Dinamis</span>
-                            </a>
                         </div>
                     </div>
 
-                    <!-- SECTION 5: TAMPILAN WEBSITE -->
-                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.banner') || request()->routeIs('admin.navigation.*') || request()->routeIs('admin.beranda.footer') ? 'true' : 'false' }} }">
+                    <!-- SECTION 5: TAMPILAN & KONTAK WEB -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.banner') || request()->routeIs('admin.beranda.kontak') || request()->routeIs('admin.beranda.footer') ? 'true' : 'false' }} }">
                         <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
-                            <span>Tampilan Website</span>
+                            <span>Tampilan & Kontak Web</span>
                             <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="open" x-collapse class="space-y-1 mt-1">
@@ -213,11 +238,13 @@
                                 <span class="truncate">Hero Banner & Slider</span>
                             </a>
 
-                            <a href="{{ route('admin.navigation.index') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.navigation.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.navigation.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                                <span>Navigasi Menu</span>
+                            <a href="{{ route('admin.beranda.kontak') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.kontak') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.kontak') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                <span class="truncate">Kontak & Alamat Lokasi</span>
                             </a>
+                            
+                            
 
                             <a href="{{ route('admin.beranda.footer') }}" 
                                class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.footer') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
@@ -226,36 +253,11 @@
                             </a>
                         </div>
                     </div>
+                    @endif
 
-                    <!-- SECTION 6: INFORMASI & KONTAK -->
-                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.statistik') || request()->routeIs('admin.beranda.kontak') || request()->routeIs('admin.beranda.lokasi') ? 'true' : 'false' }} }">
-                        <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
-                            <span>Informasi & Kontak</span>
-                            <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" x-collapse class="space-y-1 mt-1">
-                            <a href="{{ route('admin.beranda.statistik') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.statistik') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.statistik') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                                <span class="truncate">Statistik & Demografi</span>
-                            </a>
-
-                            <a href="{{ route('admin.beranda.kontak') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.kontak') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.kontak') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                <span class="truncate">Kontak & Jam Kerja</span>
-                            </a>
-                            
-                            <a href="{{ route('admin.beranda.lokasi') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.lokasi') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.lokasi') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                <span class="truncate">Alamat & Peta Lokasi</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 7: PENGATURAN SISTEM -->
-                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.kategori.*') || request()->routeIs('admin.media.*') || request()->routeIs('admin.activity-log.*') || request()->routeIs('admin.operator.*') || request()->routeIs('admin.pengaturan.*') ? 'true' : 'false' }} }">
+                    <!-- SECTION 6: PENGATURAN SISTEM -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.navigation.*') || request()->routeIs('admin.media.*') || request()->routeIs('admin.activity-log.*') || request()->routeIs('admin.operator.*') || request()->routeIs('admin.pengaturan.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
                             <span>Pengaturan Sistem</span>
                             <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -273,16 +275,16 @@
                                 <span class="truncate">Log Aktivitas Sistem</span>
                             </a>
 
-                            <a href="{{ route('admin.kategori.index') }}" 
-                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.kategori.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                                <svg class="w-4 h-4 {{ request()->routeIs('admin.kategori.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                                <span>Master Kategori</span>
-                            </a>
-
                             <a href="{{ route('admin.media.index') }}" 
                                class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.media.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <svg class="w-4 h-4 {{ request()->routeIs('admin.media.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                                 <span>File Manager & Media</span>
+                            </a>
+
+                            <a href="{{ route('admin.navigation.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.navigation.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.navigation.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                                <span>Kelola Navigasi Menu</span>
                             </a>
 
                             <a href="{{ route('admin.pengaturan.index') }}" 
@@ -292,6 +294,8 @@
                             </a>
                         </div>
                     </div>
+                    @endif
+
                 </nav>
             </div>
 
@@ -394,6 +398,17 @@
                     </div>
                 @endif
 
+                @if(session('warning'))
+                    <div class="mb-5 bg-amber-50 border border-amber-200 text-amber-900 p-3.5 sm:p-4 rounded-2xl flex items-center justify-between shadow-xs">
+                        <div class="flex items-center gap-3">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+                            </div>
+                            <span class="text-xs sm:text-sm font-semibold">{{ session('warning') }}</span>
+                        </div>
+                    </div>
+                @endif
+
                 @if($errors->any())
                     <div class="mb-5 bg-rose-50 border border-rose-200 text-rose-900 p-3.5 sm:p-4 rounded-2xl shadow-xs">
                         <div class="flex items-center gap-3 mb-2">
@@ -435,7 +450,7 @@
          role="dialog" aria-modal="true">
         
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-6">
-            <div x-show="isOpen" @click="cancel()" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity"></div>
+            <div x-show="isOpen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity"></div>
 
             <div x-show="isOpen" class="relative inline-block bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all w-full max-w-3xl my-8">
                 <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
@@ -459,7 +474,11 @@
     </div>
 
     <!-- Scripts: Live Clock & File Validator -->
+    @php $globalSettings = \App\Http\Controllers\Admin\SettingController::getSettings(); @endphp
     <script>
+        window.MAX_UPLOAD_FOTO_MB = {{ $globalSettings['max_upload_foto_mb'] ?? 2 }};
+        window.MAX_UPLOAD_PDF_MB = {{ $globalSettings['max_upload_pdf_mb'] ?? 5 }};
+
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -472,7 +491,7 @@
         }
         setInterval(updateClock, 1000);
 
-        function validateFileInput(input, maxMb = 3) {
+        function validateFileInput(input, overrideMaxMb = null) {
             const file = input.files[0];
             const container = input.closest('div');
             if (!container) return;
@@ -502,6 +521,14 @@
                 feedback.innerHTML = `Format <strong>.${fileExt}</strong> tidak didukung! Gunakan gambar JPG, PNG, WEBP atau PDF.`;
                 return false;
             }
+
+            let maxMb = 2;
+            if (['jpg', 'jpeg', 'png', 'webp'].includes(fileExt)) {
+                maxMb = window.MAX_UPLOAD_FOTO_MB;
+            } else if (fileExt === 'pdf') {
+                maxMb = window.MAX_UPLOAD_PDF_MB;
+            }
+            if (overrideMaxMb) { maxMb = overrideMaxMb; } // Allow specific overrides if needed
 
             if (file.size > maxMb * 1024 * 1024) {
                 input.value = '';
@@ -589,6 +616,310 @@
                 }
             }));
         });
+
+        // --- FULL AJAX CAPABILITIES ---
+        window.reloadContainer = async function(targetUrl = window.location.href) {
+            try {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.remove();
+                }
+                const response = await fetch(targetUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const containerEl = doc.querySelector('#data-container');
+                if (containerEl) {
+                    const targetContainer = document.querySelector('#data-container');
+                    if (targetContainer) {
+                        targetContainer.innerHTML = containerEl.innerHTML;
+
+                        // Re-execute scripts inside data-container (e.g. tinymce.init)
+                        const scripts = Array.from(targetContainer.querySelectorAll('script'));
+                        for (const oldScript of scripts) {
+                            const newScript = document.createElement('script');
+                            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                            if (oldScript.src) {
+                                if (document.querySelector(`script[src="${oldScript.src}"]`)) {
+                                    oldScript.remove();
+                                    continue;
+                                }
+                                await new Promise((resolve) => {
+                                    newScript.onload = resolve;
+                                    newScript.onerror = resolve;
+                                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                                });
+                            } else {
+                                newScript.textContent = oldScript.innerHTML;
+                                oldScript.parentNode.replaceChild(newScript, oldScript);
+                            }
+                        }
+                    }
+                } else {
+                    window.location.href = targetUrl;
+                }
+            } catch (error) {
+                console.error("Gagal reload container", error);
+                window.location.href = targetUrl; // Fallback
+            }
+        };
+
+        window.ajaxDelete = async function(url, token, title = 'Hapus data ini?') {
+            const result = await Swal.fire({
+                title: title,
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            });
+
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ _token: token, _method: 'DELETE' })
+                    });
+
+                    if (response.ok) {
+                        await window.reloadContainer();
+                        Swal.fire({ icon: 'success', title: 'Terhapus!', text: 'Data berhasil dihapus.', timer: 1500, showConfirmButton: false });
+                    } else {
+                        throw new Error('Gagal menghapus');
+                    }
+                } catch (error) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan saat menghapus data.' });
+                }
+            }
+        };
+
+        // Intercept Pagination Links
+        document.addEventListener('click', e => {
+            const link = e.target.closest('nav[role="navigation"] a'); // Laravel tailwind pagination links
+            if (link && link.href) {
+                e.preventDefault();
+                window.history.pushState({}, '', link.href);
+                window.reloadContainer(link.href);
+            }
+        });
+        
+        // Handle Back/Forward Browser Buttons for Pagination
+        window.addEventListener('popstate', (event) => {
+            window.reloadContainer(window.location.href);
+        });
+
+        window.submitAjax = async function(e, modalName = null, alpineContext = null) {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.triggerSave();
+            }
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                btn.disabled = true;
+            }
+
+            try {
+                const formData = new FormData(form);
+                const res = await fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                
+                if(res.redirected) {
+                    window.location.href = res.url;
+                    return;
+                }
+
+                const data = await res.json();
+                
+                if(res.ok && data.success) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message || 'Data disimpan.', showConfirmButton: false, timer: 1500 });
+                    if (modalName && alpineContext) alpineContext[modalName] = false;
+                    setTimeout(() => window.reloadContainer(window.location.href), 1500);
+                } else {
+                    if (res.status === 422) {
+                        let errorMessages = Object.values(data.errors).flat().join('<br>');
+                        Swal.fire({ icon: 'error', title: 'Validasi Gagal', html: errorMessages });
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Oops...', text: data.message || 'Terjadi kesalahan saat menyimpan data.' });
+                    }
+                }
+            } catch(err) {
+                console.error(err);
+                form.submit();
+            } finally {
+                if(btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+        };
+
+        // Inline Category Manager Helper
+        window.manageCategoryInline = async function(action, type, selectElementOrId) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const selectEl = typeof selectElementOrId === 'string' ? document.getElementById(selectElementOrId) : selectElementOrId;
+
+            if (action === 'add') {
+                const { value: name } = await Swal.fire({
+                    title: 'Tambah Kategori Baru',
+                    input: 'text',
+                    inputLabel: 'Nama Kategori',
+                    inputPlaceholder: 'Masukkan nama kategori...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Simpan',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#059669',
+                    cancelButtonColor: '#64748b',
+                    inputValidator: (value) => {
+                        if (!value || !value.trim()) {
+                            return 'Nama kategori tidak boleh kosong!';
+                        }
+                    }
+                });
+
+                if (!name) return;
+
+                try {
+                    const response = await fetch('{{ route("admin.kategori.store") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ name: name.trim(), type: type })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        const allSelects = document.querySelectorAll(`select[data-category-type="${type}"], select[name="category_id"]`);
+                        allSelects.forEach(select => {
+                            if (select.getAttribute('data-category-type') && select.getAttribute('data-category-type') !== type) {
+                                return;
+                            }
+                            let exists = false;
+                            for (let opt of select.options) {
+                                if (opt.value == data.category.id) exists = true;
+                            }
+                            if (!exists) {
+                                const newOpt = new Option(data.category.name, data.category.id);
+                                select.add(newOpt);
+                            }
+                        });
+
+                        if (selectEl) {
+                            selectEl.value = data.category.id;
+                            selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message || `Kategori '${name}' berhasil ditambahkan.`,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: data.message || (data.errors ? Object.values(data.errors).flat().join('\n') : 'Gagal menambahkan kategori.')
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan koneksi ke server.' });
+                }
+            } else if (action === 'delete') {
+                if (!selectEl || !selectEl.value || selectEl.value === '' || selectEl.value === 'all') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Peringatan',
+                        text: 'Silakan pilih kategori yang ingin dihapus pada pilihan di bawah terlebih dahulu.'
+                    });
+                    return;
+                }
+
+                const categoryId = selectEl.value;
+                const selectedOption = selectEl.options[selectEl.selectedIndex];
+                const categoryName = selectedOption ? selectedOption.text.trim() : '';
+
+                const result = await Swal.fire({
+                    title: 'Hapus Kategori?',
+                    text: `Apakah Anda yakin ingin menghapus kategori "${categoryName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                });
+
+                if (!result.isConfirmed) return;
+
+                try {
+                    const response = await fetch(`{{ url("admin/kategori") }}/${categoryId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        const allSelects = document.querySelectorAll(`select[data-category-type="${type}"], select[name="category_id"]`);
+                        allSelects.forEach(select => {
+                            if (select.getAttribute('data-category-type') && select.getAttribute('data-category-type') !== type) {
+                                return;
+                            }
+                            for (let i = 0; i < select.options.length; i++) {
+                                if (select.options[i].value == categoryId) {
+                                    select.remove(i);
+                                    break;
+                                }
+                            }
+                        });
+
+                        if (selectEl) {
+                            selectEl.value = '';
+                            selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message || 'Kategori berhasil dihapus.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menghapus',
+                            text: data.message || 'Kategori tidak dapat dihapus.'
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan koneksi ke server.' });
+                }
+            }
+        };
     </script>
+    @stack('scripts')
 </body>
 </html>

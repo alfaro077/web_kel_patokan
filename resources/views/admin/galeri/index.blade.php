@@ -21,6 +21,45 @@
         if(this.previewItem && this.previewItem.images) {
             this.previewIndex = (this.previewIndex - 1 + this.previewItem.images.length) % this.previewItem.images.length;
         }
+    },
+    async submitForm(e, modalName) {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type=\'submit\']');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>Menyimpan...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                // Fetch the updated page content to refresh grid
+                const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlResponse, 'text/html');
+                const newGrid = doc.querySelector('#gallery-grid').innerHTML;
+                document.querySelector('#gallery-grid').innerHTML = newGrid;
+                
+                this[modalName] = false;
+                Swal.fire({
+                    icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false
+                });
+                form.reset();
+                if (typeof liveUploadPreview !== 'undefined') liveUploadPreview = null;
+            } else {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     }
 }" @keydown.right.window="if(previewModalOpen) nextPreviewPhoto()" @keydown.left.window="if(previewModalOpen) prevPreviewPhoto()">
 
@@ -67,7 +106,7 @@
     </div>
 
     <!-- Photo Gallery Grid (3 or 4 columns) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         @forelse($galleries as $item)
             <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                 <div>
@@ -76,10 +115,7 @@
                         title: {{ json_encode($item->title) }}, 
                         image: '{{ str_starts_with($item->image ?? '', 'http') ? $item->image : asset('storage/' . $item->image) }}', 
                         youtubeId: '{{ $item->youtube_id }}',
-                        images: [
-                            '{{ str_starts_with($item->image ?? '', 'http') ? $item->image : asset('storage/' . $item->image) }}',
-                            ...{{ json_encode($item->images->map(fn($img) => asset('storage/' . $img->image_path))->toArray()) }}
-                        ]
+                        images: {{ $item->images->count() > 0 ? json_encode($item->images->map(fn($img) => asset('storage/' . $img->image_path))->toArray()) : json_encode([str_starts_with($item->image ?? '', 'http') ? $item->image : asset('storage/' . $item->image)]) }}
                     }; previewIndex = 0; previewModalOpen = true">
                         @if($item->type === 'video')
                             <div class="absolute inset-0 bg-slate-900/40 group-hover/preview:bg-slate-900/60 transition flex items-center justify-center z-10">
@@ -155,13 +191,15 @@
                         </button>
 
                         <!-- Delete Button -->
-                        <form action="{{ route('admin.galeri.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus foto kegiatan ini dari galeri?')">
+                        @if(auth()->user()->isAdmin())
+                        <form action="{{ route('admin.galeri.destroy', $item->id) }}" method="POST" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Hapus foto kegiatan ini dari galeri?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 rounded-lg transition" title="Hapus Foto">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </form>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -183,7 +221,7 @@
             <div x-show="uploadModalOpen"  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"></div>
 
             <div x-show="uploadModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'uploadModalOpen')">
                     @csrf
                     <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
                         <h3 class="text-base font-bold">Unggah Foto Kegiatan Baru</h3>
@@ -199,8 +237,20 @@
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kategori Kegiatan *</label>
-                            <select name="category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 font-medium">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block font-bold text-slate-700 uppercase tracking-wider text-xs">Kategori Kegiatan <span class="text-rose-500">*</span></label>
+                                <div class="flex items-center gap-1.5 text-xs font-bold">
+                                    <button type="button" onclick="manageCategoryInline('add', 'galeri', 'create_galeri_category_id')" class="text-emerald-600 hover:text-emerald-700 transition flex items-center gap-0.5">
+                                        <span>+ Tambah</span>
+                                    </button>
+                                    <span class="text-slate-300">|</span>
+                                    <button type="button" onclick="manageCategoryInline('delete', 'galeri', 'create_galeri_category_id')" class="text-rose-600 hover:text-rose-700 transition flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        <span>Hapus</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <select id="create_galeri_category_id" data-category-type="galeri" name="category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 font-medium">
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -239,9 +289,9 @@
                                 <!-- File Input -->
                                 <div x-show="imageMode === 'file'">
                                     <input type="file" name="image_files[]" accept="image/jpeg, image/png, image/webp" multiple
-                                           @change="const files = $event.target.files; if(files.length > 0) { liveUploadPreview = URL.createObjectURL(files[0]); }"
-                                           class="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
-                                    <p class="text-[10px] text-slate-400 mt-1">Anda dapat memilih lebih dari 1 foto sekaligus (Max 10). Format: JPG, PNG, WEBP. Maks 5MB per foto.</p>
+                                           @change="const files = $event.target.files; if(files.length === 1) { $dispatch('open-cropper', { file: files[0], aspectRatio: 4/3, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], files[0].name, {type: files[0].type})); $event.target.files = dt.files; liveUploadPreview = url; } }) } else if(files.length > 1) { liveUploadPreview = URL.createObjectURL(files[0]); }"
+                                           class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                    <p class="text-[10px] text-slate-400 mt-1">Pilih 1 foto untuk mode Crop. Pilih lebih dari 1 foto sekaligus untuk upload banyak tanpa Crop (Max 10). Format: JPG, PNG, WEBP. Maks {{ $systemSettings['max_upload_foto_mb'] ?? 2 }}MB per foto.</p>
                                 </div>
 
                                 <!-- URL Input -->
@@ -302,7 +352,7 @@
 
             <div x-show="editModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
                 <template x-if="selectedItem">
-                    <form :action="selectedItem.updateUrl" method="POST" enctype="multipart/form-data">
+                    <form :action="selectedItem.updateUrl" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'editModalOpen')">
                         @csrf
                         @method('PUT')
                         
@@ -323,8 +373,20 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kategori Kegiatan *</label>
-                                <select name="category_id" x-model="selectedItem.category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-medium bg-white">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block font-bold text-slate-700 uppercase tracking-wider text-xs">Kategori Kegiatan <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center gap-1.5 text-xs font-bold">
+                                        <button type="button" onclick="manageCategoryInline('add', 'galeri', 'edit_galeri_category_id')" class="text-emerald-600 hover:text-emerald-700 transition flex items-center gap-0.5">
+                                            <span>+ Tambah</span>
+                                        </button>
+                                        <span class="text-slate-300">|</span>
+                                        <button type="button" onclick="manageCategoryInline('delete', 'galeri', 'edit_galeri_category_id')" class="text-rose-600 hover:text-rose-700 transition flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <select id="edit_galeri_category_id" data-category-type="galeri" name="category_id" x-model="selectedItem.category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-medium bg-white">
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -366,8 +428,9 @@
                                             <i class="fas fa-plus-circle"></i> Tambahkan Foto Baru ke Album
                                         </div>
                                         <input type="file" name="image_files[]" accept="image/jpeg, image/png, image/webp" multiple
-                                               class="w-full text-xs p-2.5 border border-white rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-emerald-600">
-                                        <p class="text-[10px] text-emerald-600/80 mt-1 font-medium">Bisa pilih &gt; 1 file sekaligus. Foto-foto ini akan <b>ditambahkan</b> ke dalam album, tidak menimpa foto lama.</p>
+                                               @change="const files = $event.target.files; if(files.length === 1) { $dispatch('open-cropper', { file: files[0], aspectRatio: 4/3, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], files[0].name, {type: files[0].type})); $event.target.files = dt.files; } }) }"
+                                               class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                        <p class="text-[10px] text-emerald-600/80 mt-1 font-medium">Bisa pilih &gt; 1 file sekaligus. Foto-foto ini akan <b>ditambahkan</b> ke dalam album, tidak menimpa foto lama. Pilih 1 foto untuk dipotong (Crop).</p>
                                     </div>
 
                                     <!-- URL Input -->
@@ -398,12 +461,14 @@
                                                 <div class="relative group h-20 rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-slate-900">
                                                     <img :src="img.url" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition">
                                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-1.5">
-                                                        <form :action="'{{ url('admin/galeri') }}/' + selectedItem.id + '/image/' + img.id" method="POST" onsubmit="return confirm('Hapus foto ini dari album?')">
+                                                        @if(auth()->user()->isAdmin())
+                                                        <form :action="'{{ url('admin/galeri') }}/' + selectedItem.id + '/image/' + img.id" method="POST" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Hapus foto ini dari album?');">
                                                             @csrf @method('DELETE')
                                                             <button type="submit" class="w-full py-1.5 rounded border border-rose-500/50 bg-rose-600/90 hover:bg-rose-600 text-white font-bold text-[10px] flex items-center justify-center gap-1.5 shadow-lg transition transform hover:scale-105 backdrop-blur-sm">
                                                                 <i class="fas fa-trash-alt"></i> Hapus Foto
                                                             </button>
                                                         </form>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </template>
@@ -479,20 +544,9 @@
                 </template>
             </div>
 
-            <!-- Bottom Thumbnail Navigation -->
-            <template x-if="previewItem?.type === 'foto' && previewItem?.images?.length > 1">
-                <div class="p-4 bg-slate-900 border-t border-slate-800 flex justify-center gap-2 overflow-x-auto no-scrollbar shrink-0">
-                    <template x-for="(imgUrl, idx) in previewItem.images" :key="idx">
-                        <button @click="previewIndex = idx" 
-                                class="w-12 h-12 shrink-0 rounded-lg overflow-hidden border-2 transition"
-                                :class="previewIndex === idx ? 'border-emerald-500 opacity-100' : 'border-transparent opacity-50 hover:opacity-100'">
-                            <img :src="imgUrl" class="w-full h-full object-cover">
-                        </button>
-                    </template>
-                </div>
-            </template>
         </div>
     </div>
 
 </div>
 @endsection
+

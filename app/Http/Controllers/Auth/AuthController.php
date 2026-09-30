@@ -206,7 +206,7 @@ class AuthController extends Controller
                 ->with('status', 'Selamat datang kembali di Panel Administrator, ' . $user->name . '!');
         }
 
-        return redirect()->intended(route('staff.dashboard'))
+        return redirect()->intended(route('admin.dashboard'))
             ->with('status', 'Selamat bertugas di Panel Staf Pelayanan, ' . $user->name . '!');
     }
 

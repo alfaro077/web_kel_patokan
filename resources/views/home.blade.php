@@ -7,6 +7,29 @@
 <!-- FontAwesome Icons CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none !important;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+    }
+    .scroll-card {
+        flex: 0 0 auto !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
+    }
+    @media (min-width: 640px) {
+        .scroll-card {
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+        }
+    }
+</style>
+
 <div x-data="{ 
     // Modal States
     recapModalOpen: false,
@@ -16,7 +39,7 @@
     activePhoto: null,
     videoModalOpen: false,
     activeVideo: null,
-    activeStat: 'penduduk',
+    activeVideo: null,
 
     // Methods
     openPhotoLightbox(photo) {
@@ -208,13 +231,13 @@ class="relative overflow-x-hidden w-full max-w-full">
             <div class="bg-white rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6">
                 <div class="space-y-2 text-center lg:text-left">
                     <span class="px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-800 font-extrabold text-[10px] uppercase tracking-wider border border-emerald-400/30">
-                        AKSES CEPAT LAYANAN DIGITAL
+                        DOKUMEN & TRANSPARANSI
                     </span>
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                        Layanan & Transparansi {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}
+                        Dokumen & Transparansi {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-600">
-                        Lihat Standar Pelayanan Publik (SOP) atau unduh dokumen transparansi realisasi APBD / Dana Desa 2026.
+                        Informasi & transparansi APBD / Dana Desa.
                     </p>
                 </div>
 
@@ -227,7 +250,7 @@ class="relative overflow-x-hidden w-full max-w-full">
 
                     <a href="{{ route('transparansi') }}"
                        class="px-6 py-3.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs sm:text-sm rounded-xl transition flex items-center gap-2">
-                        <i class="fas fa-file-pdf"></i>
+                        <i class="fas fa-file-invoice-dollar"></i>
                         <span>Transparansi APBD</span>
                     </a>
                 </div>
@@ -244,51 +267,69 @@ class="relative overflow-x-hidden w-full max-w-full">
                 </p>
             </div>
 
-            <!-- Grid Cards Statistik Real-Time (10 Cards) -->
-            <div class="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 items-stretch">
+            <!-- Grid Cards Statistik Real-Time -->
+            <div class="w-full flex flex-wrap justify-center gap-4 sm:gap-6 items-stretch">
+                @php
+                    $activeStats = array_filter($villageProfile['stats'] ?? [], function($s) { return $s['is_active'] ?? false; });
+                @endphp
                 
-                <!-- Card 1: Penduduk -->
-                <div @click="statModalOpen = true; activeStat = 'penduduk'" class="cursor-pointer bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full min-h-[120px] hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-base mb-3">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1 truncate">{{ $stats['penduduk'] ?? '8.425' }}</div>
-                    <div class="text-[11px] font-bold text-slate-500 uppercase mt-auto">Jumlah Penduduk</div>
-                </div>
+                @foreach($activeStats as $stat)
+                    @if(!($stat['is_active'] ?? false)) @continue @endif
+                    @php
+                        $c = $stat['color'] ?? 'emerald';
+                        if ($c === 'emerald') {
+                            $cardClass = 'bg-white border border-slate-200/80 hover:-translate-y-0.5 hover:shadow-md';
+                            $iconClass = 'bg-emerald-50 text-emerald-600';
+                            $valClass = 'text-slate-900';
+                            $titleClass = 'text-slate-500';
+                        } else {
+                            $cardClass = match($c) {
+                                'sky' => 'bg-sky-50/50 border border-sky-300 relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md',
+                                'amber' => 'bg-amber-50/50 border border-amber-300 relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md',
+                                'rose' => 'bg-rose-50/50 border border-rose-300 relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md',
+                                'indigo' => 'bg-indigo-50/50 border border-indigo-300 relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md',
+                                default => 'bg-slate-50 border border-slate-300 relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md'
+                            };
+                            $iconClass = match($c) {
+                                'sky' => 'bg-sky-100/80 text-sky-600 border border-sky-300/50',
+                                'amber' => 'bg-amber-100/80 text-amber-600 border border-amber-300/50',
+                                'rose' => 'bg-rose-100/80 text-rose-600 border border-rose-300/50',
+                                'indigo' => 'bg-indigo-100/80 text-indigo-600 border border-indigo-300/50',
+                                default => 'bg-slate-100 text-slate-600'
+                            };
+                            $valClass = match($c) {
+                                'sky' => 'text-sky-600',
+                                'amber' => 'text-amber-600',
+                                'rose' => 'text-rose-600',
+                                'indigo' => 'text-indigo-600',
+                                default => 'text-slate-600'
+                            };
+                            $titleClass = match($c) {
+                                'sky' => 'text-sky-600/80',
+                                'amber' => 'text-amber-600/80',
+                                'rose' => 'text-rose-600/80',
+                                'indigo' => 'text-indigo-600/80',
+                                default => 'text-slate-500'
+                            };
+                        }
+                        $modalAction = "class=\"";
+                    @endphp
 
-                <!-- Card 2: KK -->
-                <div @click="statModalOpen = true; activeStat = 'kk'" class="cursor-pointer bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full min-h-[120px] hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-base mb-3">
-                        <i class="fas fa-address-card"></i>
+                    <div {!! $modalAction . $cardClass !!} rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full min-h-[120px] transition-all flex flex-col flex-1 min-w-[140px] max-w-[280px]">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base mb-3 {{ $iconClass }}">
+                            <i class="{{ $stat['icon'] ?? 'fas fa-chart-bar' }}"></i>
+                        </div>
+                        <div class="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight mb-1 truncate {{ $valClass }}">{{ $stat['value'] ?? '-' }}</div>
+                        <div class="text-[11px] font-bold uppercase mt-auto {{ $titleClass }}">{{ $stat['title'] ?? '-' }}</div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1 truncate">{{ $stats['kk'] ?? '2.640' }}</div>
-                    <div class="text-[11px] font-bold text-slate-500 uppercase mt-auto">Kepala Keluarga</div>
-                </div>
+                @endforeach
+            </div>
 
-                <!-- Card 3: RT / RW -->
-                <div @click="statModalOpen = true; activeStat = 'rtrw'" class="cursor-pointer bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full min-h-[120px] hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-base mb-3">
-                        <i class="fas fa-map-signs"></i>
-                    </div>
-                    <div class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-1 truncate">{{ $stats['rt_rw'] ?? '32 RT / 08 RW' }}</div>
-                    <div class="text-[11px] font-bold text-slate-500 uppercase mt-auto">Wilayah RT / RW</div>
-                </div>
-                <!-- Card 4: Luas Wilayah -->
-                <div @click="statModalOpen = true; activeStat = 'wilayah'" class="cursor-pointer bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full min-h-[120px] hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-base mb-3">
-                        <i class="fas fa-chart-area"></i>
-                    </div>
-                    <div class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-1 truncate">{{ $stats['luas'] ?? '3.82 km²' }}</div>
-                    <div class="text-[11px] font-bold text-slate-500 uppercase mt-auto">Luas Wilayah</div>
-                </div>
-                <!-- Card 5: Kartu Dana Desa Aksen Amber -->
-                <div @click="statModalOpen = true; activeStat = 'anggaran'" class="cursor-pointer bg-amber-50/50 border border-amber-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 h-full min-h-[120px] hover:shadow-md hover:-translate-y-0.5 transition-all relative overflow-hidden group flex flex-col">
-                    <div class="w-9 h-9 rounded-xl bg-amber-100/80 text-amber-600 flex items-center justify-center font-bold text-base mb-3 border border-amber-300/50">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <div class="text-lg sm:text-xl font-extrabold text-amber-600 tracking-tight mb-1 truncate">Rp {{ $villageProfile['apbd']['total_budget'] ?? '1.450.000.000' }}</div>
-                    <div class="text-[11px] font-extrabold text-amber-600/80 uppercase tracking-wider mt-auto">Pagu Dana TA {{ $villageProfile['apbd']['year'] ?? '2026' }}</div>
-                </div>
+            <div class="flex justify-center mt-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <a href="{{ route('statistik') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition hover:-translate-y-0.5">
+                    <span>Lihat Statistik Lengkap</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </a>
             </div>
     </section>
 
@@ -376,15 +417,15 @@ class="relative overflow-x-hidden w-full max-w-full">
                         <div class="space-y-2">
                             <span class="text-amber-600 font-extrabold text-[10px] uppercase tracking-wider">STANDAR MUTU PELAYANAN</span>
                             <h3 class="text-xl font-black text-slate-900 leading-snug">
-                                Maklumat Pelayanan Publik Resmi
+                                {{ $villageProfile['maklumat_card_title'] ?? 'Maklumat Pelayanan Publik Resmi' }}
                             </h3>
                             <p class="text-xs sm:text-sm text-slate-500 leading-relaxed font-medium">
-                                Komitmen penuh seluruh jajaran aparatur {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }} dalam memberikan hak pelayanan terbaik bagi seluruh warga.
+                                {{ $villageProfile['maklumat_card_desc'] ?? 'Komitmen penuh seluruh jajaran aparatur ' . ($villageProfile['village_name'] ?? 'Kelurahan Patokan') . ' dalam memberikan hak pelayanan terbaik bagi seluruh warga.' }}
                             </p>
                         </div>
 
                         <div class="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 text-xs text-slate-700 leading-relaxed italic border-l-4 border-l-amber-500 shadow-sm">
-                            "Dengan ini kami menyatakan sanggup menyelenggarakan pelayanan sesuai standar yang ditetapkan dan siap menerima sanksi apabila melanggar."
+                            {{ $villageProfile['maklumat_card_quote'] ?? '"Dengan ini kami menyatakan sanggup menyelenggarakan pelayanan sesuai standar yang ditetapkan dan siap menerima sanksi apabila melanggar."' }}
                         </div>
 
                         <button type="button" @click="maklumatModalOpen = true"
@@ -409,13 +450,15 @@ class="relative overflow-x-hidden w-full max-w-full">
                 <h3 class="text-xl sm:text-2xl font-black text-slate-900">Sinergi Instansi & Portal Terkait</h3>
             </div>
 
-            <div class="w-full max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="w-full max-w-5xl mx-auto flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory no-scrollbar">
                 @foreach($relatedLinks ?? [] as $link)
                 <a href="{{ $link['url'] }}" target="_blank"
-                   class="p-5 bg-slate-50 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 rounded-2xl transition flex flex-col items-center text-center group">
+                   class="scroll-card h-auto snap-start p-5 bg-slate-50 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 rounded-2xl transition flex flex-col items-center text-center group">
                     <img src="{{ str_starts_with($link['logo'], 'http') ? $link['logo'] : asset('storage/' . $link['logo']) }}" alt="{{ $link['name'] }}" class="h-10 w-auto object-contain mb-3 group-hover:scale-110 transition duration-300">
-                    <h4 class="font-bold text-xs text-slate-900 group-hover:text-emerald-700 transition">{{ $link['name'] }}</h4>
-                    <p class="text-[10px] text-slate-500 mt-1 line-clamp-1">{{ $link['desc'] }}</p>
+                    <div class="flex-1 flex flex-col justify-center w-full">
+                        <h4 class="font-bold text-xs text-slate-900 group-hover:text-emerald-700 transition line-clamp-2">{{ $link['name'] }}</h4>
+                        <p class="text-[10px] text-slate-500 mt-1 line-clamp-2">{{ $link['desc'] }}</p>
+                    </div>
                 </a>
                 @endforeach
             </div>
@@ -445,7 +488,7 @@ class="relative overflow-x-hidden w-full max-w-full">
                     </a>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5">
                     @foreach($galleries as $item)
                     <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden group w-full min-w-0 flex flex-col h-full">
                         <div class="relative h-32 sm:h-36 lg:h-40 overflow-hidden shrink-0 w-full bg-slate-100">
@@ -570,19 +613,25 @@ class="relative overflow-x-hidden w-full max-w-full">
                 </button>
             </div>
 
-            <div class="space-y-4 text-xs leading-relaxed text-slate-700 border-l-4 border-amber-400 pl-4 bg-amber-50/50 p-4 rounded-r-xl">
-                <div class="mb-4 sm:mb-6">
-                    <span class="text-[9px] sm:text-[10px] font-extrabold text-emerald-700 tracking-widest">{{ strtoupper($villageProfile['regency'] ?? 'PEMERINTAH KABUPATEN PROBOLINGGO') }} &bull; {{ strtoupper($villageProfile['subdistrict'] ?? 'KECAMATAN KRAKSAAN') }} &bull; {{ strtoupper($villageProfile['village_name'] ?? 'KELURAHAN PATOKAN') }}</span>
+            @if(!empty($villageProfile['maklumat_image']))
+                <div class="w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center p-2">
+                    <img src="{{ asset('storage/' . $villageProfile['maklumat_image']) }}" alt="Maklumat Pelayanan Publik" class="w-full aspect-[4/3] object-cover rounded-lg shadow-sm">
                 </div>
-                
-                <h2 class="text-lg sm:text-2xl font-black text-slate-900 mb-6 leading-tight uppercase">Maklumat Pelayanan Publik</h2>
-                
-                <p class="italic whitespace-pre-wrap">"{{ $maklumatText ?? 'Dengan ini, kami seluruh ASN dan Pegawai Pemerintah Kelurahan Patokan menyatakan sanggup menyelenggarakan pelayanan sesuai standar pelayanan yang telah ditetapkan dan siap menerima sanksi sesuai ketentuan perundang-undangan yang berlaku apabila pelayanan tidak sesuai janji.' }}"</p>
-                
-                <div class="mt-6 flex items-center justify-center gap-3 text-xs sm:text-sm font-bold text-slate-900">
-                    <span>Kepala {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}</span>
+            @else
+                <div class="space-y-4 text-xs leading-relaxed text-slate-700 border-l-4 border-amber-400 pl-4 bg-amber-50/50 p-4 rounded-r-xl">
+                    <div class="mb-4 sm:mb-6">
+                        <span class="text-[9px] sm:text-[10px] font-extrabold text-emerald-700 tracking-widest">{{ strtoupper($villageProfile['regency'] ?? 'PEMERINTAH KABUPATEN PROBOLINGGO') }} &bull; {{ strtoupper($villageProfile['subdistrict'] ?? 'KECAMATAN KRAKSAAN') }} &bull; {{ strtoupper($villageProfile['village_name'] ?? 'KELURAHAN PATOKAN') }}</span>
+                    </div>
+                    
+                    <h2 class="text-lg sm:text-2xl font-black text-slate-900 mb-6 leading-tight uppercase">Maklumat Pelayanan Publik</h2>
+                    
+                    <p class="italic whitespace-pre-wrap">"{!! $maklumatText ?? 'Dengan ini, kami seluruh ASN dan Pegawai Pemerintah Kelurahan Patokan menyatakan sanggup menyelenggarakan pelayanan sesuai standar pelayanan yang telah ditetapkan dan siap menerima sanksi sesuai ketentuan perundang-undangan yang berlaku apabila pelayanan tidak sesuai janji.' !!}"</p>
+                    
+                    <div class="mt-6 flex items-center justify-center gap-3 text-xs sm:text-sm font-bold text-slate-900">
+                        <span>Kepala {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}</span>
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div class="flex justify-end pt-4 border-t border-slate-200">
                 <button type="button" @click="maklumatModalOpen = false" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl">
@@ -685,170 +734,7 @@ class="relative overflow-x-hidden w-full max-w-full">
         </div>
     </div>
 
-    <!-- 5. Modal Detail Statistik -->
-    <div x-show="statModalOpen" x-cloak
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95"
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
-        
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 text-slate-800 max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
-            
-            <!-- Header Modal -->
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                <div class="flex items-center gap-3">
-                    <span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
-                        <i :class="{
-                            'fas fa-users': activeStat === 'penduduk',
-                            'fas fa-address-card': activeStat === 'kk',
-                            'fas fa-map-signs': activeStat === 'rtrw',
-                            'fas fa-chart-area': activeStat === 'wilayah',
-                            'fas fa-coins text-amber-600 bg-amber-50': activeStat === 'anggaran'
-                        }"></i>
-                    </span>
-                    <div>
-                        <h3 class="text-base sm:text-lg font-black text-slate-900 leading-snug"
-                            x-text="{
-                                'penduduk': 'Rincian Demografi & Jumlah Penduduk',
-                                'kk': 'Data Kepala Keluarga (KK)',
-                                'rtrw': 'Pembagian Wilayah Rukun Warga & Tetangga',
-                                'wilayah': 'Luas & Batas Administrasi Wilayah',
-                                'anggaran': 'Transparansi Realisasi Pagu Dana TA 2026'
-                            }[activeStat]"></h3>
-                        <p class="text-xs text-slate-500">{{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}, {{ $villageProfile['subdistrict'] ?? 'Kecamatan Kraksaan' }}</p>
-                    </div>
-                </div>
-                <button type="button" @click="statModalOpen = false" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
 
-            <!-- 1. Detail Penduduk -->
-            <div x-show="activeStat === 'penduduk'" class="space-y-4">
-                <div class="grid grid-cols-2 gap-3 text-center">
-                    <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-4">
-                        <span class="text-xs font-semibold text-blue-600 block">Laki-Laki</span>
-                        <span class="text-2xl font-black text-blue-950 mt-1 block">{{ $villageProfile['demographics']['male'] ?? '0' }}</span>
-                    </div>
-                    <div class="bg-pink-50/60 border border-pink-100 rounded-2xl p-4">
-                        <span class="text-xs font-semibold text-pink-600 block">Perempuan</span>
-                        <span class="text-2xl font-black text-pink-950 mt-1 block">{{ $villageProfile['demographics']['female'] ?? '0' }}</span>
-                    </div>
-                </div>
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 text-xs text-slate-600 space-y-2">
-                    <div class="flex justify-between py-1 border-b border-slate-200/60">
-                        <span class="font-medium">Usia Produktif (15 - 64 thn)</span>
-                        <span class="font-bold text-slate-800">{{ $villageProfile['demographics']['productive_count'] ?? '0' }} Jiwa</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-slate-200/60">
-                        <span class="font-medium">Anak-anak (0 - 14 thn)</span>
-                        <span class="font-bold text-slate-800">{{ $villageProfile['demographics']['child_count'] ?? '0' }} Jiwa</span>
-                    </div>
-                    <div class="flex justify-between py-1">
-                        <span class="font-medium">Lansia (65+ thn)</span>
-                        <span class="font-bold text-slate-800">{{ $villageProfile['demographics']['elderly_count'] ?? '0' }} Jiwa</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Detail KK -->
-            <div x-show="activeStat === 'kk'" class="space-y-4">
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 text-xs text-slate-600 space-y-2.5">
-                    <div class="flex justify-between items-center py-1 border-b border-slate-200/60">
-                        <span>Total Kepala Keluarga (KK) Terdaftar</span>
-                        <span class="font-bold text-slate-900 text-sm">{{ $villageProfile['stats']['kk'] ?? '2.640' }} KK</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1 border-b border-slate-200/60">
-                        <span>Rata-rata Jiwa / KK</span>
-                        <span class="font-bold text-slate-900">{{ $villageProfile['demographics']['avg_family_size'] ?? '3.2' }} Jiwa</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1">
-                        <span>Kepadatan Penduduk</span>
-                        <span class="font-bold text-slate-900">{{ $villageProfile['demographics']['density'] ?? '3.438' }} Jiwa/km²</span>
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-400 italic">
-                    * Data dihimpun berdasarkan rekapitulasi Sistem Informasi Administrasi Kependudukan (SIAK) berkala.
-                </p>
-            </div>
-
-            <!-- 3. Detail RT / RW -->
-            <div x-show="activeStat === 'rtrw'" class="space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl text-center">
-                        <span class="text-2xl font-black text-emerald-800 block">{{ $villageProfile['territory']['rw'] ?? '08' }}</span>
-                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Rukun Warga (RW)</span>
-                    </div>
-                    <div class="p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl text-center">
-                        <span class="text-2xl font-black text-emerald-800 block">{{ $villageProfile['territory']['rt'] ?? '32' }}</span>
-                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Rukun Tetangga (RT)</span>
-                    </div>
-                </div>
-                <p class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                    Seluruh pengantar pengurusan administrasi wajib diawali dari ketua RT dan RW setempat sesuai domisili tempat tinggal sebelum diajukan ke kantor kelurahan.
-                </p>
-            </div>
-
-            <!-- 4. Detail Luas Wilayah -->
-            <div x-show="activeStat === 'wilayah'" class="space-y-4">
-                <div class="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 text-center">
-                    <span class="text-2xl font-black text-emerald-800 block">{{ $stats['luas'] ?? '3.82 km²' }}</span>
-                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Total Luas Wilayah</span>
-                </div>
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-2 text-xs">
-                    <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2">Batas Administrasi Wilayah:</h5>
-                    <div class="grid grid-cols-2 gap-2 text-slate-600">
-                        <div class="p-2.5 bg-white rounded-lg border border-slate-100">
-                            <span class="text-[10px] text-slate-400 block font-bold">UTARA</span>
-                            <span class="font-medium text-slate-800">{{ $villageProfile['territory']['north'] ?? '-' }}</span>
-                        </div>
-                        <div class="p-2.5 bg-white rounded-lg border border-slate-100">
-                            <span class="text-[10px] text-slate-400 block font-bold">TIMUR</span>
-                            <span class="font-medium text-slate-800">{{ $villageProfile['territory']['east'] ?? '-' }}</span>
-                        </div>
-                        <div class="p-2.5 bg-white rounded-lg border border-slate-100">
-                            <span class="text-[10px] text-slate-400 block font-bold">SELATAN</span>
-                            <span class="font-medium text-slate-800">{{ $villageProfile['territory']['south'] ?? '-' }}</span>
-                        </div>
-                        <div class="p-2.5 bg-white rounded-lg border border-slate-100">
-                            <span class="text-[10px] text-slate-400 block font-bold">BARAT</span>
-                            <span class="font-medium text-slate-800">{{ $villageProfile['territory']['west'] ?? '-' }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. Detail Pagu Anggaran -->
-            <div x-show="activeStat === 'anggaran'" class="space-y-4">
-                <div class="bg-amber-50/50 border border-amber-200 rounded-2xl p-4 text-center">
-                    <span class="text-[10px] uppercase font-bold text-amber-700 tracking-wider">Total Pagu Anggaran Kelurahan TA {{ $villageProfile['apbd']['year'] ?? '2026' }}</span>
-                    <div class="text-2xl font-black text-amber-700 mt-1">Rp {{ $villageProfile['apbd']['total_budget'] ?? '0' }}</div>
-                </div>
-                <div class="space-y-2 text-xs">
-                    @foreach($villageProfile['apbd']['allocations'] ?? [] as $alloc)
-                    <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-                        <span class="font-medium text-slate-700 truncate pr-2" title="{{ $alloc['name'] }}">{{ Str::limit($alloc['name'], 35) }}</span>
-                        <span class="font-bold text-slate-900">{{ $alloc['pct'] }}%</span>
-                    </div>
-                    @endforeach
-                </div>
-                <a href="{{ route('transparansi') }}" class="block text-center w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow transition">
-                    Buka Halaman Transparansi APBD Lengkap &rarr;
-                </a>
-            </div>
-
-            <!-- Footer Modal -->
-            <div class="pt-4 border-t border-slate-100 flex justify-end">
-                <button type="button" @click="statModalOpen = false" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
-                    Tutup
-                </button>
-            </div>
-
-        </div>
-    </div>
 
 </div>
 

@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+scratch/
+update_*.py
+update_*.php
+sync.php

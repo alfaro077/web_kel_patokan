@@ -4,26 +4,28 @@
 
 @section('content')
 
-<section class="w-full py-8 sm:py-12 bg-slate-50 border-t border-slate-200 relative min-h-screen">
+<!-- Hero Section -->
+<div class="relative bg-emerald-900 overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+            Arsip Dokumen Publik
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+            Daftar dokumen publik yang tersedia untuk diunduh dan dipelajari.
+        </p>
+    </div>
     
+    <!-- Decorative bottom edge -->
+    <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+</div>
+
+<!-- Main Content -->
+<div class="w-full bg-slate-50 py-12 sm:py-16 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">
-                    Arsip Dokumen Publik
-                </h1>
-                <p class="text-sm text-slate-500">Daftar dokumen publik yang tersedia untuk diunduh dan dipelajari.</p>
-            </div>
-            
-            <div class="flex items-center gap-3">
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm">
-                    <i class="fas fa-home"></i>
-                    <span>Beranda</span>
-                </a>
-            </div>
-        </div>
 
         <div class="space-y-6">
             @if(count($documents) > 0)
@@ -69,6 +71,6 @@
             @endif
         </div>
     </div>
-</section>
+</div>
 
 @endsection

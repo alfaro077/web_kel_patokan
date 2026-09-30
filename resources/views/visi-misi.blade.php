@@ -7,25 +7,30 @@
 <!-- FontAwesome Icons CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<section class="w-full py-8 sm:py-12 bg-slate-50 border-t border-slate-200 relative min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Hero Section -->
+<div class="relative bg-emerald-900 overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+            Visi & Misi Pembangunan
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+            Arah kebijakan, cita-cita, dan komitmen pelayanan Pemerintah {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}.
+        </p>
+    </div>
+    
+    <!-- Decorative bottom edge -->
+    <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+</div>
 
-        {{-- Header Top --}}
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">Visi & Misi Pembangunan</h1>
-                <p class="text-sm text-slate-500">Arah kebijakan, cita-cita, dan komitmen pelayanan Pemerintah {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}.</p>
-            </div>
-            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm shrink-0">
-                <i class="fas fa-arrow-left text-slate-400"></i>
-                <span>Kembali ke Beranda</span>
-            </a>
-        </div>
-
-        {{-- Full Width Main Container --}}
-        <div class="w-full">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-8">
-                
+<!-- Main Content -->
+<div class="bg-white py-12 sm:py-16 relative">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200">
+            <div class="space-y-10">
                 {{-- Header Banner --}}
                 <div class="border-b border-slate-100 pb-6">
                     <span class="inline-flex items-center gap-2 text-emerald-700 text-xs font-bold uppercase tracking-widest px-3 py-1 bg-emerald-50 rounded-full border border-emerald-200 mb-3">
@@ -33,43 +38,36 @@
                         Pedoman Pembangunan Kelurahan
                     </span>
                     <h2 class="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
-                        Visi & Misi {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}, {{ $villageProfile['subdistrict'] ?? 'Kecamatan Kraksaan' }}
+                        Visi Misi {{ str_replace('Kelurahan', 'Desa', $villageProfile['village_name'] ?? 'Desa Patokan') }}
                     </h2>
                 </div>
 
-                {{-- VISI CARD --}}
-                <div class="bg-gradient-to-r from-emerald-900 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md border border-emerald-800 relative overflow-hidden">
-                    <div class="flex items-center gap-2 text-emerald-300 font-extrabold text-xs uppercase tracking-wider mb-2">
-                        <i class="fas fa-bullseye text-base"></i> VISI {{ strtoupper($villageProfile['village_name'] ?? 'KELURAHAN PATOKAN') }}
-                    </div>
-                    <div class="text-base sm:text-lg font-bold text-white leading-relaxed prose prose-invert max-w-none">
-                        {!! $villageProfile['vision'] ?? '"Terwujudnya Kelurahan Patokan yang Maju, Sejahtera, Mandiri, Berbudaya, dan Pelayanan Publik Prima Berbasis Transparansi serta Gotong Royong Warga."' !!}
+                {{-- VISI SECTION --}}
+                <div class="space-y-4">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Visi</h3>
+                    <div class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-none font-medium">
+                        {!! $villageProfile['vision'] ?? 'Terwujudnya Desa Patokan yang maju, mandiri, sejahtera, dan berkeadilan dengan tata kelola pemerintahan yang transparan dan akuntabel' !!}
                     </div>
                 </div>
 
-                {{-- MISI CARD --}}
+                {{-- MISI SECTION --}}
                 <div class="space-y-4">
-                    <h3 class="font-extrabold text-base text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-100">
-                        <i class="fas fa-list-check text-emerald-600"></i>
-                        <span>MISI PEMBANGUNAN {{ strtoupper(str_replace('Kelurahan ', '', $villageProfile['village_name'] ?? 'PATOKAN')) }}</span>
-                    </h3>
-
-                    <div class="prose prose-slate text-xs sm:text-sm text-slate-700 leading-relaxed font-normal max-w-none">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Misi</h3>
+                    <div class="prose prose-slate prose-li:marker:text-slate-400 text-sm sm:text-base text-slate-600 leading-relaxed max-w-none">
                         {!! $villageProfile['mission'] ?? '
-                        <ol class="list-decimal ml-5 space-y-3">
-                            <li class="pl-2"><strong>Pelayanan Prima:</strong> Meningkatkan kualitas pelayanan administrasi kependudukan yang ramah, cepat, transparan, dan bebas dari pungutan liar.</li>
-                            <li class="pl-2"><strong>Pemberdayaan Ekonomi:</strong> Mendorong pertumbuhan ekonomi warga melalui pembinaan Usaha Mikro, Kecil, dan Menengah (UMKM) lokal Kelurahan Patokan.</li>
-                            <li class="pl-2"><strong>Ketertiban & Kebersihan:</strong> Memelihara keamanan, ketertiban, kebersihan lingkungan, serta mempererat kerukunan hidup antar warga RT dan RW.</li>
-                            <li class="pl-2"><strong>Tata Kelola Transparan:</strong> Memperkuat transparansi tata kelola pemerintahan kelurahan serta pembangunan infrastruktur yang tepat guna.</li>
-                        </ol>
+                        <ul class="list-disc ml-5 space-y-2">
+                            <li><strong>Peningkatan Pelayanan Publik:</strong> Memberikan pelayanan yang prima, cepat, transparan, dan adil kepada seluruh masyarakat tanpa membedakan golongan.</li>
+                            <li><strong>Pembangunan Infrastruktur:</strong> Mempercepat pemerataan dan perbaikan infrastruktur desa, seperti renovasi fasilitas umum/balai desa, perbaikan jalan, dan saluran irigasi.</li>
+                            <li><strong>Pemberdayaan Ekonomi</strong></li>
+                            <li><strong>Peningkatan SDM dan Kesehatan:</strong> Meningkatkan kualitas sumber daya manusia melalui dukungan pendidikan, pembinaan kepemudaan, serta program kesehatan seperti pencegahan stunting dan layanan posyandu</li>
+                        </ul>
                         ' !!}
                     </div>
                 </div>
 
             </div>
         </div>
-
     </div>
-</section>
+</div>
 
 @endsection

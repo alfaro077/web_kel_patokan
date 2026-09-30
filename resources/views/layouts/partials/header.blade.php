@@ -2,11 +2,12 @@
 <!-- 1. TOP BAR HEADER                          -->
 <!-- ========================================== -->
 <header class="bg-slate-950 text-slate-200 text-[10px] sm:text-[11px] py-1.5 border-b border-slate-900 relative z-50 overflow-x-hidden">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2">
         
         <!-- Left Info: Office Hours -->
-        <div class="flex items-center gap-1.5 text-slate-300 font-medium justify-center sm:justify-start text-center sm:text-left">
-            <span class="text-slate-400">🕒 Jam Layanan Kantor:</span>
+        <div class="flex items-center gap-1 sm:gap-1.5 text-slate-300 font-medium text-left">
+            <span class="text-slate-400 hidden sm:inline">🕒 Jam Layanan Kantor:</span>
+            <span class="text-slate-400 sm:hidden">🕒 Layanan:</span>
             <strong class="text-white">{{ $villageProfile['office_hours_mon_thu'] ?? '08.00 - 15.30 WIB' }}</strong>
         </div>
 
@@ -93,10 +94,10 @@
 
                     <div x-show="openDropdown === 'd_profil'" x-cloak x-transition
                          class="absolute left-0 mt-1 w-56 max-h-[360px] overflow-y-auto bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 font-medium text-xs">
-                        @if(isset($profilePages) && $profilePages->count() > 0)
-                            @foreach($profilePages as $page)
-                                <a href="{{ route('profile.page', $page->slug) }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 line-clamp-1">
-                                    {{ $page->title }}
+                        @if(isset($navProfil) && $navProfil->count() > 0)
+                            @foreach($navProfil as $menu)
+                                <a href="{{ url($menu->url) }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 line-clamp-1">
+                                    {{ $menu->title }}
                                 </a>
                             @endforeach
                         @else
@@ -157,15 +158,18 @@
                 <!-- 5. INFORMASI (Dropdown) -->
                 <div class="relative" @mouseleave="openDropdown = null">
                     <button type="button" @click="toggleDropdown('d_informasi')" @mouseenter="openDropdown = 'd_informasi'"
-                            class="px-3 py-2 rounded-lg transition flex items-center gap-1 uppercase {{ request()->routeIs('berita') || request()->routeIs('berita.detail') || request()->routeIs('galeri') ? 'text-emerald-700 font-black bg-emerald-50' : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-50' }}">
+                            class="px-3 py-2 rounded-lg transition flex items-center gap-1 uppercase {{ request()->routeIs('berita') || request()->routeIs('berita.detail') || request()->routeIs('galeri') || request()->routeIs('agenda') || request()->routeIs('statistik') || request()->routeIs('transparansi') ? 'text-emerald-700 font-black bg-emerald-50' : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-50' }}">
                         <span>INFORMASI</span>
                         <svg class="w-3.5 h-3.5 text-slate-400 transition" :class="{ 'rotate-180': openDropdown === 'd_informasi' }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
 
                     <div x-show="openDropdown === 'd_informasi'" x-cloak x-transition
                          class="absolute left-0 mt-1 min-w-max bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 font-medium text-xs">
+                        <a href="{{ route('statistik') }}" class="block px-4 py-2.5 transition whitespace-nowrap {{ request()->routeIs('statistik') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'hover:bg-emerald-50 hover:text-emerald-800' }}">Statistik Kelurahan</a>
+                        <a href="{{ route('transparansi') }}" class="block px-4 py-2.5 transition whitespace-nowrap {{ request()->routeIs('transparansi') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'hover:bg-emerald-50 hover:text-emerald-800' }}">Transparansi Anggaran</a>
                         <a href="{{ route('berita') }}" class="block px-4 py-2.5 transition whitespace-nowrap {{ request()->routeIs('berita') || request()->routeIs('berita.detail') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'hover:bg-emerald-50 hover:text-emerald-800' }}">Berita & Kabar Desa</a>
                         <a href="{{ route('pengumuman') }}" class="block px-4 py-2.5 transition whitespace-nowrap {{ request()->routeIs('pengumuman') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'hover:bg-emerald-50 hover:text-emerald-800' }}">Pengumuman Warga</a>
+                        <a href="{{ route('agenda') }}" class="block px-4 py-2.5 transition whitespace-nowrap {{ request()->routeIs('agenda') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'hover:bg-emerald-50 hover:text-emerald-800' }}">Agenda Kegiatan</a>
                         <a href="{{ route('galeri') }}" class="block px-4 py-2.5 transition whitespace-nowrap {{ request()->routeIs('galeri') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'hover:bg-emerald-50 hover:text-emerald-800' }}">Galeri Dokumentasi</a>
                     </div>
                 </div>
@@ -179,7 +183,7 @@
                     </button>
 
                     <div x-show="openDropdown === 'd_hubungi'" x-cloak x-transition
-                         class="absolute right-0 mt-1 min-w-max bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 font-bold text-xs text-slate-800">
+                         class="absolute right-0 mt-1 min-w-max bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 font-medium text-xs text-slate-800">
                         <a href="{{ route('lokasi') }}" class="block px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-800 transition whitespace-nowrap {{ request()->routeIs('lokasi') ? 'bg-emerald-50 text-emerald-800' : '' }}">Lokasi Kantor & Alamat Kelurahan</a>
                         <a href="{{ route('layanan-whatsapp') }}" class="block px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-800 transition whitespace-nowrap {{ request()->routeIs('layanan-whatsapp') ? 'bg-emerald-50 text-emerald-800' : '' }}">Layanan WhatsApp CS</a>
                         <a href="https://wa.me/6282131001001" target="_blank" rel="noopener noreferrer" class="block px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-800 transition whitespace-nowrap">Hallo Sae (WhatsApp)</a>
@@ -197,7 +201,7 @@
                 <!-- 8. Auth Controls -->
                 <div class="flex items-center gap-2 pl-2">
                     @auth
-                        <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('staff.dashboard') }}" 
+                        <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('admin.dashboard') }}" 
                            class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center gap-1.5 shrink-0">
                             <span>🌐</span>
                             <span>Panel Admin</span>
@@ -252,10 +256,10 @@
                 <svg class="w-4 h-4 text-slate-400 transition transform" :class="{ 'rotate-180 text-emerald-600': openDropdown === 'm_profil' }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div x-show="openDropdown === 'm_profil'" x-cloak x-transition class="pl-4 space-y-1 text-xs">
-                @if(isset($profilePages) && $profilePages->count() > 0)
-                    @foreach($profilePages as $page)
-                        <a href="{{ route('profile.page', $page->slug) }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium line-clamp-1">
-                            {{ $page->title }}
+                @if(isset($navProfil) && $navProfil->count() > 0)
+                    @foreach($navProfil as $menu)
+                        <a href="{{ url($menu->url) }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium line-clamp-1">
+                            {{ $menu->title }}
                         </a>
                     @endforeach
                 @else
@@ -304,13 +308,16 @@
 
         <!-- 5. INFORMASI Mobile Accordion -->
         <div class="space-y-1">
-            <button type="button" @click="toggleDropdown('m_informasi')" class="w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs {{ request()->routeIs('berita') || request()->routeIs('berita.detail') || request()->routeIs('galeri') ? 'bg-emerald-50 text-emerald-800 font-black border border-emerald-200' : 'text-slate-800 hover:bg-slate-50' }}">
+            <button type="button" @click="toggleDropdown('m_informasi')" class="w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs {{ request()->routeIs('berita') || request()->routeIs('berita.detail') || request()->routeIs('galeri') || request()->routeIs('agenda') || request()->routeIs('statistik') || request()->routeIs('transparansi') ? 'bg-emerald-50 text-emerald-800 font-black border border-emerald-200' : 'text-slate-800 hover:bg-slate-50' }}">
                 <span>INFORMASI</span>
                 <svg class="w-4 h-4 text-slate-400 transition transform" :class="{ 'rotate-180 text-emerald-600': openDropdown === 'm_informasi' }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div x-show="openDropdown === 'm_informasi'" x-cloak x-transition class="pl-4 space-y-1 text-xs">
+                <a href="{{ route('statistik') }}" class="block p-2.5 rounded-lg {{ request()->routeIs('statistik') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium' }}">Statistik Kelurahan</a>
+                <a href="{{ route('transparansi') }}" class="block p-2.5 rounded-lg {{ request()->routeIs('transparansi') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium' }}">Transparansi Anggaran</a>
                 <a href="{{ route('berita') }}" class="block p-2.5 rounded-lg {{ request()->routeIs('berita') || request()->routeIs('berita.detail') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium' }}">Berita & Kabar Desa</a>
                 <a href="{{ route('pengumuman') }}" class="block p-2.5 rounded-lg {{ request()->routeIs('pengumuman') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium' }}">Pengumuman Warga</a>
+                <a href="{{ route('agenda') }}" class="block p-2.5 rounded-lg {{ request()->routeIs('agenda') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium' }}">Agenda Kegiatan</a>
                 <a href="{{ route('galeri') }}" class="block p-2.5 rounded-lg {{ request()->routeIs('galeri') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium' }}">Galeri Dokumentasi</a>
             </div>
         </div>
@@ -332,7 +339,7 @@
         <!-- Mobile Auth Action Button -->
         <div class="pt-3 border-t border-slate-100">
             @auth
-                <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('staff.dashboard') }}" 
+                <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('admin.dashboard') }}" 
                    class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl text-center shadow transition flex items-center justify-center gap-2">
                     <span>🌐</span>
                     <span>Masuk Panel Admin</span>
@@ -354,10 +361,10 @@
 <!-- ========================================== -->
 <div class="bg-emerald-50/60 border-b border-emerald-100 py-2 overflow-hidden text-xs">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center gap-3">
-        <div class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider shrink-0 flex items-center gap-1 shadow-sm shadow-emerald-600/20">
+        <a href="{{ route('pengumuman') }}" class="bg-emerald-600 hover:bg-emerald-700 transition-colors text-white px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider shrink-0 flex items-center gap-1 shadow-sm shadow-emerald-600/20">
             <span>📣 PENGUMUMAN</span>
             <span class="text-emerald-200 font-bold">›</span>
-        </div>
+        </a>
 
         <div class="overflow-hidden relative w-full text-slate-800 font-medium">
             <div class="animate-marquee flex items-center gap-8">

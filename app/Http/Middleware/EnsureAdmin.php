@@ -17,17 +17,17 @@ class EnsureAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('admin.login');
+            return redirect()->route('login');
         }
 
         if (!Auth::user()->isAdmin()) {
             if (Auth::user()->isStaff()) {
-                return redirect()->route('staff.dashboard')
-                    ->with('warning', 'Akses Ditolak: Anda tidak memiliki wewenang Administrator. Anda telah diarahkan ke Panel Staf.');
+                return redirect()->route('admin.dashboard')
+                    ->with('warning', 'Akses Ditolak: Anda tidak memiliki wewenang Administrator.');
             }
 
             Auth::logout();
-            return redirect()->route('admin.login')->withErrors(['login' => 'Akses ditolak: Hanya untuk akun Administrator.']);
+            return redirect()->route('login')->withErrors(['login' => 'Akses ditolak: Hanya untuk akun Administrator.']);
         }
 
         return $next($request);

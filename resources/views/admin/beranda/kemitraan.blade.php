@@ -5,39 +5,13 @@
 @section('header-subtitle', 'Kelola daftar tautan instansi terkait beserta logonya di beranda.')
 
 @section('content')
+<div id="data-container">
 <div class="space-y-6" x-data="{
     createModalOpen: false,
     editModalOpen: false,
     selectedPartner: null,
     selectedIndex: null
 }">
-
-    <!-- Alert Status -->
-    @if(session('success'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl flex items-center gap-3 text-xs font-semibold shadow-sm">
-            <i class="fas fa-check-circle text-emerald-600"></i>
-            <div>{{ session('success') }}</div>
-        </div>
-    @endif
-    @if(session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl flex items-center gap-3 text-xs font-semibold shadow-sm">
-            <i class="fas fa-check-circle text-emerald-600"></i>
-            <div>{{ session('status') }}</div>
-        </div>
-    @endif
-    @if($errors->any())
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl flex items-start gap-3 text-xs font-semibold shadow-sm">
-            <i class="fas fa-times-circle text-rose-600 mt-0.5"></i>
-            <div>
-                <span class="font-bold">Gagal memproses data:</span>
-                <ul class="list-disc list-inside mt-1">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
 
     <!-- Data Table Container -->
     <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
@@ -103,7 +77,7 @@
                                     Edit
                                 </button>
 
-                                <form action="{{ route('admin.beranda.kemitraan.destroy', $index) }}" method="POST" class="inline" onsubmit="return confirm('Hapus mitra ini?')">
+                                <form action="{{ route('admin.beranda.kemitraan.destroy', $index) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Hapus mitra ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] rounded-lg transition border border-rose-200">
@@ -134,7 +108,8 @@
             <div  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
 
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-xl w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.beranda.kemitraan.store') }}" method="POST" enctype="multipart/form-data">@csrf
+                <form action="{{ route('admin.beranda.kemitraan.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="window.submitAjax($event, 'createModalOpen', $data)">
+                    @csrf
                     
                     <!-- Header -->
                     <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -165,11 +140,11 @@
                         </div>
 
                         <div x-data="{ selectedFileName: null }">
-                            <label class="block font-bold text-slate-800 mb-1">Logo Mitra <span class="text-rose-500">*</span></label>
-                            <input type="file" name="partner_logo" accept="image/png, image/jpeg, image/webp" required
-                                @change="selectedFileName = $event.target.files[0] ? $event.target.files[0].name : null"
+                            <label class="block font-bold text-slate-800 mb-1">Logo Mitra (Opsional)</label>
+                            <input type="file" name="partner_logo" accept="image/png, image/jpeg, image/webp"
+                                @change="const file = $event.target.files[0]; if(file) { $dispatch('open-cropper', { file: file, aspectRatio: 1, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], file.name, {type: file.type})); $event.target.files = dt.files; selectedFileName = file.name; } }) }"
                                 class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                            <p class="text-[11px] text-slate-400 mt-1">Maks. 2MB. Format: JPG, PNG, WEBP</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Biarkan kosong untuk menggunakan logo dari link otomatis. Maks. {{ $systemSettings['max_upload_foto_mb'] ?? 2 }}MB. Format: JPG, PNG, WEBP</p>
                             <template x-if="selectedFileName">
                                 <div class="mt-2 p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center gap-2 text-xs font-semibold text-emerald-900">
                                     <span>🖼️ File Terpilih:</span>
@@ -197,7 +172,7 @@
 
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-xl w-full border border-slate-200 my-8">
                 <template x-if="selectedPartner !== null">
-                    <form :action="'{{ url('admin/kelola-beranda/kemitraan') }}/' + selectedIndex" method="POST" enctype="multipart/form-data">
+                    <form :action="'{{ url('admin/kelola-beranda/kemitraan') }}/' + selectedIndex" method="POST" enctype="multipart/form-data" @submit.prevent="window.submitAjax($event, 'editModalOpen', $data)">
                         @csrf @method('PUT')
                         
                         <!-- Header -->
@@ -231,7 +206,7 @@
                             <div x-data="{ selectedFileName: null }">
                                 <label class="block font-bold text-slate-800 mb-1">Upload Logo Baru (Opsional)</label>
                                 <input type="file" name="partner_logo" accept="image/png, image/jpeg, image/webp"
-                                    @change="selectedFileName = $event.target.files[0] ? $event.target.files[0].name : null"
+                                    @change="const file = $event.target.files[0]; if(file) { $dispatch('open-cropper', { file: file, aspectRatio: 1, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], file.name, {type: file.type})); $event.target.files = dt.files; selectedFileName = file.name; } }) }"
                                     class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                                 
                                 <template x-if="selectedFileName">
@@ -263,5 +238,6 @@
         </div>
     </div>
 
+</div>
 </div>
 @endsection

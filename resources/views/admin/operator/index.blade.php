@@ -21,7 +21,50 @@
     hasUpper(val) { return /[A-Z]/.test(val); },
     hasLower(val) { return /[a-z]/.test(val); },
     hasNumber(val) { return /[0-9]/.test(val); },
-    hasSymbol(val) { return /[@#$%!*_\-]/.test(val); }
+    hasSymbol(val) { return /[@#$%!*_\-]/.test(val); },
+    async submitForm(e, modalName) {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type=\'submit\']');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>Menyimpan...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlResponse, 'text/html');
+                const newGrid = doc.querySelector('#data-container').innerHTML;
+                document.querySelector('#data-container').innerHTML = newGrid;
+                
+                if(modalName) this[modalName] = false;
+                Swal.fire({
+                    icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false
+                });
+                if(modalName === 'createModalOpen') form.reset();
+            } else {
+                if (response.status === 422) {
+                    const data = await response.json();
+                    let errorMessages = Object.values(data.errors).flat().join('<br>');
+                    Swal.fire({ icon: 'error', title: 'Validasi Gagal', html: errorMessages });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+                }
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
 }">
 
     <!-- Alert Status -->
@@ -32,22 +75,7 @@
             <div>{{ session('warning') }}</div>
         </div>
     @endif
-
-    @if($errors->any())
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-2xl text-xs space-y-1 shadow-sm">
-            <div class="font-bold flex items-center gap-2 text-rose-900">
-                <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Terdapat kesalahan dalam pengisian formulir:
-            </div>
-            <ul class="list-disc list-inside pl-5 space-y-0.5 text-rose-700 font-medium">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- Summary Cards -->
+<!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
@@ -93,7 +121,7 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="data-container" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse min-w-[850px]">
                 <thead>
@@ -146,7 +174,7 @@
                             </td>
                             <td class="py-3.5 px-5 text-center">
                                 @if($u->id !== auth()->id())
-                                    <form action="{{ route('admin.operator.toggle', $u->id) }}" method="POST" class="inline">@csrf @method('PATCH')
+                                    <form action="{{ route('admin.operator.toggle', $u->id) }}" method="POST" class="inline" @submit.prevent="submitForm($event)">@csrf @method('PATCH')
                                         <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition shadow-sm border {{ ($u->is_active ?? true) ? 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200' }}">
                                             <span class="w-1.5 h-1.5 rounded-full {{ ($u->is_active ?? true) ? 'bg-emerald-600' : 'bg-slate-400' }}"></span>
                                             {{ ($u->is_active ?? true) ? 'Aktif' : 'Non-Aktif' }}
@@ -160,10 +188,10 @@
                                 <div class="flex items-center justify-end gap-1.5">
                                     <button @click="selectedUser = {{ json_encode($u) }}; editModalOpen = true; editPassword = ''; previewEditAvatar = selectedUser.avatar ? '{{ asset('storage') }}/' + selectedUser.avatar : null" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] rounded-lg transition border border-slate-300">Edit</button>
                                     @if($u->id !== auth()->id())
-                                        <form action="{{ route('admin.operator.reset-password', $u->id) }}" method="POST" class="inline" onsubmit="return confirm('Reset password akun ini ke default (Dishub#2026!)?')">@csrf
+                                        <form action="{{ route('admin.operator.reset-password', $u->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Reset password akun ini ke default (Dishub#2026!)?');">@csrf
                                             <button type="submit" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-[11px] rounded-lg transition border border-amber-200">Reset PW</button>
                                         </form>
-                                        <form action="{{ route('admin.operator.destroy', $u->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus akun operator ini?')">@csrf @method('DELETE')
+                                        <form action="{{ route('admin.operator.destroy', $u->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Hapus akun operator ini?');">@csrf @method('DELETE')
                                             <button type="submit" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] rounded-lg transition border border-rose-200">Hapus</button>
                                         </form>
                                     @endif
@@ -185,7 +213,7 @@
             <div  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
             
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-2xl w-full border border-slate-200 my-8 transform transition-all">
-                <form action="{{ route('admin.operator.store') }}" method="POST" enctype="multipart/form-data">@csrf
+                <form action="{{ route('admin.operator.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'createModalOpen')">@csrf
                     
                     <!-- Header -->
                     <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -215,7 +243,7 @@
                                 <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" 
                                     @change="const file = $event.target.files[0]; if(file) { $dispatch('open-cropper', { file: file, aspectRatio: 1, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], file.name, {type: file.type})); $event.target.files = dt.files; previewCreateAvatar = url; } }) }"
                                     class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer">
-                                <p class="text-[11px] text-emerald-700 font-semibold">Format: JPG, PNG, WEBP (Maksimal 5MB)</p>
+                                <p class="text-[11px] text-emerald-700 font-semibold">Format: JPG, PNG, WEBP (Maks {{ $systemSettings['max_upload_foto_mb'] ?? 2 }}MB)</p>
                             </div>
                         </div>
 
@@ -367,7 +395,7 @@
             
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-2xl w-full border border-slate-200 my-8 transform transition-all">
                 <template x-if="selectedUser">
-                    <form :action="'{{ url('admin/operator') }}/' + selectedUser.id" method="POST" enctype="multipart/form-data">
+                    <form :action="'{{ url('admin/operator') }}/' + selectedUser.id" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'editModalOpen')">
                         @csrf 
                         @method('PUT')
                         
@@ -399,7 +427,7 @@
                                     <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" 
                                         @change="const file = $event.target.files[0]; if(file) { $dispatch('open-cropper', { file: file, aspectRatio: 1, onCrop: (blob, url) => { let dt = new DataTransfer(); dt.items.add(new File([blob], file.name, {type: file.type})); $event.target.files = dt.files; previewEditAvatar = url; } }) }"
                                         class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer">
-                                    <p class="text-[11px] text-emerald-700 font-semibold">Format: JPG, PNG, WEBP (Maksimal 5MB)</p>
+                                    <p class="text-[11px] text-emerald-700 font-semibold">Format: JPG, PNG, WEBP (Maks {{ $systemSettings['max_upload_foto_mb'] ?? 2 }}MB)</p>
                                 </div>
                             </div>
 
@@ -549,3 +577,4 @@
 
 </div>
 @endsection
+

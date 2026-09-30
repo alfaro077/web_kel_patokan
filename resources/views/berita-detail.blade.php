@@ -9,22 +9,29 @@
 <!-- FontAwesome Icons CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<section class="w-full py-8 sm:py-12 bg-slate-50 border-t border-slate-200 relative min-h-screen">
+<!-- Hero Section -->
+<div class="relative bg-emerald-900 overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+            Detail Berita & Informasi
+        </h1>
+        <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+            Informasi resmi Pemerintah Kelurahan Patokan, Kecamatan Kraksaan.
+        </p>
+    </div>
+    
+    <!-- Decorative bottom edge -->
+    <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+</div>
+
+<!-- Main Content -->
+<div class="bg-white py-12 sm:py-16 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {{-- Header Top --}}
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">Detail Berita & Informasi</h1>
-                <p class="text-sm text-slate-500">Informasi resmi Pemerintah Kelurahan Patokan, Kecamatan Kraksaan.</p>
-            </div>
-            <a href="{{ route('berita') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm shrink-0">
-                <i class="fas fa-arrow-left text-slate-400"></i>
-                <span>Kembali ke Berita</span>
-            </a>
-        </div>
-
-        {{-- 2-Column Layout --}}
+{{-- 2-Column Layout --}}
         <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
             {{-- KOLOM KIRI: Main Article Card & Info (70%) --}}
@@ -174,6 +181,6 @@
         </div>
 
     </div>
-</section>
+</div>
 
 @endsection

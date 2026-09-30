@@ -13,6 +13,12 @@ class HomeController extends Controller
     /**
      * Display the village portal homepage.
      */
+    public function lembaga()
+    {
+        $profile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
+        return view('lembaga', compact('profile'));
+    }
+
     public function index()
     {
         $announcements = Announcement::where('is_active', true)
@@ -50,7 +56,9 @@ class HomeController extends Controller
 
         $latestPosts = $featuredPosts->merge($fallbackPosts);
 
-        $galleries = Gallery::where('show_on_homepage', true)->latest()->get();
+        $galleryPhotos = Gallery::where('show_on_homepage', true)->where('type', 'foto')->latest()->take(2)->get();
+        $galleryVideos = Gallery::where('show_on_homepage', true)->where('type', 'video')->latest()->take(2)->get();
+        $galleries = $galleryPhotos->merge($galleryVideos)->sortByDesc('created_at')->values();
 
         $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
         $stats = $villageProfile['stats'] ?? [
@@ -92,8 +100,12 @@ class HomeController extends Controller
     public function strukturOrganisasi()
     {
         $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
+        $rootMembers = \App\Models\OrganizationMember::whereNull('parent_id')
+            ->with('childrenRecursive')
+            ->orderBy('order')
+            ->get();
 
-        return view('struktur-organisasi', compact('villageProfile'));
+        return view('struktur-organisasi', compact('villageProfile', 'rootMembers'));
     }
 
     /**
@@ -188,6 +200,16 @@ class HomeController extends Controller
     }
 
     /**
+     * Display the village statistics page.
+     */
+    public function statistik()
+    {
+        $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
+
+        return view('statistik', compact('villageProfile'));
+    }
+
+    /**
      * Display the budget transparency page.
      */
     public function transparansi()
@@ -205,8 +227,23 @@ class HomeController extends Controller
         $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
         
         if ($request->filled('id')) {
-            $document = \App\Models\Document::with('files')->where('is_active', true)->findOrFail($request->id);
-            return view('dokumen-detail', compact('villageProfile', 'document'));
+            $document = \App\Models\Document::where('is_active', true)->findOrFail($request->id);
+            
+            $filesQuery = $document->files();
+            
+            if ($request->filled('filter_month')) {
+                $filesQuery->where('month', $request->filter_month);
+            }
+            if ($request->filled('filter_year')) {
+                $filesQuery->where('year', $request->filter_year);
+            }
+            
+            $document->setRelation('files', $filesQuery->orderBy('year', 'desc')->orderBy('month', 'desc')->get());
+            
+            // For filter options
+            $availableYears = $document->files()->select('year')->whereNotNull('year')->distinct()->orderBy('year', 'desc')->pluck('year');
+            
+            return view('dokumen-detail', compact('villageProfile', 'document', 'availableYears'));
         }
 
         $query = \App\Models\Document::withCount('files')->where('is_active', true)->orderBy('created_at', 'desc')->orderBy('name', 'asc');
@@ -226,6 +263,16 @@ class HomeController extends Controller
         return view('standar-pelayanan', compact('villageProfile', 'services'));
     }
 
+    /**
+     * Display a specific service detail page by slug.
+     */
+    public function layananDetail(string $slug)
+    {
+        $service = \App\Models\ServiceType::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
+
+        return view('standar-pelayanan', compact('villageProfile', 'service'));
+    }
 
 
     /**
@@ -256,6 +303,33 @@ class HomeController extends Controller
         $activeCategory = $request->kategori;
 
         return view('pengumuman', compact('villageProfile', 'announcements', 'categories', 'activeCategory'));
+    }
+
+    /**
+     * Display the public agenda page.
+     */
+    public function agenda(Request $request)
+    {
+        \App\Models\Agenda::autoArchivePastAgendas();
+
+        $villageProfile = \App\Http\Controllers\Admin\VillageProfileController::getProfileData();
+        
+        $query = \App\Models\Agenda::where('is_active', true)->orderBy('agenda_date', 'asc')->orderBy('agenda_time', 'asc');
+        
+        // Hanya tampilkan agenda yang belum berlalu (berdasarkan bulan ini ke depan) atau semua
+        // Sebagai contoh kita tampilkan semua, atau filter yang akan datang
+        if ($request->filled('q')) {
+            $search = $request->input('q');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+
+        $agendas = $query->paginate(12)->withQueryString();
+
+        return view('agenda', compact('villageProfile', 'agendas'));
     }
 
     public function page($slug)

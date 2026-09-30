@@ -42,7 +42,7 @@ class GalleryController extends Controller
             'caption' => 'nullable|string|max:500',
             'type' => 'required|in:foto,video',
             'image_files' => 'nullable|array|max:10', // Allow up to 10 photos per upload
-            'image_files.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+            'image_files.*' => 'image|mimes:jpg,jpeg,png,webp|max:' . (\App\Http\Controllers\Admin\SettingController::getSettings()['max_upload_foto_mb'] * 1024),
             'image_url' => 'nullable|url',
             'youtube_url' => 'nullable|required_if:type,video|url',
         ], [
@@ -135,7 +135,7 @@ class GalleryController extends Controller
             'caption' => 'nullable|string|max:500',
             'type' => 'required|in:foto,video',
             'image_files' => 'nullable|array|max:10',
-            'image_files.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+            'image_files.*' => 'image|mimes:jpg,jpeg,png,webp|max:' . (\App\Http\Controllers\Admin\SettingController::getSettings()['max_upload_foto_mb'] * 1024),
             'image_url' => 'nullable|url',
             'youtube_url' => 'nullable|required_if:type,video|url',
         ], [

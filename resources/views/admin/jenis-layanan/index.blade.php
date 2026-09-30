@@ -10,7 +10,47 @@
     editModalOpen: false,
     selectedType: null,
     createDocsArray: [''],
-    editDocsArray: ['']
+    editDocsArray: [''],
+    async submitForm(e, modalName) {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type=\'submit\']');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>Menyimpan...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlResponse, 'text/html');
+                const newGrid = doc.querySelector('#data-container').innerHTML;
+                document.querySelector('#data-container').innerHTML = newGrid;
+                
+                if(modalName) this[modalName] = false;
+                Swal.fire({
+                    icon: 'success', title: 'Berhasil', text: 'Data berhasil disimpan!', timer: 1500, showConfirmButton: false
+                });
+                if(modalName === 'createModalOpen') {
+                    form.reset();
+                    this.createDocsArray = [''];
+                }
+            } else {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
 }">
 
     <!-- Alert Status -->
@@ -21,22 +61,7 @@
             <div>{{ session('warning') }}</div>
         </div>
     @endif
-
-    @if($errors->any())
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl flex items-start gap-3 text-xs font-semibold shadow-sm">
-            <svg class="w-5 h-5 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <div>
-                <span class="font-bold">Gagal menyimpan data:</span>
-                <ul class="list-disc list-inside mt-1">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
-
-    <!-- Summary Cards -->
+<!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
@@ -79,7 +104,7 @@
     </div>
 
     <!-- Data Table Container -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="data-container" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse min-w-[900px]">
                 <thead>
@@ -169,7 +194,7 @@
 
                             <!-- Tampil di Beranda Toggle -->
                             <td class="py-3.5 px-5 text-center whitespace-nowrap">
-                                <form action="{{ route('admin.jenis-layanan.toggle-homepage', $st->id) }}" method="POST">@csrf @method('PATCH')
+                                <form action="{{ route('admin.jenis-layanan.toggle-homepage', $st->id) }}" method="POST" @submit.prevent="submitForm($event)">@csrf @method('PATCH')
                                     <button type="submit" 
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold transition shadow-sm border {{ $st->show_on_homepage ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100' : 'bg-slate-100 text-slate-500 border-slate-300' }}">
                                         <span>{{ $st->show_on_homepage ? '🌐 Beranda' : '🚫 Sembunyi' }}</span>
@@ -179,7 +204,7 @@
 
                             <!-- Status Aktif Toggle -->
                             <td class="py-3.5 px-5 text-center whitespace-nowrap">
-                                <form action="{{ route('admin.jenis-layanan.toggle', $st->id) }}" method="POST">@csrf @method('PATCH')
+                                <form action="{{ route('admin.jenis-layanan.toggle', $st->id) }}" method="POST" @submit.prevent="submitForm($event)">@csrf @method('PATCH')
                                     <button type="submit" 
                                             class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition shadow-sm border {{ $st->is_active ? 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200' }}">
                                         <span class="w-1.5 h-1.5 rounded-full {{ $st->is_active ? 'bg-emerald-600' : 'bg-slate-400' }}"></span>
@@ -195,7 +220,7 @@
                                     Edit
                                 </button>
 
-                                <form action="{{ route('admin.jenis-layanan.destroy', $st->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus layanan ini?')">
+                                <form action="{{ route('admin.jenis-layanan.destroy', $st->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Apakah Anda yakin ingin menghapus layanan ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[11px] rounded-lg transition border border-rose-200">
                                         Hapus
@@ -222,7 +247,7 @@
             <div  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
 
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-xl w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.jenis-layanan.store') }}" method="POST" enctype="multipart/form-data">@csrf
+                <form action="{{ route('admin.jenis-layanan.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'createModalOpen')">@csrf
                     
                     <!-- Header -->
                     <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -297,8 +322,25 @@
                             </div>
                             <div x-data="{ selectedFileName: null }" class="sm:col-span-2">
                                 <label class="block font-bold text-slate-800 mb-1">Upload File PDF Surat/Formulir (Opsional)</label>
-                                <input type="file" name="pdf_document" accept="application/pdf"
-                                    @change="selectedFileName = $event.target.files[0] ? $event.target.files[0].name : null"
+                                <input type="file" name="pdf_document" accept=".pdf,application/pdf"
+                                    @change="
+                                        const file = $event.target.files[0];
+                                        if (file && !file.name.toLowerCase().endsWith('.pdf')) {
+                                            $event.target.value = '';
+                                            selectedFileName = null;
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Format Tidak Valid!',
+                                                text: 'Harap pilih file dengan format PDF.',
+                                                confirmButtonColor: '#10b981',
+                                                confirmButtonText: 'Pilih Ulang File'
+                                            }).then(() => {
+                                                $event.target.click();
+                                            });
+                                        } else {
+                                            selectedFileName = file ? file.name : null;
+                                        }
+                                    "
                                     class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                                 <p class="text-[11px] text-slate-400 mt-1">Unggah file formulir resmi atau dokumen SOP berbentuk PDF.</p>
                                 <template x-if="selectedFileName">
@@ -349,7 +391,7 @@
 
             <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl max-w-xl w-full border border-slate-200 my-8">
                 <template x-if="selectedType">
-                    <form :action="'{{ url('admin/jenis-layanan') }}/' + selectedType.id" method="POST" enctype="multipart/form-data">
+                    <form :action="'{{ url('admin/jenis-layanan') }}/' + selectedType.id" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm($event, 'editModalOpen')">
                         @csrf @method('PUT')
                         
                         <!-- Header -->
@@ -425,8 +467,25 @@
                                 </div>
                                 <div x-data="{ selectedFileName: null }" class="sm:col-span-2">
                                     <label class="block font-bold text-slate-800 mb-1">Upload File PDF Surat/Formulir (Biarkan kosong jika tidak ingin mengubah)</label>
-                                    <input type="file" name="pdf_document" accept="application/pdf"
-                                        @change="selectedFileName = $event.target.files[0] ? $event.target.files[0].name : null"
+                                    <input type="file" name="pdf_document" accept=".pdf,application/pdf"
+                                        @change="
+                                            const file = $event.target.files[0];
+                                            if (file && !file.name.toLowerCase().endsWith('.pdf')) {
+                                                $event.target.value = '';
+                                                selectedFileName = null;
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Format Tidak Valid!',
+                                                    text: 'Harap pilih file dengan format PDF.',
+                                                    confirmButtonColor: '#10b981',
+                                                    confirmButtonText: 'Pilih Ulang File'
+                                                }).then(() => {
+                                                    $event.target.click();
+                                                });
+                                            } else {
+                                                selectedFileName = file ? file.name : null;
+                                            }
+                                        "
                                         class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                                     
                                     <template x-if="selectedFileName">
@@ -488,3 +547,4 @@
 
 </div>
 @endsection
+

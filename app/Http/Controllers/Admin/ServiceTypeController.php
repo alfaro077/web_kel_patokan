@@ -50,7 +50,7 @@ class ServiceTypeController extends Controller
             'required_documents.*' => 'string|max:255',
             'order' => 'nullable|integer|min:0',
             'action_url' => 'nullable|string|max:255',
-            'pdf_document' => 'nullable|file|mimes:pdf|max:5120',
+            'pdf_document' => 'nullable|file|mimes:pdf|max:' . (\App\Http\Controllers\Admin\SettingController::getSettings()['max_upload_pdf_mb'] * 1024),
             'sop_description' => 'nullable|string',
             'operational_hours' => 'nullable|string|max:255',
             'estimated_time' => 'nullable|string|max:255',
@@ -68,7 +68,7 @@ class ServiceTypeController extends Controller
             $pdfPath = $request->file('pdf_document')->store('services/pdf', 'public');
         }
 
-        ServiceType::create([
+        $service = ServiceType::create([
             'name' => $request->input('name'),
             'slug' => Str::slug($request->input('name')),
             'code' => strtoupper($request->input('code')),
@@ -88,7 +88,16 @@ class ServiceTypeController extends Controller
             'cost' => $request->input('cost'),
         ]);
 
-        return back()->with('status', 'Master Layanan & Jenis Surat baru berhasil ditambahkan.');
+        // Auto sync to NavigationMenu
+        \App\Models\NavigationMenu::create([
+            'section' => 'layanan',
+            'title' => $service->name,
+            'url' => '/standar-pelayanan?id=' . $service->id,
+            'order' => \App\Models\NavigationMenu::where('section', 'layanan')->max('order') + 1,
+            'is_active' => $service->is_active,
+        ]);
+
+        return back()->with('success', 'Master Layanan & Jenis Surat baru berhasil ditambahkan.');
     }
 
     /**
@@ -108,7 +117,7 @@ class ServiceTypeController extends Controller
             'required_documents.*' => 'string|max:255',
             'order' => 'nullable|integer|min:0',
             'action_url' => 'nullable|string|max:255',
-            'pdf_document' => 'nullable|file|mimes:pdf|max:5120',
+            'pdf_document' => 'nullable|file|mimes:pdf|max:' . (\App\Http\Controllers\Admin\SettingController::getSettings()['max_upload_pdf_mb'] * 1024),
             'sop_description' => 'nullable|string',
             'operational_hours' => 'nullable|string|max:255',
             'estimated_time' => 'nullable|string|max:255',
@@ -148,7 +157,17 @@ class ServiceTypeController extends Controller
 
         $serviceType->update($data);
 
-        return back()->with('status', "Data layanan {$serviceType->name} berhasil diperbarui.");
+        $navMenu = \App\Models\NavigationMenu::where('section', 'layanan')
+            ->where('url', '/standar-pelayanan?id=' . $serviceType->id)
+            ->first();
+        if ($navMenu) {
+            $navMenu->update([
+                'title' => $serviceType->name,
+                'is_active' => $serviceType->is_active,
+            ]);
+        }
+
+        return back()->with('success', "Data layanan {$serviceType->name} berhasil diperbarui.");
     }
 
     /**
@@ -161,8 +180,15 @@ class ServiceTypeController extends Controller
             'is_active' => !$serviceType->is_active,
         ]);
 
+        $navMenu = \App\Models\NavigationMenu::where('section', 'layanan')
+            ->where('url', '/standar-pelayanan?id=' . $serviceType->id)
+            ->first();
+        if ($navMenu) {
+            $navMenu->update(['is_active' => $serviceType->is_active]);
+        }
+
         $statusText = $serviceType->is_active ? 'diaktifkan' : 'dinonaktifkan';
-        return back()->with('status', "Layanan {$serviceType->name} berhasil {$statusText}.");
+        return back()->with('success', "Layanan {$serviceType->name} berhasil {$statusText}.");
     }
 
     /**
@@ -176,7 +202,7 @@ class ServiceTypeController extends Controller
         ]);
 
         $statusText = $serviceType->show_on_homepage ? 'ditampilkan di beranda' : 'disembunyikan dari beranda';
-        return back()->with('status', "Layanan {$serviceType->name} berhasil {$statusText}.");
+        return back()->with('success', "Layanan {$serviceType->name} berhasil {$statusText}.");
     }
 
     /**
@@ -190,7 +216,11 @@ class ServiceTypeController extends Controller
             Storage::disk('public')->delete($serviceType->pdf_document);
         }
 
+        \App\Models\NavigationMenu::where('section', 'layanan')
+            ->where('url', '/standar-pelayanan?id=' . $serviceType->id)
+            ->delete();
+
         $serviceType->delete();
-        return back()->with('status', "Layanan {$serviceType->name} berhasil dihapus.");
+        return back()->with('success', "Layanan {$serviceType->name} berhasil dihapus.");
     }
 }

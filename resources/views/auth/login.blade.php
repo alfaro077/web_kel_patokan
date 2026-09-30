@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login Admin - Kelurahan Patokan</title>
+    <title>Login Admin - {{ $systemSettings['app_name'] ?? 'Kelurahan Patokan' }}</title>
+
+    <!-- Favicon / Logo Web Title -->
+    <link rel="icon" type="image/png" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlwlIShkVajC2C_tEglw59FLYjmw5n-E1vAgqplpW75A&s=10' }}">
+    <link rel="shortcut icon" href="{{ !empty($systemSettings['app_logo']) ? asset('storage/' . $systemSettings['app_logo']) : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlwlIShkVajC2C_tEglw59FLYjmw5n-E1vAgqplpW75A&s=10' }}">
 
     <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,7 +117,8 @@
         <!-- LEFT SIDE: Banner & Branding -->
         <div class="hidden lg:flex w-full lg:w-1/2 h-screen relative flex-col justify-between p-8 xl:p-12 overflow-hidden bg-slate-900 shrink-0">
             <!-- Background Image with Overlay -->
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/login_left_banner.png') }}');"></div>
+            @php $globalSettings = \App\Http\Controllers\Admin\SettingController::getSettings(); @endphp
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ !empty($globalSettings['login_background']) ? asset('storage/' . $globalSettings['login_background']) : asset('images/login_left_banner.png') }}');"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/30 to-slate-950/60 backdrop-blur-[0.5px]"></div>
 
             <!-- Content Container -->
@@ -121,7 +126,7 @@
                 <!-- Header Logos -->
                 <div class="flex items-center gap-4">
                     <div class="bg-white/95 backdrop-blur p-2 rounded-2xl shadow-lg border border-white/20">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlwlIShkVajC2C_tEglw59FLYjmw5n-E1vAgqplpW75A&s=10" 
+                        <img src="{{ !empty($globalSettings['app_logo']) ? asset('storage/' . $globalSettings['app_logo']) : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlwlIShkVajC2C_tEglw59FLYjmw5n-E1vAgqplpW75A&s=10' }}" 
                              alt="Logo Pemkab Probolinggo" 
                              class="h-10 xl:h-12 w-auto object-contain">
                     </div>
@@ -166,7 +171,7 @@
                 </a>
 
                 <div class="flex items-center gap-2 text-xs font-bold text-slate-600">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlwlIShkVajC2C_tEglw59FLYjmw5n-E1vAgqplpW75A&s=10" 
+                    <img src="{{ !empty($globalSettings['app_logo']) ? asset('storage/' . $globalSettings['app_logo']) : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlwlIShkVajC2C_tEglw59FLYjmw5n-E1vAgqplpW75A&s=10' }}" 
                          alt="Logo Pemkab Probolinggo" 
                          class="h-6 w-auto">
                     <span class="hidden xs:inline">Kelurahan Patokan</span>

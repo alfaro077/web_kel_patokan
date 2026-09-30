@@ -5,7 +5,45 @@
 @section('header-subtitle', 'Kelola foto, gambar banner, dan dokumen PDF yang terunggah di server')
 
 @section('content')
-<div class="space-y-6" x-data="{ uploadModalOpen: false, copyToast: false }">
+<div class="space-y-6" x-data="{ uploadModalOpen: false, copyToast: false,
+    async submitForm(e, modalName) {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type=\'submit\']');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class=\'fas fa-spinner fa-spin mr-2\'></i>...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                const htmlResponse = await fetch(window.location.href).then(res => res.text());
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlResponse, 'text/html');
+                const newGrid = doc.querySelector('#data-container').innerHTML;
+                document.querySelector('#data-container').innerHTML = newGrid;
+                
+                if(modalName) this[modalName] = false;
+                Swal.fire({
+                    icon: 'success', title: 'Berhasil', text: 'Tindakan berhasil!', timer: 1500, showConfirmButton: false
+                });
+                if(modalName === 'uploadModalOpen') form.reset();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Terjadi kesalahan saat menyimpan data.' });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksi bermasalah.' });
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+}">
 
     <!-- Alert Status -->
 
@@ -40,7 +78,8 @@
     </div>
 
     <!-- Media Library Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div id="data-container" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         @forelse($files as $file)
             <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                 <div>
@@ -93,7 +132,8 @@
                         </a>
 
                         <!-- Delete Button -->
-                        <form action="{{ route('admin.media.destroy') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berkas media ini?')">
+                        @if(auth()->user()->isAdmin())
+                        <form action="{{ route('admin.media.destroy') }}" method="POST" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Apakah Anda yakin ingin menghapus berkas media ini?');">
                             @csrf
                             @method('DELETE')
                             <input type="hidden" name="path" value="{{ $file['path'] }}">
@@ -101,6 +141,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </form>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -110,11 +151,10 @@
                 <p class="font-semibold text-slate-600">Belum ada berkas media di server.</p>
             </div>
         @endforelse
-    </div>
-
-    <!-- Pagination Links -->
-    <div class="p-4 bg-white rounded-2xl border border-slate-200 text-xs">
-        {{ $files->links() }}
+        <!-- Pagination Links -->
+        <div class="p-4 bg-white rounded-2xl border border-slate-200 text-xs">
+            {{ $files->links() }}
+        </div>
     </div>
 
     <!-- MODAL UNGGAH BERKAS BARU -->
@@ -123,7 +163,7 @@
             <div x-show="uploadModalOpen"  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"></div>
 
             <div x-show="uploadModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.media.store') }}" method="POST" enctype="multipart/form-data" x-data="{ mediaPreview: null }">
+                <form action="{{ route('admin.media.store') }}" method="POST" enctype="multipart/form-data" x-data="{ mediaPreview: null }" @submit.prevent="submitForm($event, 'uploadModalOpen')">
                     @csrf
                     <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
                         <h3 class="text-base font-bold">Unggah Berkas Media Baru</h3>
@@ -147,8 +187,8 @@
                             <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Pilih Berkas *</label>
                             <input type="file" name="file" required 
                                    @change="const f = $event.target.files[0]; if(f && f.type.startsWith('image/')) { mediaPreview = URL.createObjectURL(f); } else { mediaPreview = null; }" 
-                                   class="w-full p-2 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
-                            <p class="text-[10px] text-slate-400 mt-1">Format: Gambar (JPG/PNG/WEBP) atau PDF. Maksimal 10MB.</p>
+                                   class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                            <p class="text-[10px] text-slate-400 mt-1">Format: Gambar (JPG/PNG/WEBP) atau PDF. Maks {{ $systemSettings['max_upload_foto_mb'] ?? 2 }}MB (Foto) / {{ $systemSettings['max_upload_pdf_mb'] ?? 5 }}MB (PDF).</p>
                         </div>
 
                         <template x-if="mediaPreview">
@@ -179,3 +219,4 @@
 
 </div>
 @endsection
+

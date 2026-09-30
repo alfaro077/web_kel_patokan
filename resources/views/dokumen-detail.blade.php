@@ -4,38 +4,66 @@
 
 @section('content')
 
-<section class="w-full py-8 sm:py-12 bg-slate-50 border-t border-slate-200 relative min-h-screen" 
+<div class="w-full bg-slate-50 relative min-h-screen" 
     x-data="{ 
-        search: '', 
+        search: '',
+        selectedYear: '',
+        selectedMonth: '',
         files: @js($document->files->map(function($f) {
             return [
                 'id' => $f->id,
                 'name' => $f->name,
+                'month' => $f->month,
+                'year' => $f->year,
                 'date' => $f->created_at->format('d M Y'),
                 'url' => asset('storage/' . $f->file_path)
             ];
         })),
         get filteredFiles() {
-            if (this.search === '') return this.files;
-            const term = String(this.search).toLowerCase();
-            return this.files.filter(f => String(f.name).toLowerCase().includes(term));
+            return this.files.filter(f => {
+                const matchSearch = this.search === '' || String(f.name).toLowerCase().includes(String(this.search).toLowerCase());
+                const matchYear = this.selectedYear === '' || String(f.year) === String(this.selectedYear);
+                const matchMonth = this.selectedMonth === '' || String(f.month) === String(this.selectedMonth);
+                return matchSearch && matchYear && matchMonth;
+            });
         }
     }">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Hero Section -->
+    <div class="relative bg-emerald-900 overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
+                {{ $document->name }}
+            </h1>
+            <p class="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-emerald-100 font-medium">
+                Pilih dan unduh file lampiran dari dokumen publik ini.
+            </p>
+        </div>
         
-        <!-- Header -->
+        <!-- Decorative bottom edge -->
+        <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        
+        <!-- Header Controls -->
         <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
                     <i class="fas fa-folder-open text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">
-                        {{ $document->name }}
-                    </h1>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">
+                        Daftar File Lampiran
+                    </h2>
                     <div class="text-sm text-slate-500 flex items-center gap-2">
                         <span class="inline-block px-2.5 py-1 bg-slate-200 text-slate-700 text-[10px] font-bold rounded">{{ $document->code ?? 'DOKUMEN' }}</span>
-                        <span>• Dipublikasikan pada {{ $document->created_at->format('d M Y') }}</span>
+                        <span>? Dipublikasikan pada {{ $document->created_at->format('d M Y') }}</span>
                     </div>
                 </div>
             </div>
@@ -58,10 +86,33 @@
                     
                     <div class="p-6">
                         @if(count($document->files) > 0)
-                            <!-- Pencarian -->
-                            <div class="mb-5 relative">
-                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="text" x-model="search" placeholder="Cari nama, tahun, atau bulan (Misal: 2024 atau Januari)..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 focus:bg-white transition-colors">
+                            <!-- Filter & Pencarian -->
+                            <div class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="relative sm:col-span-1">
+                                    <select x-model="selectedYear" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 focus:bg-white transition-colors cursor-pointer appearance-none">
+                                        <option value="">Semua Tahun</option>
+                                        @foreach($availableYears ?? [] as $y)
+                                            <option value="{{ $y }}">{{ $y }}</option>
+                                        @endforeach
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                </div>
+                                <div class="relative sm:col-span-1">
+                                    <select x-model="selectedMonth" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 focus:bg-white transition-colors cursor-pointer appearance-none">
+                                        <option value="">Semua Bulan</option>
+                                        <option value="1">Januari</option><option value="2">Februari</option>
+                                        <option value="3">Maret</option><option value="4">April</option>
+                                        <option value="5">Mei</option><option value="6">Juni</option>
+                                        <option value="7">Juli</option><option value="8">Agustus</option>
+                                        <option value="9">September</option><option value="10">Oktober</option>
+                                        <option value="11">November</option><option value="12">Desember</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                </div>
+                                <div class="relative sm:col-span-1">
+                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                    <input type="text" x-model="search" placeholder="Cari..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 focus:bg-white transition-colors">
+                                </div>
                             </div>
 
                             <div class="space-y-3">
@@ -119,6 +170,6 @@
 
         </div>
     </div>
-</section>
+</div>
 
 @endsection

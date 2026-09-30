@@ -39,6 +39,17 @@ class KemitraanMaklumatController extends Controller
 
         if ($section === 'maklumat') {
             $existingData['maklumat_text'] = $request->input('maklumat_text', '');
+            $existingData['maklumat_card_title'] = $request->input('maklumat_card_title', '');
+            $existingData['maklumat_card_desc'] = $request->input('maklumat_card_desc', '');
+            $existingData['maklumat_card_quote'] = $request->input('maklumat_card_quote', '');
+            
+            if ($request->hasFile('maklumat_image')) {
+                if (!empty($existingData['maklumat_image']) && Storage::disk('public')->exists($existingData['maklumat_image'])) {
+                    Storage::disk('public')->delete($existingData['maklumat_image']);
+                }
+                $existingData['maklumat_image'] = $request->file('maklumat_image')->store('maklumat', 'public');
+            }
+
             $statusMsg = 'Maklumat Pelayanan berhasil diperbarui.';
         } elseif ($section === 'kemitraan') {
             $partnerNames = $request->input('partner_name', []);
@@ -86,6 +97,9 @@ class KemitraanMaklumatController extends Controller
 
         File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => $statusMsg]);
+        }
         return back()->with('status', $statusMsg);
     }
 
@@ -109,6 +123,9 @@ class KemitraanMaklumatController extends Controller
         $existingData['kemitraan'] = $kemitraan;
         File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Mitra baru berhasil ditambahkan.']);
+        }
         return back()->with('success', 'Mitra baru berhasil ditambahkan.');
     }
 
@@ -137,6 +154,9 @@ class KemitraanMaklumatController extends Controller
             $existingData['kemitraan'] = $kemitraan;
             File::put($this->configPath, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Data mitra berhasil diperbarui.']);
+            }
             return back()->with('success', 'Data mitra berhasil diperbarui.');
         }
 

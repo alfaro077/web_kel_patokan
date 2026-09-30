@@ -46,7 +46,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:' . (\App\Http\Controllers\Admin\SettingController::getSettings()['max_upload_foto_mb'] * 1024),
             'name' => 'required|string|max:255',
             'username' => 'required|string|min:3|max:50|alpha_dash|unique:users,username',
             'role' => 'required|in:staff,admin',
@@ -114,7 +114,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:' . (\App\Http\Controllers\Admin\SettingController::getSettings()['max_upload_foto_mb'] * 1024),
             'name' => 'required|string|max:255',
             'username' => 'required|string|min:3|max:50|alpha_dash|unique:users,username,' . $id,
             'role' => 'required|in:staff,admin',

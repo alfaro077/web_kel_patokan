@@ -15,7 +15,9 @@ class NavigationMenuController extends Controller
             ->get()
             ->groupBy('section');
 
-        return view('admin.navigation.index', compact('menus'));
+        $pages = \App\Models\Page::all();
+
+        return view('admin.navigation.index', compact('menus', 'pages'));
     }
 
     public function store(Request $request)
@@ -36,11 +38,23 @@ class NavigationMenuController extends Controller
             ]);
             $url = '/dokumen?id=' . $document->id;
         } elseif ($request->section === 'profil') {
-            $page = \App\Models\Page::create([
-                'title' => $request->title,
-                'is_active' => $request->has('is_active'),
-            ]);
-            $url = '/halaman/' . $page->slug;
+            if ($request->filled('url') && $request->url !== 'new') {
+                $url = $request->url;
+            } else {
+                $pageData = [
+                    'title' => $request->input('page_title', $request->title),
+                    'subtitle' => $request->input('page_subtitle'),
+                    'content' => $request->input('page_content'),
+                    'is_active' => $request->has('is_active'),
+                ];
+                
+                if ($request->hasFile('page_banner')) {
+                    $pageData['banner_image'] = $request->file('page_banner')->store('pages/banners', 'public');
+                }
+
+                $page = \App\Models\Page::create($pageData);
+                $url = '/halaman/' . $page->slug;
+            }
         } elseif ($request->section === 'layanan') {
             $service = \App\Models\ServiceType::create([
                 'name' => $request->title,
@@ -118,7 +132,7 @@ class NavigationMenuController extends Controller
 
     public function destroy(NavigationMenu $navigation)
     {
-        $protectedUrls = ['/visi-misi', '/sejarah', '/struktur-organisasi'];
+        $protectedUrls = ['/visi-misi', '/sejarah', '/struktur-organisasi', '/lembaga'];
         if (in_array($navigation->url, $protectedUrls)) {
             return back()->with('error', 'Menu utama profil sistem tidak dapat dihapus.');
         }
@@ -147,5 +161,46 @@ class NavigationMenuController extends Controller
         }
         $navigation->delete();
         return back()->with('success', 'Menu navigasi berhasil dihapus.');
+    }
+
+    public function getPageContent(\App\Models\Page $page)
+    {
+        return response()->json([
+            'title' => $page->title,
+            'subtitle' => $page->subtitle,
+            'slug' => $page->slug,
+            'banner_image' => $page->banner_image ? asset('storage/' . $page->banner_image) : '',
+            'content' => $page->content,
+        ]);
+    }
+
+    public function updatePageContent(Request $request, \App\Models\Page $page)
+    {
+        $request->validate([
+            'page_title' => 'required|string|max:255',
+            'page_subtitle' => 'nullable|string',
+            'page_content' => 'nullable|string',
+            'page_banner' => 'nullable|image|max:2048',
+        ]);
+
+        $data = [
+            'title' => $request->page_title,
+            'subtitle' => $request->page_subtitle,
+            'content' => $request->page_content,
+        ];
+
+        if ($request->hasFile('page_banner')) {
+            if ($page->banner_image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($page->banner_image);
+            }
+            $data['banner_image'] = $request->file('page_banner')->store('pages', 'public');
+        }
+
+        $page->update($data);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Konten halaman berhasil diperbarui.']);
+        }
+        return back()->with('success', 'Konten halaman berhasil diperbarui.');
     }
 }

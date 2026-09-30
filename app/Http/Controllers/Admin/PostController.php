@@ -77,6 +77,12 @@ class PostController extends Controller
             $imagePath = $request->input('image_url');
         }
 
+        $status = $request->input('status', 'published');
+        $publishedAt = null;
+        if ($status === 'published') {
+            $publishedAt = $request->input('published_at') ? \Carbon\Carbon::parse($request->input('published_at')) : now();
+        }
+
         Post::create([
             'title' => $request->input('title'),
             'slug' => Str::slug($request->input('title')) . '-' . Str::random(5),
@@ -87,10 +93,10 @@ class PostController extends Controller
             'image' => $imagePath,
             'is_featured' => $request->boolean('is_featured'),
             'is_slider' => $request->boolean('is_slider'),
-            'published_at' => $request->input('published_at') ?? now(),
+            'published_at' => $publishedAt,
         ]);
 
-        return back()->with('status', 'Berita / Artikel baru berhasil dipublikasikan.');
+        return back()->with('status', $status === 'draft' ? 'Berita / Artikel berhasil disimpan sebagai Draft.' : 'Berita / Artikel baru berhasil dipublikasikan.');
     }
 
 
@@ -112,6 +118,7 @@ class PostController extends Controller
             'is_featured' => 'boolean',
             'is_slider' => 'boolean',
             'published_at' => 'nullable|date',
+            'status' => 'nullable|string|in:published,draft',
         ], [
             'title.required' => 'Judul berita wajib diisi.',
             'category_id.required' => 'Kategori berita wajib dipilih.',
@@ -142,6 +149,12 @@ class PostController extends Controller
             $imagePath = $request->input('image_url');
         }
 
+        $status = $request->input('status', 'published');
+        $publishedAt = null;
+        if ($status === 'published') {
+            $publishedAt = $request->input('published_at') ? \Carbon\Carbon::parse($request->input('published_at')) : ($post->published_at ?? now());
+        }
+
         $post->update([
             'title' => $request->input('title'),
             'slug' => Str::slug($request->input('title')) . '-' . $post->id,
@@ -151,7 +164,7 @@ class PostController extends Controller
             'image' => $imagePath,
             'is_featured' => $request->boolean('is_featured'),
             'is_slider' => $request->boolean('is_slider'),
-            'published_at' => $request->input('published_at') ?? $post->published_at,
+            'published_at' => $publishedAt,
         ]);
 
         return back()->with('status', "Berita {$post->title} berhasil diperbarui.");
@@ -181,6 +194,9 @@ class PostController extends Controller
         if (!$post->is_featured) {
             $currentCount = Post::where('is_featured', true)->count();
             if ($currentCount >= 2) {
+                if (request()->wantsJson() || request()->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'Maksimal 2 berita yang dapat dijadikan Berita Utama di beranda. Silakan hapus/nonaktifkan berita utama lain terlebih dahulu.'], 400);
+                }
                 return back()->with('error', 'Maksimal 2 berita yang dapat dijadikan Berita Utama di beranda. Silakan hapus/nonaktifkan berita utama lain terlebih dahulu.');
             }
         }
@@ -188,6 +204,9 @@ class PostController extends Controller
         $post->is_featured = !$post->is_featured;
         $post->save();
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Status Berita Utama berhasil diubah.']);
+        }
         return back()->with('status', 'Status Berita Utama berhasil diubah.');
     }
 }
