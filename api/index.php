@@ -3,6 +3,12 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
+// Clean up stale local bootstrap cache files if present
+@unlink(__DIR__ . '/../bootstrap/cache/packages.php');
+@unlink(__DIR__ . '/../bootstrap/cache/services.php');
+@unlink(__DIR__ . '/../bootstrap/cache/config.php');
+@unlink(__DIR__ . '/../bootstrap/cache/routes.php');
+
 define('LARAVEL_START', microtime(true));
 
 // Ensure /tmp storage paths exist for Vercel

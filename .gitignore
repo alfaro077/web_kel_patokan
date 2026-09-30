@@ -22,6 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
 scratch/
 update_*.py
 update_*.php
