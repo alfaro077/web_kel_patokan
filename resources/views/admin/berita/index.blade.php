@@ -303,13 +303,8 @@
                             <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1.5">Isi Lengkap Berita & Artikel *</label>
                             <textarea name="content" rows="10" required placeholder="Tuliskan berita lengkap di sini..." 
                             x-init="
-                                tinymce.init({
-        toolbar_mode: 'sliding',
+                                tinymce.init(window.createTinyMCEConfig({
                                     target: $el,
-                                    plugins: 'lists link image media table code help fullscreen wordcount',
-                                    toolbar: 'styles | bold underline removeformat | forecolor backcolor | bullist numlist align | table | link image media | fullscreen code help',
-                                    menubar: false,
-                                    height: 350,
                                     setup: function (editor) {
                                         editor.on('init', function () {
                                             var container = editor.getContainer();
@@ -322,7 +317,7 @@
                                             editor.save();
                                         });
                                     }
-                                });
+                                }));
                             "
                             class="w-full text-xs p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 shadow-sm leading-relaxed font-sans"></textarea>
                         </div>
@@ -455,17 +450,12 @@
                                 <textarea name="content" x-model="selectedPost.content" rows="10" required 
                                 x-init="
                                     setTimeout(() => {
-                                        tinymce.init({
-        toolbar_mode: 'sliding',
+                                        tinymce.init(window.createTinyMCEConfig({
                                             target: $el,
-                                            plugins: 'lists link image media table code help fullscreen wordcount',
-                                            toolbar: 'styles | bold underline removeformat | forecolor backcolor | bullist numlist align | table | link image media | fullscreen code help',
-                                            menubar: false,
-                                            height: 350,
                                             setup: function (editor) {
                                                 editor.on('init', function () {
                                                     var container = editor.getContainer();
-                                                    container.style.border = '2px solid #0284c7'; // sky-600 for edit
+                                                    container.style.border = '2px solid #0284c7';
                                                     container.style.borderRadius = '0.5rem';
                                                     container.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
                                                     container.style.overflow = 'hidden';
@@ -475,7 +465,7 @@
                                                     $el.dispatchEvent(new Event('input'));
                                                 });
                                             }
-                                        });
+                                        }));
                                     }, 50);
                                 "
                                 class="w-full text-xs p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 shadow-sm leading-relaxed font-sans"></textarea>

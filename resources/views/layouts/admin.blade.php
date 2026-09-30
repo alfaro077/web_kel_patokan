@@ -919,6 +919,101 @@
                 }
             }
         };
+
+        // Global TinyMCE Config Helper (Includes image upload & video/media support)
+        window.createTinyMCEConfig = function(options = {}) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const mediaStoreUrl = "{{ route('admin.media.store') }}";
+
+            const baseConfig = {
+                toolbar_mode: 'sliding',
+                plugins: 'lists link image media table code help fullscreen wordcount',
+                toolbar: 'styles | bold underline removeformat | forecolor backcolor | bullist numlist align | table | link image media | fullscreen code help',
+                menubar: false,
+                height: 350,
+                automatic_uploads: true,
+                file_picker_types: 'image media',
+                images_upload_handler: function (blobInfo, progress) {
+                    return new Promise((resolve, reject) => {
+                        const formData = new FormData();
+                        formData.append('file', blobInfo.blob(), blobInfo.filename());
+                        formData.append('folder', 'editor');
+
+                        fetch(mediaStoreUrl, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error('Upload HTTP Error ' + res.status);
+                            return res.json();
+                        })
+                        .then(json => {
+                            if (json && json.location) {
+                                resolve(json.location);
+                            } else {
+                                reject('Gagal mengunggah berkas: ' + (json.message || 'Respon tidak valid'));
+                            }
+                        })
+                        .catch(err => reject('Error: ' + err.message));
+                    });
+                }
+            };
+
+            return Object.assign(baseConfig, options);
+        };
+
+        // Global Automatic TinyMCE Image Upload & Media Enhancer
+        window.setupTinyMCEUploadHandler = function() {
+            if (typeof tinymce !== 'undefined' && !tinymce._uploadHandlerEnhanced) {
+                tinymce._uploadHandlerEnhanced = true;
+                const origInit = tinymce.init;
+                tinymce.init = function(config) {
+                    const mediaStoreUrl = "{{ route('admin.media.store') }}";
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                    if (!config.images_upload_handler) {
+                        config.automatic_uploads = true;
+                        config.file_picker_types = config.file_picker_types || 'image media';
+                        config.images_upload_handler = function (blobInfo, progress) {
+                            return new Promise((resolve, reject) => {
+                                const formData = new FormData();
+                                formData.append('file', blobInfo.blob(), blobInfo.filename());
+                                formData.append('folder', 'editor');
+
+                                fetch(mediaStoreUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': csrfToken,
+                                        'Accept': 'application/json'
+                                    },
+                                    body: formData
+                                })
+                                .then(res => {
+                                    if (!res.ok) throw new Error('Upload HTTP Error ' + res.status);
+                                    return res.json();
+                                })
+                                .then(json => {
+                                    if (json && json.location) {
+                                        resolve(json.location);
+                                    } else {
+                                        reject('Gagal mengunggah berkas: ' + (json.message || 'Respon tidak valid'));
+                                    }
+                                })
+                                .catch(err => reject('Error: ' + err.message));
+                            });
+                        };
+                    }
+                    return origInit.call(tinymce, config);
+                };
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', window.setupTinyMCEUploadHandler);
+        setInterval(window.setupTinyMCEUploadHandler, 500);
     </script>
     @stack('scripts')
 </body>
