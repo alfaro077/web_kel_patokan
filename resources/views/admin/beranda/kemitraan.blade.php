@@ -49,7 +49,7 @@
                             <td class="py-3.5 px-4 sm:px-5 w-24">
                                 @if(!empty($partner['logo']))
                                     <div class="w-16 h-12 bg-white border border-slate-200 rounded-lg p-1.5 flex items-center justify-center shadow-sm">
-                                        <img src="{{ str_starts_with($partner['logo'], 'http') ? $partner['logo'] : asset('storage/' . $partner['logo']) }}" alt="{{ $partner['name'] }}" class="max-w-full max-h-full object-contain">
+                                        <img src="{{ str_starts_with($partner['logo'], 'http') ? $partner['logo'] : asset('storage/' . $partner['logo']) }}" alt="{{ $partner['name'] }}" class="max-w-full max-h-full object-contain filter drop-shadow-sm">
                                     </div>
                                 @else
                                     <div class="w-16 h-12 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-400">
