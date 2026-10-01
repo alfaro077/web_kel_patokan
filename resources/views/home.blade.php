@@ -197,10 +197,9 @@ class="relative overflow-x-hidden w-full max-w-full">
                                  class="w-full aspect-[4/5] object-cover rounded-3xl shadow-sm bg-slate-100">
                         @else
                             <div class="w-full aspect-[4/5] rounded-3xl bg-slate-100 border border-slate-200 shadow-sm flex flex-col items-center justify-center text-slate-400 p-6">
-                                <div class="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 mb-3 shadow-inner">
+                                <div class="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 shadow-inner">
                                     <i class="fas fa-user-tie text-4xl text-slate-300"></i>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-400 text-center">Foto Belum Diatur</span>
                             </div>
                         @endif
 
