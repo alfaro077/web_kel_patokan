@@ -101,7 +101,9 @@
                             <td class="py-4 px-6">
                                 <form action="{{ route('admin.beranda.statistik.basic.toggle', $index) }}" method="POST" @submit.prevent="window.submitAjax($event, null, $data)">
                                     @csrf @method('PATCH')
-                                    <button type="submit" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ ($stat['is_active'] ?? false) ? 'bg-emerald-500' : 'bg-slate-200' }}"><span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out {{ ($stat['is_active'] ?? false) ? 'translate-x-5' : 'translate-x-0' }}"></span></button>
+                                    <button type="submit" class="relative inline-flex items-center h-6 w-11 shrink-0 cursor-pointer rounded-full focus:outline-none transition-colors duration-200 ease-in-out {{ ($stat['is_active'] ?? false) ? 'bg-emerald-500' : 'bg-slate-300' }}">
+                                        <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform duration-200 ease-in-out shadow-sm {{ ($stat['is_active'] ?? false) ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                                    </button>
                                 </form>
                             </td>
                             <td class="py-4 px-6 text-right whitespace-nowrap">
@@ -475,3 +477,4 @@
 </div>
 </div>
 @endsection
+
