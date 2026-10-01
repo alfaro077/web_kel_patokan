@@ -36,6 +36,7 @@ class OrganizationMemberController extends Controller
         }
 
         OrganizationMember::create($data);
+        $this->syncVillageProfileHead();
 
         return redirect()->route('admin.struktur_organisasi.index')->with('success', 'Anggota struktur berhasil ditambahkan.');
     }
@@ -64,6 +65,8 @@ class OrganizationMemberController extends Controller
 
         $struktur_organisasi->update($data);
 
+        $this->syncVillageProfileHead();
+
         return redirect()->route('admin.struktur_organisasi.index')->with('success', 'Anggota struktur berhasil diperbarui.');
     }
 
@@ -75,11 +78,29 @@ class OrganizationMemberController extends Controller
         }
         
         $struktur_organisasi->delete();
+        $this->syncVillageProfileHead();
 
         if (request()->wantsJson() || request()->ajax()) {
             return response()->json(['success' => true, 'message' => 'Anggota struktur berhasil dihapus.']);
         }
 
         return redirect()->route('admin.struktur_organisasi.index')->with('success', 'Anggota struktur berhasil dihapus.');
+    }
+
+    private function syncVillageProfileHead()
+    {
+        $root = OrganizationMember::whereNull('parent_id')->first();
+        $configPath = storage_path('app/village_profile.json');
+        if (\Illuminate\Support\Facades\File::exists($configPath)) {
+            $data = json_decode(\Illuminate\Support\Facades\File::get($configPath), true) ?: [];
+            if ($root) {
+                $data['head_name'] = $root->name;
+                $data['head_nip'] = $root->nip;
+                $data['head_photo'] = $root->photo;
+            } else {
+                $data['head_photo'] = null;
+            }
+            \Illuminate\Support\Facades\File::put($configPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        }
     }
 }

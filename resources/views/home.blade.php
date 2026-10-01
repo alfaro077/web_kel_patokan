@@ -179,13 +179,34 @@ class="relative overflow-x-hidden w-full max-w-full">
                 <!-- Left: Foto Lurah / Pimpinan -->
                 <div class="w-full lg:col-span-1 flex justify-center" data-aos="fade-right" data-aos-delay="100">
                     <div class="relative w-56 sm:w-64 lg:w-72">
-                        <img src="{{ !empty($villageProfile['head_photo']) ? asset('storage/' . $villageProfile['head_photo']) : asset('images/sotk/lurah.png') }}"
-                             alt="Foto Kepala {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}"
-                             class="w-full aspect-[4/5] object-cover rounded-3xl shadow-sm bg-slate-100">
+                        @php
+                            $rootMember = \App\Models\OrganizationMember::whereNull('parent_id')->first();
+                            $lurahPhoto = null;
+                            if ($rootMember) {
+                                $lurahPhoto = $rootMember->photo ? asset('storage/' . $rootMember->photo) : null;
+                                $lurahName = $rootMember->name;
+                            } else {
+                                $lurahPhoto = !empty($villageProfile['head_photo']) ? asset('storage/' . $villageProfile['head_photo']) : null;
+                                $lurahName = $villageProfile['head_name'] ?? 'Kepala Kelurahan Patokan';
+                            }
+                        @endphp
+
+                        @if(!empty($lurahPhoto))
+                            <img src="{{ $lurahPhoto }}"
+                                 alt="Foto {{ $lurahName }}"
+                                 class="w-full aspect-[4/5] object-cover rounded-3xl shadow-sm bg-slate-100">
+                        @else
+                            <div class="w-full aspect-[4/5] rounded-3xl bg-slate-100 border border-slate-200 shadow-sm flex flex-col items-center justify-center text-slate-400 p-6">
+                                <div class="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 mb-3 shadow-inner">
+                                    <i class="fas fa-user-tie text-4xl text-slate-300"></i>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-400 text-center">Foto Belum Diatur</span>
+                            </div>
+                        @endif
 
                         <!-- Floating Name Badge -->
                         <div class="absolute -bottom-6 inset-x-4 sm:inset-x-6 bg-white py-4 px-3 sm:py-5 sm:px-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-center">
-                            <h3 class="font-bold text-sm sm:text-base text-slate-900 leading-tight">{{ $villageProfile['head_name'] ?? 'Drs. H. Ahmad Sudirman, M.Si' }}</h3>
+                            <h3 class="font-bold text-sm sm:text-base text-slate-900 leading-tight">{{ $lurahName }}</h3>
                             <p class="text-[9px] sm:text-[10px] text-emerald-600 font-bold uppercase tracking-wider mt-1 sm:mt-2">Kepala {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}</p>
                         </div>
                     </div>

@@ -60,10 +60,16 @@
                             <div class="flex flex-col items-center z-10 relative">
                                 <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-56 hover:border-slate-300 transition">
                                     {{-- Foto Lingkaran Lurah --}}
-                                    <div class="w-24 h-24 rounded-full border-2 border-slate-800 p-0.5 mb-2.5 bg-slate-50 shrink-0 shadow-sm">
-                                        <img src="{{ !empty($villageProfile['head_photo']) ? asset('storage/' . $villageProfile['head_photo']) : asset('images/sotk/lurah.png') }}" 
-                                            alt="Lurah Patokan" 
-                                            class="w-full h-full object-cover rounded-full">
+                                    <div class="w-24 h-24 rounded-full border-2 border-slate-800 p-0.5 mb-2.5 bg-slate-50 shrink-0 shadow-sm overflow-hidden flex items-center justify-center">
+                                        @if(!empty($villageProfile['head_photo']))
+                                            <img src="{{ asset('storage/' . $villageProfile['head_photo']) }}" 
+                                                alt="Lurah Patokan" 
+                                                class="w-full h-full object-cover rounded-full">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
+                                                <i class="fas fa-user-tie text-3xl"></i>
+                                            </div>
+                                        @endif
                                     </div>
                                     
                                     <h3 class="font-bold text-xs text-slate-900 leading-snug">
@@ -93,10 +99,16 @@
                                     <div class="flex flex-col items-center relative">
                                         <div class="w-px h-8 bg-slate-300 absolute -top-8 left-1/2 -translate-x-1/2"></div>
                                         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-full hover:border-slate-300 transition group">
-                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100">
-                                                <img src="{{ !empty($villageProfile['sekel_photo']) ? asset('storage/' . $villageProfile['sekel_photo']) : asset('images/sotk/sekel.png') }}" 
-                                                    alt="Sekretaris Kelurahan" 
-                                                    class="w-full h-full object-cover">
+                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100 flex items-center justify-center">
+                                                @if(!empty($villageProfile['sekel_photo']))
+                                                    <img src="{{ asset('storage/' . $villageProfile['sekel_photo']) }}" 
+                                                        alt="Sekretaris Kelurahan" 
+                                                        class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
+                                                        <i class="fas fa-user text-xl"></i>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <h5 class="font-bold text-xs text-slate-900 leading-tight">
                                                 {{ $villageProfile['sekel_name'] ?? 'Budi Santoso, S.STP' }}
@@ -116,10 +128,16 @@
                                     <div class="flex flex-col items-center relative">
                                         <div class="w-px h-8 bg-slate-300 absolute -top-8 left-1/2 -translate-x-1/2"></div>
                                         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-full hover:border-slate-300 transition group">
-                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100">
-                                                <img src="{{ !empty($villageProfile['kasi_pem_photo']) ? asset('storage/' . $villageProfile['kasi_pem_photo']) : asset('images/sotk/kasi_pem.png') }}" 
-                                                    alt="Kasi Pemerintahan" 
-                                                    class="w-full h-full object-cover">
+                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100 flex items-center justify-center">
+                                                @if(!empty($villageProfile['kasi_pem_photo']))
+                                                    <img src="{{ asset('storage/' . $villageProfile['kasi_pem_photo']) }}" 
+                                                        alt="Kasi Pemerintahan" 
+                                                        class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
+                                                        <i class="fas fa-user text-xl"></i>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <h5 class="font-bold text-xs text-slate-900 leading-tight">
                                                 {{ $villageProfile['kasi_kesra_name'] ?? 'Arief Rachman, S.IP' }}
@@ -139,10 +157,16 @@
                                     <div class="flex flex-col items-center relative">
                                         <div class="w-px h-8 bg-slate-300 absolute -top-8 left-1/2 -translate-x-1/2"></div>
                                         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-full hover:border-slate-300 transition group">
-                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100">
-                                                <img src="{{ !empty($villageProfile['kasi_kesra_photo']) ? asset('storage/' . $villageProfile['kasi_kesra_photo']) : asset('images/sotk/kasi_kesra.png') }}" 
-                                                    alt="Kasi Kesra" 
-                                                    class="w-full h-full object-cover">
+                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100 flex items-center justify-center">
+                                                @if(!empty($villageProfile['kasi_kesra_photo']))
+                                                    <img src="{{ asset('storage/' . $villageProfile['kasi_kesra_photo']) }}" 
+                                                        alt="Kasi Kesra" 
+                                                        class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
+                                                        <i class="fas fa-user text-xl"></i>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <h5 class="font-bold text-xs text-slate-900 leading-tight">
                                                 {{ $villageProfile['kasi_pem_name'] ?? 'Siti Aminah, S.Sos' }}
@@ -162,10 +186,16 @@
                                     <div class="flex flex-col items-center relative">
                                         <div class="w-px h-8 bg-slate-300 absolute -top-8 left-1/2 -translate-x-1/2"></div>
                                         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-full hover:border-slate-300 transition group">
-                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100">
-                                                <img src="{{ !empty($villageProfile['kasi_ekbang_photo']) ? asset('storage/' . $villageProfile['kasi_ekbang_photo']) : asset('images/sotk/kasi_ekbang.png') }}" 
-                                                    alt="Kasi Ekbang" 
-                                                    class="w-full h-full object-cover">
+                                            <div class="w-16 h-16 rounded-full border-2 border-slate-800 overflow-hidden shadow-sm mb-2 bg-slate-100 flex items-center justify-center">
+                                                @if(!empty($villageProfile['kasi_ekbang_photo']))
+                                                    <img src="{{ asset('storage/' . $villageProfile['kasi_ekbang_photo']) }}" 
+                                                        alt="Kasi Ekbang" 
+                                                        class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
+                                                        <i class="fas fa-user text-xl"></i>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <h5 class="font-bold text-xs text-slate-900 leading-tight">
                                                 {{ $villageProfile['kasi_ekbang_name'] ?? 'Bambang Wijaya, S.T' }}
