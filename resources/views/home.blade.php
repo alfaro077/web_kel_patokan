@@ -470,9 +470,9 @@ class="relative overflow-x-hidden w-full max-w-full">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
             <div class="text-center space-y-2 max-w-2xl mx-auto" data-aos="fade-down" data-aos-delay="100">
                 <span class="px-3.5 py-1 rounded-full bg-emerald-100/80 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm border border-emerald-200">
-                    <i class="fas fa-handshake text-emerald-600"></i> SINERGI & KEMITRAAN
+                    <i class="fas fa-link text-emerald-600"></i> LINK TERKAIT
                 </span>
-                <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Sinergi Instansi & Portal Terkait</h3>
+                <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Portal & Link Terkait</h3>
                 <p class="text-xs sm:text-sm text-slate-500 font-medium">Tautan resmi layanan publik, instansi kedinasan, dan portal pemerintah daerah Kabupaten Probolinggo.</p>
             </div>
 

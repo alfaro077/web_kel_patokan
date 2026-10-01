@@ -144,7 +144,7 @@
                             <a href="{{ route('admin.beranda.kemitraan') }}" 
                                class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.kemitraan') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.kemitraan') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                <span class="truncate">Kemitraan Instansi</span>
+                                <span class="truncate">Link Terkait</span>
                             </a>
 
                             <a href="{{ route('admin.beranda.statistik') }}" 
