@@ -86,9 +86,9 @@
 
 <!-- Main Content -->
 <div class="bg-white py-12 sm:py-16" x-data="{ modalOpen: false, modalName: '', modalPosition: '', modalTupoksi: '' }" @open-tupoksi.window="modalName = $event.detail.name; modalPosition = $event.detail.position; modalTupoksi = $event.detail.tupoksi; modalOpen = true;">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
         <div class="w-full space-y-6">
-            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8" data-aos="zoom-in" data-aos-delay="100">
                 
                 <div class="text-center max-w-2xl mx-auto space-y-2">
                     <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-black uppercase tracking-wider">

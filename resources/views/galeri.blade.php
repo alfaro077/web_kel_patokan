@@ -103,10 +103,11 @@
 
                 {{-- Photos Grid --}}
                 @if($galleries->count() > 0)
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6" data-aos="fade-up">
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                             @foreach($galleries as $index => $gal)
                                 <div class="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition duration-200 h-full"
+                                     data-aos="zoom-in" data-aos-delay="{{ 80 + (($loop->index % 4) * 80) }}"
                                      @click="openModal({{ $index }})">
                                     
                                     {{-- Photo Image Box --}}

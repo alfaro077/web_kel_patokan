@@ -23,14 +23,14 @@
 </div>
 
 <!-- Main Content -->
-<div class="bg-white py-12 sm:py-16">
+<div class="bg-white py-12 sm:py-16" data-aos="fade-up">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="flex items-center gap-3 mb-8 pb-4 border-b-2 border-emerald-500/20">
+        <div class="flex items-center gap-3 mb-8 pb-4 border-b-2 border-emerald-500/20" data-aos="fade-right">
             <h2 class="text-2xl sm:text-3xl font-extrabold text-emerald-800 tracking-tight">Lembaga Kemasyarakatan</h2>
         </div>
 
-        <div class="overflow-x-auto min-w-full rounded-xl sm:rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto min-w-full rounded-xl sm:rounded-2xl border border-slate-200 bg-white shadow-sm" data-aos="fade-up" data-aos-delay="100">
             <table class="w-full text-left border-collapse min-w-[700px]">
                 <thead>
                     <tr class="bg-slate-50 border-b-2 border-slate-200">

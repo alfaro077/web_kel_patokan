@@ -92,13 +92,14 @@
         <div class="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 print:py-0 print:space-y-4">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 print:py-0 print:space-y-4" data-aos="fade-up">
 
         <!-- CARDS VIEW -->
         <div x-show="viewMode === 'cards'" x-transition.opacity class="print:hidden">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <template x-for="(yearData, index) in apbdData" :key="index">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition group cursor-pointer"
+                         data-aos="zoom-in" data-aos-delay="100"
                          @click="selectedYearIndex = index; viewMode = 'details'; window.scrollTo({top: 0, behavior: 'smooth'})">
                         
                         <!-- Image Area -->

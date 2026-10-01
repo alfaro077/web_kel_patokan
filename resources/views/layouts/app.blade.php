@@ -38,6 +38,9 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- AOS (Animate On Scroll) CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
     <!-- Tailwind CSS CDN & Alpine.js -->
     @if(file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -92,6 +95,22 @@
 
     <!-- FOOTER PARTIAL -->
     @include('layouts.partials.footer')
+
+    <!-- AOS (Animate On Scroll) JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 700,
+                    easing: 'ease-out-cubic',
+                    once: true,
+                    offset: 50,
+                    delay: 50
+                });
+            }
+        });
+    </script>
 
     @stack('scripts')
 </body>

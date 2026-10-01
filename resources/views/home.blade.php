@@ -172,12 +172,12 @@ class="relative overflow-x-hidden w-full max-w-full">
     <!-- ========================================================================= -->
     <!-- 2. SEKSI SAMBUTAN LURAH / KEPALA INSTANSI                                 -->
     <!-- ========================================================================= -->
-    <section class="w-full py-16 lg:py-24 bg-white border-b border-slate-200">
+    <section class="w-full py-16 lg:py-24 bg-white border-b border-slate-200" data-aos="fade-up">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="w-full grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20 items-center">
                 
                 <!-- Left: Foto Lurah / Pimpinan -->
-                <div class="w-full lg:col-span-1 flex justify-center">
+                <div class="w-full lg:col-span-1 flex justify-center" data-aos="fade-right" data-aos-delay="100">
                     <div class="relative w-56 sm:w-64 lg:w-72">
                         <img src="{{ !empty($villageProfile['head_photo']) ? asset('storage/' . $villageProfile['head_photo']) : asset('images/sotk/lurah.png') }}"
                              alt="Foto Kepala {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}"
@@ -192,7 +192,7 @@ class="relative overflow-x-hidden w-full max-w-full">
                 </div>
 
                 <!-- Right: Sambutan Resmi -->
-                <div class="w-full lg:col-span-2 space-y-5 text-center lg:text-left min-w-0 mt-8 lg:mt-0">
+                <div class="w-full lg:col-span-2 space-y-5 text-center lg:text-left min-w-0 mt-8 lg:mt-0" data-aos="fade-left" data-aos-delay="200">
                     <h4 class="text-emerald-600 text-xs sm:text-sm font-bold uppercase tracking-wide">
                         SAMBUTAN KEPALA KELURAHAN
                     </h4>
@@ -221,14 +221,14 @@ class="relative overflow-x-hidden w-full max-w-full">
     <!-- ========================================================================= -->
     <!-- 3. BANNER HIGHLIGHT & STATISTIK TRANSPARANSI (Glassmorphism Hijau Gelap)  -->
     <!-- ========================================================================= -->
-    <section id="stat-transparansi" class="py-16 sm:py-20 bg-slate-50 border-y border-slate-200 text-slate-900 relative w-full max-w-full">
+    <section id="stat-transparansi" class="py-16 sm:py-20 bg-slate-50 border-y border-slate-200 text-slate-900 relative w-full max-w-full" data-aos="fade-up">
         <!-- Background subtle glow -->
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col gap-12 lg:gap-20">
             
             <!-- Action Buttons Banner Highlight -->
-            <div class="bg-white rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-sm border border-slate-200" data-aos="zoom-in" data-aos-delay="100">
                 <div class="space-y-2 text-center lg:text-left">
                     <span class="px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-800 font-extrabold text-[10px] uppercase tracking-wider border border-emerald-400/30">
                         DOKUMEN & TRANSPARANSI
@@ -336,12 +336,12 @@ class="relative overflow-x-hidden w-full max-w-full">
     <!-- ========================================================================= -->
     <!-- 4. INFO BERITA TERKINI & SIDEBAR MAKLUMAT PELAYANAN                       -->
     <!-- ========================================================================= -->
-    <section class="py-16 sm:py-20 bg-slate-50 border-b border-slate-200 w-full max-w-full">
+    <section class="py-16 sm:py-20 bg-slate-50 border-b border-slate-200 w-full max-w-full" data-aos="fade-up">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
             <div class="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 
                 <!-- Left: Berita Terkini (lg:col-span-8) -->
-                <div class="w-full lg:col-span-2 min-w-0 space-y-6">
+                <div class="w-full lg:col-span-2 min-w-0 space-y-6" data-aos="fade-right" data-aos-delay="100">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-4">
                         <div>
                             <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">KABAR KELURAHAN</span>
@@ -365,7 +365,7 @@ class="relative overflow-x-hidden w-full max-w-full">
                         @else
                             @foreach($latestPosts as $post)
 
-                        <article class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group flex flex-col justify-between w-full min-w-0 h-full">
+                        <article class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group flex flex-col justify-between w-full min-w-0 h-full" data-aos="fade-up" data-aos-delay="{{ 150 + ($loop->index * 100) }}">
                             <div>
                                 <!-- Image Thumbnail (Fixed Height) -->
                                 <div class="relative h-48 sm:h-52 overflow-hidden bg-slate-900 w-full shrink-0">
@@ -408,7 +408,7 @@ class="relative overflow-x-hidden w-full max-w-full">
                 </div>
 
                 <!-- Right: Maklumat Pelayanan Sidebar (lg:col-span-4) -->
-                <div class="w-full lg:col-span-1 min-w-0 space-y-6">
+                <div class="w-full lg:col-span-1 min-w-0 space-y-6" data-aos="fade-left" data-aos-delay="200">
                     <div class="bg-gradient-to-br from-white via-slate-50 to-emerald-50 text-slate-900 border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden space-y-6">
                         <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 border border-amber-200 flex items-center justify-center font-bold text-xl shadow-sm">
                             <i class="fas fa-award"></i>
@@ -443,12 +443,12 @@ class="relative overflow-x-hidden w-full max-w-full">
     <!-- ========================================================================= -->
     <!-- 5. SINERGI INSTANSI / TAUTAN TERKAIT                                      -->
     <!-- ========================================================================= -->
-    <section class="py-16 sm:py-20 bg-gradient-to-b from-slate-50 via-white to-slate-50 border-b border-slate-200/80 w-full max-w-full block clear-both relative overflow-hidden">
+    <section class="py-16 sm:py-20 bg-gradient-to-b from-slate-50 via-white to-slate-50 border-b border-slate-200/80 w-full max-w-full block clear-both relative overflow-hidden" data-aos="fade-up">
         <!-- Subtle background glow decoration -->
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
-            <div class="text-center space-y-2 max-w-2xl mx-auto">
+            <div class="text-center space-y-2 max-w-2xl mx-auto" data-aos="fade-down" data-aos-delay="100">
                 <span class="px-3.5 py-1 rounded-full bg-emerald-100/80 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm border border-emerald-200">
                     <i class="fas fa-handshake text-emerald-600"></i> SINERGI & KEMITRAAN
                 </span>
@@ -460,6 +460,7 @@ class="relative overflow-x-hidden w-full max-w-full">
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                     @foreach($relatedLinks as $link)
                     <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer"
+                       data-aos="zoom-in" data-aos-delay="{{ 100 + (($loop->index % 5) * 80) }}"
                        class="group bg-white hover:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 hover:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between transform hover:-translate-y-1 relative overflow-hidden">
                         
                         <!-- Top Logo Container with High Contrast & Soft Frame -->
@@ -506,7 +507,7 @@ class="relative overflow-x-hidden w-full max-w-full">
     <!-- ========================================================================= -->
     <!-- 6. DOKUMENTASI TERPADU (GALERI FOTO & VIDEO KEGIATAN)                     -->
     <!-- ========================================================================= -->
-    <section class="py-16 sm:py-20 bg-slate-50 border-t border-slate-200 text-slate-900 w-full max-w-full block clear-both">
+    <section class="py-16 sm:py-20 bg-slate-50 border-t border-slate-200 text-slate-900 w-full max-w-full block clear-both" data-aos="fade-up">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-10">
             <div class="text-center space-y-2">
                 <span class="text-emerald-400 text-xs font-black uppercase tracking-wider">DOKUMENTASI KEGIATAN</span>

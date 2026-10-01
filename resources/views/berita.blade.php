@@ -33,7 +33,7 @@
         <div class="w-full space-y-6">
 
             {{-- Filter Pill Header Bar --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex items-center gap-2 overflow-x-auto no-scrollbar" data-aos="fade-down">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1.5">
                     <i class="fas fa-filter text-emerald-600"></i> Filter Topik:
                 </span>
@@ -66,9 +66,9 @@
 
             {{-- Articles Grid --}}
             @if($posts->count() > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="100">
                     @foreach($posts as $post)
-                        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col group hover:shadow-md transition duration-200 h-full">
+                        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col group hover:shadow-md transition duration-200 h-full" data-aos="fade-up" data-aos-delay="{{ 100 + (($loop->index % 3) * 100) }}">
                             
                             {{-- Thumbnail --}}
                             <a href="{{ route('berita.detail', $post->slug) }}" class="h-48 sm:h-52 relative overflow-hidden bg-slate-900 block w-full shrink-0">

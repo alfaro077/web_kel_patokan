@@ -29,10 +29,10 @@
 <!-- Main Content -->
 <div class="bg-white py-12 sm:py-16 relative">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200">
+        <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200" data-aos="fade-up" data-aos-delay="100">
             <div class="space-y-10">
                 {{-- Header Banner --}}
-                <div class="border-b border-slate-100 pb-6">
+                <div class="border-b border-slate-100 pb-6" data-aos="fade-down">
                     <span class="inline-flex items-center gap-2 text-emerald-700 text-xs font-bold uppercase tracking-widest px-3 py-1 bg-emerald-50 rounded-full border border-emerald-200 mb-3">
                         <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
                         Pedoman Pembangunan Kelurahan
@@ -43,7 +43,7 @@
                 </div>
 
                 {{-- VISI SECTION --}}
-                <div class="space-y-4">
+                <div class="space-y-4" data-aos="fade-up" data-aos-delay="200">
                     <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Visi</h3>
                     <div class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-none font-medium">
                         {!! $villageProfile['vision'] ?? 'Terwujudnya Desa Patokan yang maju, mandiri, sejahtera, dan berkeadilan dengan tata kelola pemerintahan yang transparan dan akuntabel' !!}
@@ -51,7 +51,7 @@
                 </div>
 
                 {{-- MISI SECTION --}}
-                <div class="space-y-4">
+                <div class="space-y-4" data-aos="fade-up" data-aos-delay="300">
                     <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Misi</h3>
                     <div class="prose prose-slate prose-li:marker:text-slate-400 text-sm sm:text-base text-slate-600 leading-relaxed max-w-none">
                         {!! $villageProfile['mission'] ?? '
