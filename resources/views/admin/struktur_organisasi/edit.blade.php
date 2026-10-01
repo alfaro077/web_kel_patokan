@@ -23,6 +23,9 @@
 
         try {
             const formData = new FormData(form);
+            if (this.deletePhoto) {
+                formData.set('delete_photo', '1');
+            }
             const response = await fetch(form.action, {
                 method: form.method,
                 body: formData,
@@ -50,7 +53,7 @@
     <form action="{{ route('admin.struktur_organisasi.update', $struktur_organisasi->id) }}" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6" @submit.prevent="submitForm">
         @csrf
         @method('PUT')
-        <input type="hidden" name="delete_photo" :value="deletePhoto ? '1' : '0'">
+        <input type="hidden" name="delete_photo" id="delete_photo_input" :value="deletePhoto ? '1' : '0'">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div class="space-y-2">
@@ -116,6 +119,9 @@
                                 <i class="fas fa-trash-alt"></i>
                                 <span>Hapus Foto</span>
                             </button>
+                        </template>
+                        <template x-if="!photoPreview && deletePhoto">
+                            <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100"><i class="fas fa-exclamation-circle mr-1"></i>Foto akan dihapus saat disimpan</span>
                         </template>
                     </div>
                 </div>
