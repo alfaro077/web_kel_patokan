@@ -35,7 +35,7 @@
             <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
             <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
         </div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center" data-aos="fade-up">
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
                 {{ $document->name }}
             </h1>
@@ -52,7 +52,7 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         
         <!-- Header Controls -->
-        <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4" data-aos="fade-up">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
                     <i class="fas fa-folder-open text-2xl"></i>
@@ -63,7 +63,7 @@
                     </h2>
                     <div class="text-sm text-slate-500 flex items-center gap-2">
                         <span class="inline-block px-2.5 py-1 bg-slate-200 text-slate-700 text-[10px] font-bold rounded">{{ $document->code ?? 'DOKUMEN' }}</span>
-                        <span>? Dipublikasikan pada {{ $document->created_at->format('d M Y') }}</span>
+                        <span>• Dipublikasikan pada {{ $document->created_at->format('d M Y') }}</span>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-6" data-aos="fade-right" data-aos-delay="100">
                 <!-- Daftar File -->
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
@@ -155,7 +155,7 @@
             </div>
 
             <!-- Sidebar Info -->
-            <div class="space-y-6">
+            <div class="space-y-6" data-aos="fade-left" data-aos-delay="200">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h4 class="font-bold text-slate-800 text-sm mb-4 pb-3 border-b border-slate-100">Keterangan Dokumen</h4>
                     @if($document->description)

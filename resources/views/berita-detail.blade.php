@@ -15,7 +15,7 @@
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
     </div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center" data-aos="fade-up">
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
             Detail Berita & Informasi
         </h1>
@@ -35,7 +35,7 @@
         <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
             {{-- KOLOM KIRI: Main Article Card & Info (70%) --}}
-            <div class="w-full lg:w-2/3 space-y-6">
+            <div class="w-full lg:w-2/3 space-y-6" data-aos="fade-right" data-aos-delay="100">
 
                 {{-- Article Card --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
@@ -118,7 +118,7 @@
             </div>
 
             {{-- KOLOM KANAN: Berita Terkait & Bantuan (30%) --}}
-            <div class="w-full lg:w-1/3 space-y-6">
+            <div class="w-full lg:w-1/3 space-y-6" data-aos="fade-left" data-aos-delay="200">
 
                 {{-- Card Berita Terkait --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">

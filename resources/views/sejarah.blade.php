@@ -13,7 +13,7 @@
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
     </div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center" data-aos="fade-up">
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
             Sejarah Singkat {{ $villageProfile['village_name'] ?? 'Kelurahan Patokan' }}
         </h1>
@@ -29,7 +29,7 @@
 <!-- Main Content -->
 <div class="bg-white py-12 sm:py-16 relative">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200">
+        <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200" data-aos="fade-up" data-aos-delay="100">
             <div class="space-y-8">
                 {{-- Title Header --}}
                 <div class="border-b border-slate-100 pb-6">

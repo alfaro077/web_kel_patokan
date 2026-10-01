@@ -9,7 +9,7 @@
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
     </div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center" data-aos="fade-up">
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
             {{ $page->title }}
         </h1>
@@ -29,7 +29,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         @if($page->banner_image)
-        <div class="mb-10 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+        <div class="mb-10 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200" data-aos="fade-up" data-aos-delay="100">
             <img src="{{ asset('storage/' . $page->banner_image) }}" alt="Banner {{ $page->title }}" class="w-full h-auto object-cover max-h-[400px]">
         </div>
         @endif
@@ -48,13 +48,13 @@
         @endphp
 
         @if(empty($blocks))
-            <div class="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200">
+            <div class="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200" data-aos="fade-up">
                 <i class="fas fa-tools text-4xl text-slate-300 mb-4"></i>
                 <h3 class="text-lg font-bold text-slate-700 mb-2">Halaman Sedang Dalam Pengembangan</h3>
                 <p class="text-slate-500">Konten untuk halaman ini sedang disusun oleh admin kelurahan.</p>
             </div>
         @else
-            <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200">
+            <div class="bg-white p-6 sm:p-10 md:p-12 rounded-3xl shadow-sm border border-slate-200" data-aos="fade-up" data-aos-delay="150">
                 <div class="space-y-6">
                     @foreach($blocks as $block)
                         

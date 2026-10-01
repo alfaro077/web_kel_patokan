@@ -13,7 +13,7 @@
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
     </div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center" data-aos="fade-up">
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
             Agenda & Jadwal Kegiatan
         </h1>
@@ -35,8 +35,8 @@
             {{-- Agenda Grid --}}
             @if($agendas->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($agendas as $agenda)
-                        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition duration-200 h-full">
+                    @foreach($agendas as $index => $agenda)
+                        <article class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition duration-200 h-full" data-aos="fade-up" data-aos-delay="{{ 50 + (($index % 6) * 50) }}">
                             
                             {{-- Card Header --}}
                             <div class="bg-emerald-600 px-5 py-4 text-white">
@@ -88,12 +88,12 @@
                 </div>
 
                 {{-- Pagination --}}
-                <div class="mt-8 flex justify-center">
+                <div class="mt-8 flex justify-center" data-aos="fade-up">
                     {{ $agendas->links() }}
                 </div>
             @else
                 {{-- Empty State --}}
-                <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                <div class="text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm" data-aos="fade-up">
                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-200">
                         <i class="far fa-calendar-times text-2xl text-slate-400"></i>
                     </div>

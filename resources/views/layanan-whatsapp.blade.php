@@ -6,13 +6,13 @@
 <!-- Page Header -->
 <div class="bg-emerald-900 py-16 relative overflow-hidden">
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center" data-aos="fade-up">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">Layanan Pengaduan & Informasi WhatsApp</h1>
         <p class="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base">Kanal komunikasi cepat dan interaktif antara warga dan pihak Kelurahan.</p>
     </div>
 </div>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16" data-aos="zoom-in" data-aos-delay="100">
     <div class="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-slate-200 text-center flex flex-col items-center">
         
         <div class="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-6 border-4 border-green-100 shrink-0">

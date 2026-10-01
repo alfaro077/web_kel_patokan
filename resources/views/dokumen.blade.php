@@ -10,7 +10,7 @@
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 opacity-90"></div>
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
     </div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center" data-aos="fade-up">
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-md">
             Arsip Dokumen Publik
         </h1>
@@ -29,10 +29,10 @@
 
         <div class="space-y-6">
             @if(count($documents) > 0)
-                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
                     <div class="divide-y divide-slate-100">
-                        @foreach($documents as $doc)
-                            <div class="px-6 py-5 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                        @foreach($documents as $index => $doc)
+                            <div class="px-6 py-5 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 group" data-aos="fade-up" data-aos-delay="{{ 100 + (($index % 5) * 50) }}">
                                 <div class="flex items-start gap-4 flex-1">
                                     <div class="w-12 h-12 bg-slate-100 text-slate-400 group-hover:bg-emerald-100 group-hover:text-emerald-600 rounded-xl flex items-center justify-center shrink-0 transition-colors">
                                         <i class="fas fa-folder-open text-xl"></i>
@@ -60,11 +60,11 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-6 flex justify-center">
+                <div class="mt-6 flex justify-center" data-aos="fade-up">
                     {{ $documents->links() }}
                 </div>
             @else
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col items-center justify-center text-slate-400 py-16">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col items-center justify-center text-slate-400 py-16" data-aos="fade-up">
                     <i class="fas fa-box-open text-5xl mb-4 text-slate-300"></i>
                     <p class="font-bold text-slate-500">Belum ada arsip dokumen publik.</p>
                 </div>
