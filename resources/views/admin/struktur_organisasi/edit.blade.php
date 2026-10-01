@@ -120,9 +120,6 @@
                                 <span>Hapus Foto</span>
                             </button>
                         </template>
-                        <template x-if="!photoPreview && deletePhoto">
-                            <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100"><i class="fas fa-exclamation-circle mr-1"></i>Foto akan dihapus saat disimpan</span>
-                        </template>
                     </div>
                 </div>
             </div>
