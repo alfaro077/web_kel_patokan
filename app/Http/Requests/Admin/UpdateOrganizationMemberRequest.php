@@ -20,6 +20,7 @@ class UpdateOrganizationMemberRequest extends FormRequest
             'tupoksi' => 'nullable|string',
             'nip' => 'nullable|string|max:255',
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'delete_photo' => 'nullable|boolean',
             'parent_id' => 'nullable|exists:organization_members,id',
             'order' => 'nullable|integer',
         ];

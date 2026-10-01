@@ -50,7 +50,12 @@ class OrganizationMemberController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('photo')) {
+        if ($request->boolean('delete_photo')) {
+            if ($struktur_organisasi->photo) {
+                Storage::disk('public')->delete($struktur_organisasi->photo);
+            }
+            $data['photo'] = null;
+        } elseif ($request->hasFile('photo')) {
             if ($struktur_organisasi->photo) {
                 Storage::disk('public')->delete($struktur_organisasi->photo);
             }
