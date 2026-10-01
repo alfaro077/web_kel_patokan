@@ -72,27 +72,36 @@
             </div>
 
 
-            <div class="space-y-2">
+            <div class="space-y-2 col-span-1 sm:col-span-2">
                 <label for="nip" class="block text-sm font-semibold text-slate-900">NIP <span class="text-slate-400 font-normal">(Opsional)</span></label>
                 <input type="text" name="nip" id="nip" value="{{ old('nip', $struktur_organisasi->nip) }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 transition-all">
             </div>
-
-            <div class="space-y-2">
-                <label for="order" class="block text-sm font-semibold text-slate-900">No Urut Tampil <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <input type="number" name="order" id="order" value="{{ old('order', $struktur_organisasi->order) }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 transition-all">
-            </div>
         </div>
 
-        <div class="space-y-2">
-            <label for="parent_id" class="block text-sm font-semibold text-slate-900">Atasan (Parent) <span class="text-slate-400 font-normal">(Biarkan kosong jika ini adalah Ketua/Lurah)</span></label>
-            <select name="parent_id" id="parent_id" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 transition-all">
-                <option value="">-- Paling Atas (Root / Ketua Kelurahan) --</option>
-                @foreach($members as $m)
-                    <option value="{{ $m->id }}" {{ old('parent_id', $struktur_organisasi->parent_id) == $m->id ? 'selected' : '' }}>
-                        {{ $m->name }} ({{ $m->position }})
-                    </option>
-                @endforeach
-            </select>
+        <div x-data="{ showAdvanced: false }" class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+            <button type="button" @click="showAdvanced = !showAdvanced" class="flex items-center justify-between w-full text-left font-semibold text-sm text-slate-700 hover:text-emerald-700 transition">
+                <span class="flex items-center gap-2"><i class="fas fa-cog text-slate-400"></i> Pengaturan Lanjutan (Pindah Posisi / Ubah Urutan)</span>
+                <i class="fas fa-chevron-down transition-transform" :class="showAdvanced ? 'rotate-180' : ''"></i>
+            </button>
+            
+            <div x-show="showAdvanced" x-collapse class="mt-4 pt-4 border-t border-slate-200 space-y-4">
+                <div class="space-y-2">
+                    <label for="parent_id" class="block text-sm font-semibold text-slate-900">Atasan (Parent) <span class="text-slate-400 font-normal">(Biarkan kosong jika ini adalah Ketua/Lurah)</span></label>
+                    <select name="parent_id" id="parent_id" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 transition-all">
+                        <option value="">-- Paling Atas (Root / Ketua Kelurahan) --</option>
+                        @foreach($members as $m)
+                            <option value="{{ $m->id }}" {{ old('parent_id', $struktur_organisasi->parent_id) == $m->id ? 'selected' : '' }}>
+                                {{ $m->name }} ({{ $m->position }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="order" class="block text-sm font-semibold text-slate-900">No Urut Tampil <span class="text-slate-400 font-normal">(Biarkan jika tidak ingin merubah urutan)</span></label>
+                    <input type="number" name="order" id="order" value="{{ old('order', $struktur_organisasi->order) }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 transition-all">
+                </div>
+            </div>
         </div>
 
         <div class="space-y-2">
@@ -119,6 +128,9 @@
                                 <i class="fas fa-trash-alt"></i>
                                 <span>Hapus Foto</span>
                             </button>
+                        </template>
+                        <template x-if="!photoPreview && deletePhoto">
+                            <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-100"><i class="fas fa-exclamation-circle mr-1"></i>Foto akan dihapus saat disimpan</span>
                         </template>
                     </div>
                 </div>

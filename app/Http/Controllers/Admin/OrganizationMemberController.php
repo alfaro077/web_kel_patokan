@@ -30,6 +30,10 @@ class OrganizationMemberController extends Controller
     public function store(StoreOrganizationMemberRequest $request)
     {
         $data = $request->validated();
+        
+        if (!isset($data['order']) || $data['order'] === null) {
+            $data['order'] = OrganizationMember::where('parent_id', $data['parent_id'] ?? null)->max('order') + 1;
+        }
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('struktur', 'public');

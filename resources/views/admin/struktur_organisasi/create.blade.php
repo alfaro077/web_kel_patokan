@@ -59,15 +59,9 @@
             </div>
 
 
-            <div class="space-y-2">
+            <div class="space-y-2 col-span-1 sm:col-span-2">
                 <label for="nip" class="block text-sm font-semibold text-slate-900">NIP <span class="text-slate-400 font-normal">(Opsional)</span></label>
                 <input type="text" name="nip" id="nip" value="{{ old('nip') }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-all" placeholder="Masukkan NIP jika ada">
-            </div>
-
-            <div class="space-y-2">
-                <label for="order" class="block text-sm font-semibold text-slate-900">No Urut Tampil <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                <input type="number" name="order" id="order" value="{{ old('order', 0) }}" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-all" placeholder="0">
-                <p class="text-xs text-slate-500 mt-1">Gunakan angka untuk mengatur urutan tampilan (angka terkecil tampil paling atas).</p>
             </div>
         </div>
 
