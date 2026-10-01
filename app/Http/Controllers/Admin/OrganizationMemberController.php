@@ -67,6 +67,43 @@ class OrganizationMemberController extends Controller
             $data['photo'] = $request->file('photo')->store('struktur', 'public');
         }
 
+        // Reorder Logic
+        $oldParentId = $struktur_organisasi->parent_id;
+        $newParentId = $data['parent_id'] ?? null;
+        $oldOrder = (int)$struktur_organisasi->order;
+        $newOrder = isset($data['order']) ? (int)$data['order'] : $oldOrder;
+
+        if ($oldParentId === $newParentId) {
+            if ($oldOrder !== $newOrder) {
+                if ($newOrder > $oldOrder) {
+                    OrganizationMember::where('parent_id', $oldParentId)
+                        ->whereBetween('order', [$oldOrder + 1, $newOrder])
+                        ->where('id', '!=', $struktur_organisasi->id)
+                        ->decrement('order');
+                } else {
+                    OrganizationMember::where('parent_id', $oldParentId)
+                        ->whereBetween('order', [$newOrder, $oldOrder - 1])
+                        ->where('id', '!=', $struktur_organisasi->id)
+                        ->increment('order');
+                }
+            }
+        } else {
+            // Remove from old parent sequence
+            OrganizationMember::where('parent_id', $oldParentId)
+                ->where('order', '>', $oldOrder)
+                ->decrement('order');
+                
+            if (!isset($data['order'])) {
+                $newOrder = OrganizationMember::where('parent_id', $newParentId)->max('order') + 1;
+                $data['order'] = $newOrder;
+            } else {
+                // Insert into new parent sequence
+                OrganizationMember::where('parent_id', $newParentId)
+                    ->where('order', '>=', $newOrder)
+                    ->increment('order');
+            }
+        }
+
         $struktur_organisasi->update($data);
 
         $this->syncVillageProfileHead();
@@ -76,12 +113,20 @@ class OrganizationMemberController extends Controller
 
     public function destroy(OrganizationMember $struktur_organisasi)
     {
-        // Update children's parent_id to null or handle cascading, but let's just null it as defined in migration
+        // Reorder siblings after deletion
+        $parentId = $struktur_organisasi->parent_id;
+        $order = $struktur_organisasi->order;
+
         if ($struktur_organisasi->photo) {
             Storage::disk('public')->delete($struktur_organisasi->photo);
         }
         
         $struktur_organisasi->delete();
+        
+        OrganizationMember::where('parent_id', $parentId)
+            ->where('order', '>', $order)
+            ->decrement('order');
+
         $this->syncVillageProfileHead();
 
         if (request()->wantsJson() || request()->ajax()) {
