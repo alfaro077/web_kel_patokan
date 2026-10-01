@@ -457,41 +457,53 @@ class="relative overflow-x-hidden w-full max-w-full">
             </div>
 
             @if(!empty($relatedLinks) && count($relatedLinks) > 0)
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-                    @foreach($relatedLinks as $link)
-                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer"
-                       data-aos="zoom-in" data-aos-delay="{{ 100 + (($loop->index % 5) * 80) }}"
-                       class="group bg-white hover:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 hover:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between transform hover:-translate-y-1 relative overflow-hidden">
-                        
-                        <!-- Top Logo Container with High Contrast & Soft Frame -->
-                        <div class="w-full h-20 sm:h-24 bg-gradient-to-br from-slate-100 to-slate-200/80 group-hover:from-slate-800 group-hover:to-slate-950 rounded-2xl p-3 flex items-center justify-center border border-slate-200/60 group-hover:border-slate-700/60 transition-all duration-300 relative shadow-inner">
-                            <img src="{{ str_starts_with($link['logo'], 'http') ? $link['logo'] : asset('storage/' . $link['logo']) }}" 
-                                 alt="{{ $link['name'] }}" 
-                                 class="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-300"
-                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($link['name']) }}&background=059669&color=fff'">
-                        </div>
-
-                        <!-- Card Info -->
-                        <div class="mt-4 flex-1 flex flex-col justify-between text-left space-y-1">
-                            <div>
-                                <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-white transition line-clamp-1 group-hover:translate-x-0.5 duration-300">
-                                    {{ $link['name'] }}
-                                </h4>
-                                @if(!empty($link['desc']))
-                                    <p class="text-[11px] text-slate-500 group-hover:text-slate-300 mt-1 line-clamp-2 leading-relaxed font-medium transition">
-                                        {{ $link['desc'] }}
-                                    </p>
-                                @endif
+                <div class="relative w-full">
+                    <style>
+                        .no-scrollbar::-webkit-scrollbar {
+                            display: none;
+                        }
+                        .no-scrollbar {
+                            -ms-overflow-style: none;
+                            scrollbar-width: none;
+                        }
+                    </style>
+                    <div class="flex overflow-x-auto gap-4 sm:gap-6 py-2 px-1 no-scrollbar scroll-smooth"
+                         style="scrollbar-width: none; -ms-overflow-style: none;">
+                        @foreach($relatedLinks as $link)
+                        <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer"
+                           data-aos="zoom-in" data-aos-delay="{{ 100 + (($loop->index % 5) * 80) }}"
+                           class="group bg-white hover:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 hover:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between transform hover:-translate-y-1 relative overflow-hidden w-[240px] sm:w-[260px] md:w-[280px] shrink-0">
+                            
+                            <!-- Top Logo Container with High Contrast & Soft Frame -->
+                            <div class="w-full h-20 sm:h-24 bg-gradient-to-br from-slate-100 to-slate-200/80 group-hover:from-slate-800 group-hover:to-slate-950 rounded-2xl p-3 flex items-center justify-center border border-slate-200/60 group-hover:border-slate-700/60 transition-all duration-300 relative shadow-inner">
+                                <img src="{{ str_starts_with($link['logo'], 'http') ? $link['logo'] : asset('storage/' . $link['logo']) }}" 
+                                     alt="{{ $link['name'] }}" 
+                                     class="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-110 transition-transform duration-300"
+                                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($link['name']) }}&background=059669&color=fff'">
                             </div>
 
-                            <!-- Bottom Link Action -->
-                            <div class="pt-3 border-t border-slate-100 group-hover:border-slate-800 flex items-center justify-between text-[11px] font-bold text-emerald-600 group-hover:text-emerald-400 transition mt-2">
-                                <span>Kunjungi Portal</span>
-                                <i class="fas fa-arrow-right text-[10px] transform group-hover:translate-x-1.5 transition duration-300"></i>
+                            <!-- Card Info -->
+                            <div class="mt-4 flex-1 flex flex-col justify-between text-left space-y-1">
+                                <div>
+                                    <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-white transition line-clamp-1 group-hover:translate-x-0.5 duration-300">
+                                        {{ $link['name'] }}
+                                    </h4>
+                                    @if(!empty($link['desc']))
+                                        <p class="text-[11px] text-slate-500 group-hover:text-slate-300 mt-1 line-clamp-2 leading-relaxed font-medium transition">
+                                            {{ $link['desc'] }}
+                                        </p>
+                                    @endif
+                                </div>
+
+                                <!-- Bottom Link Action -->
+                                <div class="pt-3 border-t border-slate-100 group-hover:border-slate-800 flex items-center justify-between text-[11px] font-bold text-emerald-600 group-hover:text-emerald-400 transition mt-2">
+                                    <span>Kunjungi Portal</span>
+                                    <i class="fas fa-arrow-right text-[10px] transform group-hover:translate-x-1.5 transition duration-300"></i>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                    @endforeach
+                        </a>
+                        @endforeach
+                    </div>
                 </div>
             @else
                 <div class="max-w-md mx-auto p-8 bg-white rounded-3xl border border-slate-200 text-center space-y-3">
