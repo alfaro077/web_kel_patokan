@@ -112,7 +112,7 @@
                     <i class="fas fa-sitemap text-4xl text-slate-300 mb-3"></i>
                     <h3 class="text-lg font-bold text-slate-700">Belum ada struktur organisasi</h3>
                     <p class="text-sm text-slate-500 mt-1">Silakan tambahkan anggota pertama (Ketua/Lurah) untuk memulai.</p>
-                    <a href="{{ route('admin.struktur_organisasi.create') }}" class="mt-4 inline-block px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-xl hover:bg-blue-200 transition">Mulai Buat Struktur</a>
+                    <a href="{{ route('admin.struktur_organisasi.create') }}" class="mt-4 inline-block px-4 py-2 bg-emerald-100 text-emerald-700 font-medium rounded-xl hover:bg-emerald-200 transition">Mulai Buat Struktur</a>
                 </div>
                 @endif
 

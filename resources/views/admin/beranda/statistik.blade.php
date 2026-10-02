@@ -375,7 +375,7 @@
                                     <label class="block font-bold mb-1 text-slate-700">Warna Tema</label>
                                     <select name="color" x-model="selectedBasicStat.color" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
                                         <option value="emerald" class="text-emerald-700">Hijau (Emerald)</option>
-                                        <option value="sky" class="text-sky-700">Biru (Sky)</option>
+                                        <option value="sky" class="text-emerald-700">Biru (Sky)</option>
                                         <option value="amber" class="text-amber-700">Kuning (Amber)</option>
                                         <option value="rose" class="text-rose-700">Merah (Rose)</option>
                                         <option value="indigo" class="text-indigo-700">Ungu (Indigo)</option>

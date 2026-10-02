@@ -18,10 +18,16 @@ class MediaController extends Controller
     {
         $allFiles = Storage::disk('public')->allFiles();
         
-        $filesData = collect($allFiles)->map(function ($filePath) {
+        $protectedFolders = ['posts', 'docs', 'gallery', 'kemitraan', 'maklumat', 'lembaga', 'struktur', 'pages', 'services', 'settings'];
+
+        $filesData = collect($allFiles)->map(function ($filePath) use ($protectedFolders) {
             $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
             $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']);
             $isPdf = $extension === 'pdf';
+            
+            // Check if file is in a protected folder
+            $folder = explode('/', $filePath)[0];
+            $isProtected = in_array($folder, $protectedFolders);
             
             return [
                 'path' => $filePath,
@@ -32,6 +38,7 @@ class MediaController extends Controller
                 'extension' => $extension,
                 'is_image' => $isImage,
                 'is_pdf' => $isPdf,
+                'is_protected' => $isProtected,
             ];
         })->sortByDesc('last_modified')->values();
 
@@ -113,13 +120,30 @@ class MediaController extends Controller
         ]);
 
         $path = $request->input('path');
+        
+        $protectedFolders = ['posts', 'docs', 'gallery', 'kemitraan', 'maklumat', 'lembaga', 'struktur', 'pages', 'services', 'settings'];
+        $folder = explode('/', $path)[0];
+
+        if (in_array($folder, $protectedFolders)) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['error' => 'Akses ditolak: File sistem tidak bisa dihapus dari menu Media.'], 403);
+            }
+            return back()->with('warning', 'Akses ditolak: File di folder "' . $folder . '" adalah aset sistem dan hanya bisa dihapus dari menu fitur terkait (Berita, Galeri, Dokumen, dll).');
+        }
 
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
             ActivityLog::record('DELETE', "Menghapus berkas media: {$path}");
+            
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Berkas media berhasil dihapus.']);
+            }
             return back()->with('status', 'Berkas media berhasil dihapus.');
         }
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['error' => 'Berkas media tidak ditemukan.'], 404);
+        }
         return back()->with('warning', 'Berkas media tidak ditemukan.');
     }
 }

@@ -56,11 +56,11 @@
         </div>
 
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0 border border-blue-200">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0 border border-emerald-200">
                 ✏️
             </div>
             <div>
-                <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Pengubahan Data</div>
+                <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Pengubahan Data</div>
                 <div class="text-base sm:text-lg font-black text-slate-900">{{ number_format($stats['updates']) }}</div>
             </div>
         </div>
@@ -104,7 +104,7 @@
 
                 <a href="{{ route('admin.activity-log.index', ['action' => 'UPDATE']) }}"
                    class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0
-                          {{ request('action') == 'UPDATE' ? 'bg-blue-600 text-white shadow-xs' : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' }}">
+                          {{ request('action') == 'UPDATE' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' }}">
                     UPDATE
                 </a>
 
@@ -165,7 +165,7 @@
                                     $actionClasses = match($log->action) {
                                         'LOGIN' => 'bg-purple-100 text-purple-700 border-purple-200',
                                         'CREATE' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
-                                        'UPDATE' => 'bg-blue-100 text-blue-700 border-blue-200',
+                                        'UPDATE' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
                                         'DELETE' => 'bg-rose-100 text-rose-700 border-rose-200',
                                         default => 'bg-slate-100 text-slate-700 border-slate-200'
                                     };

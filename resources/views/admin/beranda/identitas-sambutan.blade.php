@@ -24,12 +24,12 @@
             </div>
         </div>
 
-        <div class="mt-4 p-4 bg-sky-50 border border-sky-100 rounded-xl">
+        <div class="mt-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
             <div class="flex items-start gap-3">
-                <i class="fas fa-info-circle text-sky-600 mt-0.5"></i>
+                <i class="fas fa-info-circle text-emerald-600 mt-0.5"></i>
                 <div>
-                    <p class="text-sm font-bold text-sky-900">Info Pengelolaan Data Lurah</p>
-                    <p class="text-xs text-sky-700 mt-1">Nama, NIP, dan Foto Kepala Kelurahan (Lurah) sekarang dikelola secara terpusat melalui menu <strong>Struktur Organisasi</strong>. Data sambutan di bawah ini akan otomatis menggunakan foto dan nama Lurah dari struktur tersebut.</p>
+                    <p class="text-sm font-bold text-emerald-900">Info Pengelolaan Data Lurah</p>
+                    <p class="text-xs text-emerald-700 mt-1">Nama, NIP, dan Foto Kepala Kelurahan (Lurah) sekarang dikelola secara terpusat melalui menu <strong>Struktur Organisasi</strong>. Data sambutan di bawah ini akan otomatis menggunakan foto dan nama Lurah dari struktur tersebut.</p>
                 </div>
             </div>
         </div>

@@ -71,10 +71,6 @@
             <button type="submit" class="px-3.5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl shadow transition">Filter</button>
         </form>
 
-        <button @click="uploadModalOpen = true" class="px-4 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-extrabold text-xs rounded-xl shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-            <span>Unggah Berkas Media Baru</span>
-        </button>
     </div>
 
     <!-- Media Library Grid -->
@@ -120,7 +116,7 @@
                         <!-- Copy URL Button -->
                         <button type="button" 
                                 @click="navigator.clipboard.writeText('{{ $file['url'] }}'); copyToast = true; setTimeout(() => copyToast = false, 2000)"
-                                class="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-[10px] rounded-lg transition border border-sky-200 flex items-center gap-1"
+                                class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-lg transition border border-emerald-200 flex items-center gap-1"
                                 title="Salin URL Berkas">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                             <span>Salin URL</span>
@@ -133,14 +129,20 @@
 
                         <!-- Delete Button -->
                         @if(auth()->user()->isAdmin())
-                        <form action="{{ route('admin.media.destroy') }}" method="POST" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Apakah Anda yakin ingin menghapus berkas media ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <input type="hidden" name="path" value="{{ $file['path'] }}">
-                            <button type="submit" class="p-1 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Berkas">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </form>
+                            @if($file['is_protected'])
+                            <div class="px-2 py-1 bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg border border-slate-200 cursor-not-allowed" title="Aset sistem tidak bisa dihapus di sini">
+                                Aset Sistem
+                            </div>
+                            @else
+                            <form action="{{ route('admin.media.destroy') }}" method="POST" onsubmit="event.preventDefault(); window.ajaxDelete(this.action, document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Apakah Anda yakin ingin menghapus berkas media ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="path" value="{{ $file['path'] }}">
+                                <button type="submit" class="p-1 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Hapus Berkas">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </form>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -157,59 +159,7 @@
         </div>
     </div>
 
-    <!-- MODAL UNGGAH BERKAS BARU -->
-    <div x-show="uploadModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-6">
-            <div x-show="uploadModalOpen"  class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"></div>
 
-            <div x-show="uploadModalOpen" class="relative inline-block bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all max-w-lg w-full border border-slate-200 my-8">
-                <form action="{{ route('admin.media.store') }}" method="POST" enctype="multipart/form-data" x-data="{ mediaPreview: null }" @submit.prevent="submitForm($event, 'uploadModalOpen')">
-                    @csrf
-                    <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
-                        <h3 class="text-base font-bold">Unggah Berkas Media Baru</h3>
-                        <button type="button" @click="uploadModalOpen = false" class="text-emerald-300 hover:text-white">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>
-
-                    <div class="p-6 space-y-4 text-xs">
-                        <div>
-                            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Folder Penyimpanan</label>
-                            <select name="folder" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600">
-                                <option value="uploads">uploads (Berkas Umum)</option>
-                                <option value="documents">documents (Dokumen & Form)</option>
-                                <option value="gallery">gallery (Foto Kegiatan)</option>
-                                <option value="posts">posts (Gambar Berita)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Pilih Berkas *</label>
-                            <input type="file" name="file" required 
-                                   @change="const f = $event.target.files[0]; if(f && f.type.startsWith('image/')) { mediaPreview = URL.createObjectURL(f); } else { mediaPreview = null; }" 
-                                   class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                            <p class="text-[10px] text-slate-400 mt-1">Format: Gambar (JPG/PNG/WEBP) atau PDF. Maks {{ $systemSettings['max_upload_foto_mb'] ?? 2 }}MB (Foto) / {{ $systemSettings['max_upload_pdf_mb'] ?? 5 }}MB (PDF).</p>
-                        </div>
-
-                        <template x-if="mediaPreview">
-                            <div class="mt-2.5 p-2.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
-                                <img :src="mediaPreview" class="w-14 h-14 rounded-xl object-cover border-2 border-emerald-500 shadow-sm shrink-0">
-                                <div class="min-w-0 text-[11px]">
-                                    <div class="font-bold text-slate-800">Pratinjau Gambar Media</div>
-                                    <div class="text-[10px] text-sky-600 font-medium">Siap diunggah ke server</div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-200">
-                        <button type="button" @click="uploadModalOpen = false" class="px-4 py-2 text-slate-600 font-semibold rounded-xl hover:bg-slate-200">Batal</button>
-                        <button type="submit" class="px-5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-extrabold rounded-xl shadow">Unggah Sekarang</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- COPY TOAST NOTIFICATION -->
     <div x-show="copyToast" x-cloak class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 text-xs font-bold flex items-center gap-2">

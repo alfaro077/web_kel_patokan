@@ -219,12 +219,12 @@
                         @csrf
                         @method('PUT')
                         
-                        <div class="bg-gradient-to-r from-sky-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
+                        <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
                             <h3 class="text-base font-bold flex items-center gap-2">
-                                <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 <span>Edit Kategori</span>
                             </h3>
-                            <button type="button" @click="editModalOpen = false" class="text-sky-300 hover:text-white">
+                            <button type="button" @click="editModalOpen = false" class="text-emerald-300 hover:text-white">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
@@ -232,12 +232,12 @@
                         <div class="p-6 space-y-4 text-xs">
                             <div>
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Kategori *</label>
-                                <input type="text" name="name" x-model="selectedCategory.name" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-semibold text-sm">
+                                <input type="text" name="name" x-model="selectedCategory.name" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 font-semibold text-sm">
                             </div>
 
                             <div>
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Deskripsi Singkat</label>
-                                <textarea name="description" x-model="selectedCategory.description" rows="2" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600"></textarea>
+                                <textarea name="description" x-model="selectedCategory.description" rows="2" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600"></textarea>
                             </div>
 
                             <div>
@@ -255,7 +255,7 @@
 
                         <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-200">
                             <button type="button" @click="editModalOpen = false" class="px-4 py-2 text-slate-600 font-semibold rounded-xl hover:bg-slate-200">Batal</button>
-                            <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl shadow transition transform hover:-translate-y-0.5">Simpan Perubahan</button>
+                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow transition transform hover:-translate-y-0.5">Simpan Perubahan</button>
                         </div>
                     </form>
                 </template>

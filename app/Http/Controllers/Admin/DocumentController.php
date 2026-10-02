@@ -69,6 +69,8 @@ class DocumentController extends Controller
                     DocumentFile::create([
                         'document_id' => $document->id,
                         'name' => $name,
+                        'month' => $months[$index],
+                        'year' => $years[$index],
                         'file_path' => $path,
                     ]);
                 }
@@ -138,6 +140,8 @@ class DocumentController extends Controller
                     DocumentFile::create([
                         'document_id' => $document->id,
                         'name' => $name,
+                        'month' => $months[$index],
+                        'year' => $years[$index],
                         'file_path' => $path,
                     ]);
                 }

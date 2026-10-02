@@ -259,7 +259,7 @@
                                 <i class="fas fa-calendar-alt"></i>
                             </div>
                             <div class="flex items-center">
-                                <button type="button" @click="openEditYear(index, yearData)" class="w-8 h-8 mr-2 rounded-lg bg-white border border-sky-100 text-sky-500 hover:bg-sky-50 hover:border-sky-200 flex items-center justify-center transition opacity-0 group-hover:opacity-100">
+                                <button type="button" @click="openEditYear(index, yearData)" class="w-8 h-8 mr-2 rounded-lg bg-white border border-emerald-100 text-emerald-500 hover:bg-emerald-50 hover:border-emerald-200 flex items-center justify-center transition opacity-0 group-hover:opacity-100">
                                     <i class="fas fa-pencil-alt text-[11px]"></i>
                                 </button>
                                 <button type="button" @click="deleteItem('{{ url('admin/kelola-beranda/apbd/year') }}/' + index)" class="w-8 h-8 rounded-lg bg-white border border-rose-100 text-rose-500 hover:bg-rose-50 hover:border-rose-200 flex items-center justify-center transition opacity-0 group-hover:opacity-100">
@@ -405,15 +405,15 @@
 
             <!-- 3. PEMBIAYAAN DESA -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                <div class="flex items-center justify-between gap-4 p-4 sm:p-5 border-b border-slate-200 bg-sky-50/50">
+                <div class="flex items-center justify-between gap-4 p-4 sm:p-5 border-b border-slate-200 bg-emerald-50/50">
                     <div>
                         <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fas fa-hand-holding-usd text-sky-600 shrink-0"></i>
+                            <i class="fas fa-hand-holding-usd text-emerald-600 shrink-0"></i>
                             <span>3. Pembiayaan Desa</span>
                         </h3>
                     </div>
                     <button type="button" @click="selectedFin = {category: apbdCategories.financings[0] || '', name: '', anggaran: '', realisasi: ''}; createFinModalOpen = true;" 
-                       class="px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-[11px] rounded-xl shadow-md transition flex items-center justify-center gap-1.5 shrink-0">
+                       class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] rounded-xl shadow-md transition flex items-center justify-center gap-1.5 shrink-0">
                         <i class="fas fa-plus"></i>
                         <span>Tambah</span>
                     </button>
@@ -432,10 +432,10 @@
                         <tbody class="divide-y divide-slate-200 text-xs">
                             <template x-for="(fin, index) in (activeYear.financings || [])" :key="index">
                                 <tr class="hover:bg-slate-50 transition">
-                                    <td class="py-3 px-4 font-bold text-sky-700 text-[10px]" x-text="fin.category"></td>
+                                    <td class="py-3 px-4 font-bold text-emerald-700 text-[10px]" x-text="fin.category"></td>
                                     <td class="py-3 px-4 font-medium text-slate-900" x-text="fin.name"></td>
                                     <td class="py-3 px-4 text-right text-slate-600" x-text="formatRupiah(fin.anggaran)"></td>
-                                    <td class="py-3 px-4 text-right font-medium text-sky-600" x-text="formatRupiah(fin.realisasi)"></td>
+                                    <td class="py-3 px-4 text-right font-medium text-emerald-600" x-text="formatRupiah(fin.realisasi)"></td>
                                     <td class="py-3 px-4 text-center whitespace-nowrap space-x-1">
                                         <button type="button" @click="selectedFin = JSON.parse(JSON.stringify(fin)); selectedFinIndex = index; editFinModalOpen = true;" class="inline-block px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] rounded transition border border-slate-300">Edit</button>
                                         <button type="button" @click="deleteItem('{{ url('admin/kelola-beranda/apbd-financing') }}/' + selectedYearIndex + '/' + index)" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-[10px] rounded transition border border-rose-200">Hapus</button>
@@ -729,7 +729,7 @@
                 <form :action="'{{ url('admin/kelola-beranda/apbd-financing') }}/' + selectedYearIndex + '/store'" method="POST" @submit.prevent="submitForm($event, 'createFinModalOpen')">@csrf
                     <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-hand-holding-usd text-sky-600"></i>
+                            <i class="fas fa-hand-holding-usd text-emerald-600"></i>
                             <h3 class="text-base font-bold text-slate-800">Tambah Pembiayaan</h3>
                         </div>
                         <button type="button" @click="createFinModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
@@ -770,7 +770,7 @@
                     </div>
                     <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-100">
                         <button type="button" @click="createFinModalOpen = false" class="px-4 py-2 text-slate-600 font-bold rounded-xl hover:bg-slate-200">Batal</button>
-                        <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl shadow-md transition">Simpan Pembiayaan</button>
+                        <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-md transition">Simpan Pembiayaan</button>
                     </div>
                 </form>
             </div>
@@ -787,7 +787,7 @@
                         @csrf @method('PUT')
                         <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-hand-holding-usd text-sky-600"></i>
+                                <i class="fas fa-hand-holding-usd text-emerald-600"></i>
                                 <h3 class="text-base font-bold text-slate-800">Edit Pembiayaan</h3>
                             </div>
                             <button type="button" @click="editFinModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
@@ -827,7 +827,7 @@
                         </div>
                         <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-100">
                             <button type="button" @click="editFinModalOpen = false" class="px-4 py-2 text-slate-600 font-bold rounded-xl hover:bg-slate-200">Batal</button>
-                            <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl shadow-md transition">Simpan Perubahan</button>
+                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-md transition">Simpan Perubahan</button>
                         </div>
                     </form>
                 </template>

@@ -167,7 +167,7 @@
                             </td>
                             <td class="py-3.5 px-5 text-center">
                                 @if($u->role === 'admin')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-sky-100 text-emerald-900 border border-sky-200 whitespace-nowrap">🛡️ Administrator</span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-200 whitespace-nowrap">🛡️ Administrator</span>
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-200 whitespace-nowrap">👤 Anggota Staf</span>
                                 @endif

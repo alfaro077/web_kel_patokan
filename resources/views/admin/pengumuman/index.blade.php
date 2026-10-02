@@ -84,7 +84,7 @@
                             <!-- Badge Type -->
                             <td class="py-3.5 px-4 sm:px-5 whitespace-nowrap">
                                 @if($ann->badge_type === 'info')
-                                    <span class="px-2.5 py-1 text-[10px] font-extrabold bg-blue-100 text-blue-900 rounded-md border border-blue-200">
+                                    <span class="px-2.5 py-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-900 rounded-md border border-emerald-200">
                                         INFO LAYANAN
                                     </span>
                                 @elseif($ann->badge_type === 'warning')

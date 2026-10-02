@@ -195,7 +195,7 @@
                                     youtube_url: {{ json_encode($item->youtube_id ? 'https://www.youtube.com/watch?v='.$item->youtube_id : '') }},
                                     updateUrl: {{ json_encode(route('admin.galeri.update', $item->id)) }}
                                 }; editModalOpen = true"
-                                class="p-1.5 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition" title="Edit Foto Kegiatan">
+                                class="p-1.5 text-emerald-600 hover:text-white hover:bg-emerald-600 rounded-lg transition" title="Edit Foto Kegiatan">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
 
@@ -365,12 +365,12 @@
                         @csrf
                         @method('PUT')
                         
-                        <div class="bg-gradient-to-r from-sky-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
+                        <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
                             <h3 class="text-base font-bold flex items-center gap-2">
-                                <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 <span>Edit Foto Kegiatan</span>
                             </h3>
-                            <button type="button" @click="editModalOpen = false" class="text-sky-300 hover:text-white">
+                            <button type="button" @click="editModalOpen = false" class="text-emerald-300 hover:text-white">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
@@ -378,7 +378,7 @@
                         <div class="p-6 space-y-4 text-xs">
                             <div>
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Judul / Nama Kegiatan *</label>
-                                <input type="text" name="title" x-model="selectedItem.title" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-semibold">
+                                <input type="text" name="title" x-model="selectedItem.title" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 font-semibold">
                             </div>
 
                             <div>
@@ -395,7 +395,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <select id="edit_galeri_category_id" data-category-type="galeri" name="category_id" x-model="selectedItem.category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-medium bg-white">
+                                <select id="edit_galeri_category_id" data-category-type="galeri" name="category_id" x-model="selectedItem.category_id" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 font-medium bg-white">
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -406,9 +406,9 @@
                             <div x-data="{ mediaType: selectedItem ? selectedItem.type : 'foto', imageMode: 'file', localLivePreview: selectedItem ? selectedItem.image : null }" x-init="$watch('selectedItem', value => { if(value) { localLivePreview = value.image; mediaType = value.type || 'foto'; } })">
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-2">Tipe Media *</label>
                                 <div class="flex gap-4 mb-4">
-                                    <label class="flex items-center gap-2 cursor-pointer p-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition" :class="{'bg-sky-50 border-sky-300': mediaType === 'foto'}">
-                                        <input type="radio" name="type" value="foto" x-model="mediaType" class="text-sky-600 focus:ring-sky-600">
-                                        <span class="text-xs font-bold text-slate-700"><i class="fas fa-camera mr-1 text-sky-600"></i> Foto Kegiatan</span>
+                                    <label class="flex items-center gap-2 cursor-pointer p-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition" :class="{'bg-emerald-50 border-emerald-300': mediaType === 'foto'}">
+                                        <input type="radio" name="type" value="foto" x-model="mediaType" class="text-emerald-600 focus:ring-emerald-600">
+                                        <span class="text-xs font-bold text-slate-700"><i class="fas fa-camera mr-1 text-emerald-600"></i> Foto Kegiatan</span>
                                     </label>
                                     <label class="flex items-center gap-2 cursor-pointer p-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition" :class="{'bg-rose-50 border-rose-300': mediaType === 'video'}">
                                         <input type="radio" name="type" value="video" x-model="mediaType" class="text-rose-600 focus:ring-rose-600">
@@ -423,11 +423,11 @@
                                     <div class="flex items-center p-1 bg-slate-100 rounded-lg w-max mb-3 border border-slate-200">
                                         <label class="cursor-pointer">
                                             <input type="radio" name="image_mode" value="file" x-model="imageMode" class="sr-only peer">
-                                            <div class="px-3 py-1.5 text-[11px] font-bold text-slate-500 rounded-md peer-checked:bg-white peer-checked:text-sky-700 peer-checked:shadow-sm transition">Upload File Baru</div>
+                                            <div class="px-3 py-1.5 text-[11px] font-bold text-slate-500 rounded-md peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm transition">Upload File Baru</div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="image_mode" value="url" x-model="imageMode" class="sr-only peer">
-                                            <div class="px-3 py-1.5 text-[11px] font-bold text-slate-500 rounded-md peer-checked:bg-white peer-checked:text-sky-700 peer-checked:shadow-sm transition">Ganti Sampul (URL)</div>
+                                            <div class="px-3 py-1.5 text-[11px] font-bold text-slate-500 rounded-md peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm transition">Ganti Sampul (URL)</div>
                                         </label>
                                     </div>
 
@@ -445,7 +445,7 @@
                                     <!-- URL Input -->
                                     <div x-show="imageMode === 'url'" x-cloak>
                                         <input type="url" name="image_url" placeholder="https://contoh.com/gambar.jpg"
-                                               class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-sky-600 font-mono">
+                                               class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 font-mono">
                                         <p class="text-[10px] text-slate-400 mt-1">Masukkan URL gambar untuk mengubah gambar <b>Sampul Utama</b>.</p>
                                     </div>
                                     
@@ -494,20 +494,20 @@
 
                             <div>
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Keterangan Foto (Caption)</label>
-                                <textarea name="caption" x-model="selectedItem.caption" rows="2" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-medium"></textarea>
+                                <textarea name="caption" x-model="selectedItem.caption" rows="2" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 font-medium"></textarea>
                             </div>
                             
                             <div>
-                                <label class="flex items-center gap-2 cursor-pointer mt-2 bg-sky-50/50 p-3 rounded-xl border border-sky-100 hover:bg-sky-50 transition">
-                                    <input type="checkbox" name="show_on_homepage" value="1" x-model="selectedItem.show_on_homepage" class="w-5 h-5 text-sky-600 border-slate-300 rounded focus:ring-sky-600">
-                                    <span class="text-xs font-bold text-sky-800">Tampilkan Album/Video ini di Halaman Beranda Utama</span>
+                                <label class="flex items-center gap-2 cursor-pointer mt-2 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 hover:bg-emerald-50 transition">
+                                    <input type="checkbox" name="show_on_homepage" value="1" x-model="selectedItem.show_on_homepage" class="w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-600">
+                                    <span class="text-xs font-bold text-emerald-800">Tampilkan Album/Video ini di Halaman Beranda Utama</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-200">
                             <button type="button" @click="editModalOpen = false" class="px-4 py-2 text-slate-600 font-semibold rounded-xl hover:bg-slate-200">Batal</button>
-                            <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl shadow transition transform hover:-translate-y-0.5">Simpan Perubahan</button>
+                            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow transition transform hover:-translate-y-0.5">Simpan Perubahan</button>
                         </div>
                     </form>
                 </template>

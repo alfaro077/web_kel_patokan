@@ -139,7 +139,7 @@
                                         <span class="px-1.5 py-0.5 text-[9px] font-extrabold bg-amber-100 text-amber-900 rounded">UTAMA</span>
                                     @endif
                                     @if($post->is_slider)
-                                        <span class="px-1.5 py-0.5 text-[9px] font-extrabold bg-blue-100 text-blue-900 rounded">BANNER SLIDER</span>
+                                        <span class="px-1.5 py-0.5 text-[9px] font-extrabold bg-emerald-100 text-emerald-900 rounded">BANNER SLIDER</span>
                                     @endif
                                 </div>
                             </td>
@@ -365,9 +365,9 @@
                         @csrf
                         @method('PUT')
                         
-                        <div class="bg-gradient-to-r from-sky-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
+                        <div class="bg-gradient-to-r from-emerald-950 to-slate-900 px-6 py-4 text-white flex items-center justify-between">
                             <h3 class="text-base font-bold">Edit Berita & Artikel</h3>
-                            <button type="button" @click="editModalOpen = false" class="text-sky-300 hover:text-white">
+                            <button type="button" @click="editModalOpen = false" class="text-emerald-300 hover:text-white">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
@@ -376,7 +376,7 @@
                             <!-- Judul Berita -->
                             <div>
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1.5">Judul Berita / Artikel *</label>
-                                <input type="text" name="title" x-model="selectedPost.title" required class="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 font-semibold">
+                                <input type="text" name="title" x-model="selectedPost.title" required class="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 font-semibold">
                             </div>
 
                             <!-- Grid Kategori & Foto -->
@@ -395,7 +395,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <select id="edit_berita_category_id" data-category-type="berita" name="category_id" x-model="selectedPost.category_id" required class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-sky-600 font-medium">
+                                    <select id="edit_berita_category_id" data-category-type="berita" name="category_id" x-model="selectedPost.category_id" required class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 font-medium">
                                         @foreach($categories as $cat)
                                             <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                         @endforeach
@@ -422,7 +422,7 @@
                                     </div>
 
                                     <div x-show="imageMode === 'url'" x-cloak>
-                                        <input type="url" name="image_url" placeholder="https://contoh.com/gambar.jpg" @input="localLivePreview = $event.target.value" class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-sky-600 font-mono">
+                                        <input type="url" name="image_url" placeholder="https://contoh.com/gambar.jpg" @input="localLivePreview = $event.target.value" class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 font-mono">
                                     </div>
 
                                     <div class="mt-2.5 p-2.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
@@ -441,7 +441,7 @@
                             <!-- Excerpt -->
                             <div>
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kutipan Ringkas (Excerpt)</label>
-                                <textarea name="excerpt" x-model="selectedPost.excerpt" rows="2" class="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 shadow-sm"></textarea>
+                                <textarea name="excerpt" x-model="selectedPost.excerpt" rows="2" class="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 shadow-sm"></textarea>
                             </div>
 
                             <!-- Content -->
@@ -468,13 +468,13 @@
                                         }));
                                     }, 50);
                                 "
-                                class="w-full text-xs p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-600 shadow-sm leading-relaxed font-sans"></textarea>
+                                class="w-full text-xs p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 shadow-sm leading-relaxed font-sans"></textarea>
                             </div>
 
                             <!-- Status Publikasi -->
                             <div class="pt-2">
                                 <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1.5">Status Publikasi *</label>
-                                <select name="status" x-model="selectedPost.status" required class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-sky-600 shadow-sm font-bold text-slate-800">
+                                <select name="status" x-model="selectedPost.status" required class="w-full text-xs p-3 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 shadow-sm font-bold text-slate-800">
                                     <option value="published">🟢 Publikasikan</option>
                                     <option value="draft">🟠 Simpan Sebagai Draft</option>
                                 </select>

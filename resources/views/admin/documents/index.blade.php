@@ -41,7 +41,7 @@
                     @forelse($documents as $doc)
                         <tr class="hover:bg-slate-50 transition">
                             <td class="py-3.5 px-4 sm:px-5 whitespace-nowrap">
-                                <span class="px-2.5 py-1 text-[10px] font-extrabold bg-blue-100 text-blue-900 rounded-md border border-blue-200 block mb-1 w-max">
+                                <span class="px-2.5 py-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-900 rounded-md border border-emerald-200 block mb-1 w-max">
                                     {{ $doc->code ?? 'UMUM' }}
                                 </span>
                             </td>
@@ -297,7 +297,7 @@
                                             setup: function (editor) {
                                                 editor.on('init', function () {
                                                     var container = editor.getContainer();
-                                                    container.style.border = '2px solid #0284c7'; // sky-600 for edit
+                                                    container.style.border = '2px solid #0284c7'; // emerald-600 for edit
                                                     container.style.borderRadius = '0.5rem';
                                                     container.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
                                                     container.style.overflow = 'hidden';

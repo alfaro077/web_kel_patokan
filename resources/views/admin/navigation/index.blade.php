@@ -61,11 +61,11 @@
             </div>
         </div>
 
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-start gap-3 shadow-sm">
-            <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 flex items-start gap-3 shadow-sm">
+            <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <div>
-                <h4 class="text-sm font-bold text-blue-900 mb-1">Informasi Sinkronisasi Menu Otomatis</h4>
-                <p class="text-xs text-blue-800 leading-relaxed">Menu dropdown untuk <strong>Layanan</strong> dan <strong>Dokumen</strong> disinkronkan secara otomatis. Setiap kali Anda menambahkan Standar Layanan atau Dokumen Publik baru, tautan menunya akan otomatis dibuat tanpa perlu mengisinya secara manual di sini. Anda dapat langsung menambahkan layanan/dokumen baru melalui tombol <span class="font-semibold bg-blue-100 px-1.5 py-0.5 rounded text-blue-900">Kelola Layanan</span> atau <span class="font-semibold bg-blue-100 px-1.5 py-0.5 rounded text-blue-900">Kelola Dokumen</span> di bawah.</p>
+                <h4 class="text-sm font-bold text-emerald-900 mb-1">Informasi Sinkronisasi Menu Otomatis</h4>
+                <p class="text-xs text-emerald-800 leading-relaxed">Menu dropdown untuk <strong>Layanan</strong> dan <strong>Dokumen</strong> disinkronkan secara otomatis. Setiap kali Anda menambahkan Standar Layanan atau Dokumen Publik baru, tautan menunya akan otomatis dibuat tanpa perlu mengisinya secara manual di sini. Anda dapat langsung menambahkan layanan/dokumen baru melalui tombol <span class="font-semibold bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-900">Kelola Layanan</span> atau <span class="font-semibold bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-900">Kelola Dokumen</span> di bawah.</p>
             </div>
         </div>
 
@@ -164,15 +164,15 @@
                                     }
                                 @endphp
                                 @if(in_array($menu->url, ['/visi-misi', '/sejarah']))
-                                    <a href="{{ route('admin.beranda.visi_misi_sejarah') }}" class="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-100 rounded shadow-sm transition" title="Kelola Konten Profil">
+                                    <a href="{{ route('admin.beranda.visi_misi_sejarah') }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded shadow-sm transition" title="Kelola Konten Profil">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </a>
                                 @elseif($menu->url === '/struktur-organisasi')
-                                    <a href="{{ route('admin.beranda.sotk') }}" class="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-100 rounded shadow-sm transition" title="Kelola SOTK">
+                                    <a href="{{ route('admin.beranda.sotk') }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded shadow-sm transition" title="Kelola SOTK">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </a>
                                 @elseif($menu->url === '/lembaga')
-                                    <a href="{{ route('admin.beranda.lembaga') }}" class="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-100 rounded shadow-sm transition" title="Kelola Lembaga">
+                                    <a href="{{ route('admin.beranda.lembaga') }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded shadow-sm transition" title="Kelola Lembaga">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </a>
                                 @elseif($isDynamicPage && isset($page) && $page->type === 'standard')
@@ -181,7 +181,7 @@
                                     </button>
                                 @endif
                                 
-                                <button type="button" @click="$dispatch('open-edit-menu', {{ json_encode($menu) }})" class="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-100 rounded shadow-sm transition" title="Edit Menu Info">
+                                <button type="button" @click="$dispatch('open-edit-menu', {{ json_encode($menu) }})" class="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded shadow-sm transition" title="Edit Menu Info">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
                                 
@@ -220,7 +220,7 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 uppercase border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>
-                        <a href="{{ route('admin.jenis-layanan.index') }}" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                        <a href="{{ route('admin.jenis-layanan.index') }}" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                             Kelola Layanan
                         </a>
@@ -260,7 +260,7 @@
                                     <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 mr-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif</span>
                                 @endif
                                 
-                                <button type="button" @click="$dispatch('open-edit-menu', {{ json_encode($menu) }})" class="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-100 rounded shadow-sm transition" title="Edit">
+                                <button type="button" @click="$dispatch('open-edit-menu', {{ json_encode($menu) }})" class="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded shadow-sm transition" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
                                 
@@ -297,7 +297,7 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 uppercase border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif</span>
-                        <a href="{{ route('admin.documents.index') }}" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                        <a href="{{ route('admin.documents.index') }}" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                             Kelola Dokumen
                         </a>
@@ -322,7 +322,7 @@
                                 <div>
                                     <div class="flex flex-wrap items-center gap-2">
                                         <div class="font-bold text-slate-800 text-sm">{{ $menu->title }}</div>
-                                        <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[9px] font-bold uppercase">Dokumen File</span>
+                                        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[9px] font-bold uppercase">Dokumen File</span>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-mono text-slate-500 mt-1 overflow-hidden w-full">
                                         <span>URL: {{ $menu->url }}</span>
@@ -337,7 +337,7 @@
                                     <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 mr-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif</span>
                                 @endif
                                 
-                                <button type="button" @click="$dispatch('open-edit-menu', {{ json_encode($menu) }})" class="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-100 rounded shadow-sm transition" title="Edit">
+                                <button type="button" @click="$dispatch('open-edit-menu', {{ json_encode($menu) }})" class="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded shadow-sm transition" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
                                 

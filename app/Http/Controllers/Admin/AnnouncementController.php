@@ -13,7 +13,7 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Announcement::latest();
+        $query = Announcement::with('category')->latest();
 
         if ($request->filled('q')) {
             $search = $request->input('q');

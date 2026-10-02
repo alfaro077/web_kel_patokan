@@ -1,6 +1,6 @@
 <li>
     <div class="inline-block relative z-10 group">
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-56 hover:border-blue-300 hover:shadow-md transition mx-auto relative">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col items-center text-center w-56 hover:border-emerald-300 hover:shadow-md transition mx-auto relative">
             
             {{-- Aksi Tambah Bawahan, Edit & Delete (muncul saat hover) --}}
             <div class="absolute -top-3 -right-3 hidden group-hover:flex items-center gap-1 bg-white p-1 rounded-xl shadow-md border border-slate-200 z-20">
