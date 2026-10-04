@@ -165,7 +165,6 @@ Route::middleware('auth')->group(function () {
         // CMS: Kelola Beranda (Section-based) - Other than Statistik
         Route::prefix('kelola-beranda')->name('beranda.')->group(function () {
             Route::get('identitas-sambutan', [\App\Http\Controllers\Admin\VillageProfileController::class, 'identitasSambutan'])->name('identitas_sambutan');
-            Route::get('sotk', [\App\Http\Controllers\Admin\VillageProfileController::class, 'sotk'])->name('sotk');
             Route::get('visi-misi-sejarah', [\App\Http\Controllers\Admin\VillageProfileController::class, 'visiMisiSejarah'])->name('visi_misi_sejarah');
             Route::get('banner', [\App\Http\Controllers\Admin\VillageProfileController::class, 'banner'])->name('banner');
             Route::get('transparansi', [\App\Http\Controllers\Admin\VillageProfileController::class, 'transparansi'])->name('transparansi');

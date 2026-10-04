@@ -87,21 +87,36 @@
                 <!-- 2. PROFIL (Dropdown) -->
                 <div class="relative" @mouseleave="openDropdown = null">
                     <button type="button" @click="toggleDropdown('d_profil')" @mouseenter="openDropdown = 'd_profil'"
-                            class="px-3 py-2 rounded-lg transition flex items-center gap-1 uppercase {{ request()->is('profil/*') || request()->is('sejarah*') || request()->is('visi-misi*') || request()->is('struktur-organisasi*') ? 'text-emerald-700 font-black bg-emerald-50' : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-50' }}">
+                            class="px-3 py-2 rounded-lg transition flex items-center gap-1 uppercase {{ request()->is('profil/*') || request()->is('halaman/*') || request()->is('sejarah*') || request()->is('visi-misi*') || request()->is('struktur-organisasi*') ? 'text-emerald-700 font-black bg-emerald-50' : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-50' }}">
                         <span>PROFIL</span>
                         <svg class="w-3.5 h-3.5 text-slate-400 transition" :class="{ 'rotate-180': openDropdown === 'd_profil' }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
 
                     <div x-show="openDropdown === 'd_profil'" x-cloak x-transition
                          class="absolute left-0 mt-1 w-56 max-h-[360px] overflow-y-auto bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 font-medium text-xs">
+                        
+                        <!-- PERMANENT CORE MENUS -->
+                        <a href="{{ route('sejarah') }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('sejarah') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Profil & Sejarah</a>
+                        <a href="{{ route('visi-misi') }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('visi-misi') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Visi & Misi</a>
+                        <a href="{{ route('lembaga') }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('lembaga') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Lembaga Desa</a>
+                        <a href="{{ route('struktur-organisasi') }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('struktur-organisasi') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Struktur Organisasi</a>
+
+                        <!-- DYNAMIC CUSTOM MENUS -->
                         @if(isset($navProfil) && $navProfil->count() > 0)
-                            @foreach($navProfil as $menu)
-                                <a href="{{ url($menu->url) }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 line-clamp-1">
-                                    {{ $menu->title }}
-                                </a>
-                            @endforeach
-                        @else
-                            <a href="{{ route('sejarah') }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800">Sejarah Kelurahan</a>
+                            @php
+                                $customMenus = $navProfil->filter(function($menu) {
+                                    return !in_array($menu->url, ['/sejarah', '/visi-misi', '/lembaga', '/struktur-organisasi', '/halaman/sejarah-profil-kelurahan', '/halaman/visi-misi', '/halaman/lembaga-kemasyarakatan', '/halaman/struktur-organisasi']);
+                                });
+                            @endphp
+                            
+                            @if($customMenus->count() > 0)
+                                <div class="my-1 border-t border-slate-100"></div>
+                                @foreach($customMenus as $menu)
+                                    <a href="{{ url($menu->url) }}" class="block px-4 py-2.5 transition hover:bg-emerald-50 hover:text-emerald-800 line-clamp-1">
+                                        {{ $menu->title }}
+                                    </a>
+                                @endforeach
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -251,19 +266,32 @@
 
         <!-- 2. PROFIL Mobile Accordion -->
         <div class="space-y-1">
-            <button type="button" @click="toggleDropdown('m_profil')" class="w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs {{ request()->is('profil/*') || request()->is('sejarah*') || request()->is('visi-misi*') || request()->is('struktur-organisasi*') ? 'bg-emerald-50 text-emerald-800 font-black border border-emerald-200' : 'text-slate-800 hover:bg-slate-50' }}">
+            <button type="button" @click="toggleDropdown('m_profil')" class="w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs {{ request()->is('profil/*') || request()->is('halaman/*') || request()->is('sejarah*') || request()->is('visi-misi*') || request()->is('struktur-organisasi*') ? 'bg-emerald-50 text-emerald-800 font-black border border-emerald-200' : 'text-slate-800 hover:bg-slate-50' }}">
                 <span>PROFIL</span>
                 <svg class="w-4 h-4 text-slate-400 transition transform" :class="{ 'rotate-180 text-emerald-600': openDropdown === 'm_profil' }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div x-show="openDropdown === 'm_profil'" x-cloak x-transition class="pl-4 space-y-1 text-xs">
+                <!-- PERMANENT CORE MENUS -->
+                <a href="{{ route('sejarah') }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium {{ request()->routeIs('sejarah') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Profil & Sejarah</a>
+                <a href="{{ route('visi-misi') }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium {{ request()->routeIs('visi-misi') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Visi & Misi</a>
+                <a href="{{ route('lembaga') }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium {{ request()->routeIs('lembaga') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Lembaga Desa</a>
+                <a href="{{ route('struktur-organisasi') }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium {{ request()->routeIs('struktur-organisasi') ? 'bg-emerald-50 text-emerald-800 font-bold' : '' }}">Struktur Organisasi</a>
+
+                <!-- DYNAMIC CUSTOM MENUS -->
                 @if(isset($navProfil) && $navProfil->count() > 0)
-                    @foreach($navProfil as $menu)
-                        <a href="{{ url($menu->url) }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium line-clamp-1">
-                            {{ $menu->title }}
-                        </a>
-                    @endforeach
-                @else
-                    <a href="{{ route('sejarah') }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium">Sejarah Kelurahan</a>
+                    @php
+                        $customMenus = $navProfil->filter(function($menu) {
+                            return !in_array($menu->url, ['/sejarah', '/visi-misi', '/lembaga', '/struktur-organisasi', '/halaman/sejarah-profil-kelurahan', '/halaman/visi-misi', '/halaman/lembaga-kemasyarakatan', '/halaman/struktur-organisasi']);
+                        });
+                    @endphp
+                    
+                    @if($customMenus->count() > 0)
+                        @foreach($customMenus as $menu)
+                            <a href="{{ url($menu->url) }}" class="block p-2.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 font-medium line-clamp-1">
+                                {{ $menu->title }}
+                            </a>
+                        @endforeach
+                    @endif
                 @endif
             </div>
         </div>

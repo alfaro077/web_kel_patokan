@@ -8,18 +8,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 @php
-    // Get APBD Data. If it's empty, create a dummy structure so page doesn't crash.
+    // Get APBD Data.
     $apbdData = $villageProfile['apbd'] ?? [];
-    if (!is_array($apbdData) || empty($apbdData) || !isset($apbdData[0])) {
-        $apbdData = [
-            [
-                'year' => date('Y'),
-                'incomes' => [],
-                'allocations' => [],
-                'financings' => []
-            ]
-        ];
-    }
 @endphp
 
 <div class="w-full bg-slate-50 min-h-screen text-slate-800 pb-16"

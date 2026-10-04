@@ -1,0 +1,190 @@
+                    <!-- SECTION 2: PROFIL & DATA KELURAHAN -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.identitas_sambutan') || request()->routeIs('admin.beranda.visi_misi_sejarah') || request()->routeIs('admin.beranda.sotk') || request()->routeIs('admin.beranda.kemitraan') || request()->routeIs('admin.beranda.statistik') ? 'true' : 'false' }} }">
+                        <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
+                            <span>Profil & Data Kelurahan</span>
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-collapse class="space-y-1 mt-1">
+                            <a href="{{ route('admin.beranda.identitas_sambutan') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.identitas_sambutan') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.identitas_sambutan') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0l-3 3m3-3l3 3M9 7h6"></path></svg>
+                                <span class="truncate">Identitas & Sambutan</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.visi_misi_sejarah') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.visi_misi_sejarah') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.visi_misi_sejarah') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                <span class="truncate">Visi, Misi & Sejarah</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.sotk') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.sotk') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.sotk') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <span class="truncate">Struktur Organisasi (SOTK)</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.kemitraan') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.kemitraan') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.kemitraan') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                <span class="truncate">Kemitraan Instansi</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.statistik') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.statistik') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.statistik') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                <span class="truncate">Statistik & Demografi</span>
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- SECTION 3: LAYANAN & TRANSPARANSI -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.jenis-layanan.*') || request()->routeIs('admin.layanan-publik.*') || request()->routeIs('admin.documents.*') || request()->routeIs('admin.beranda.maklumat') || request()->routeIs('admin.beranda.transparansi') ? 'true' : 'false' }} }">
+                        <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
+                            <span>Layanan & Transparansi</span>
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-collapse class="space-y-1 mt-1">
+                            <a href="{{ route('admin.beranda.maklumat') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.maklumat') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.maklumat') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span class="truncate">Maklumat Pelayanan</span>
+                            </a>
+
+                            <a href="{{ route('admin.jenis-layanan.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.jenis-layanan.*') || request()->routeIs('admin.layanan-publik.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.jenis-layanan.*') || request()->routeIs('admin.layanan-publik.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span class="truncate">Layanan & Standar SOP</span>
+                            </a>
+                            
+                            <a href="{{ route('admin.beranda.transparansi') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.transparansi') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.transparansi') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="truncate">Transparansi & APBD</span>
+                            </a>
+
+                            <a href="{{ route('admin.documents.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.documents.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.documents.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span class="truncate">Dokumen Publik (PDF)</span>
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- SECTION 4: KONTEN & PUBLIKASI -->
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.berita.*') || request()->routeIs('admin.pengumuman.*') || request()->routeIs('admin.galeri.*') || request()->routeIs('admin.agenda.*') ? 'true' : 'false' }} }">
+                        <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
+                            <span>Konten & Publikasi</span>
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-collapse class="space-y-1 mt-1">
+                            <a href="{{ route('admin.berita.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.berita.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.berita.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                                <span>Berita & Artikel</span>
+                            </a>
+
+                            <a href="{{ route('admin.pengumuman.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.pengumuman.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.pengumuman.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                <span>Pengumuman & Marquee</span>
+                            </a>
+
+                            <a href="{{ route('admin.agenda.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.agenda.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.agenda.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span>Agenda Kegiatan</span>
+                            </a>
+
+                            <a href="{{ route('admin.galeri.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.galeri.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.galeri.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span>Galeri Foto & Video</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 5: TAMPILAN & KONTAK WEB -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.beranda.banner') || request()->routeIs('admin.beranda.kontak') || request()->routeIs('admin.beranda.lokasi') || request()->routeIs('admin.beranda.footer') ? 'true' : 'false' }} }">
+                        <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
+                            <span>Tampilan & Kontak Web</span>
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-collapse class="space-y-1 mt-1">
+                            <a href="{{ route('admin.beranda.banner') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.banner') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.banner') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span class="truncate">Hero Banner & Slider</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.kontak') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.kontak') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.kontak') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                <span class="truncate">Kontak & Jam Kerja</span>
+                            </a>
+                            
+                            <a href="{{ route('admin.beranda.lokasi') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.lokasi') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.lokasi') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span class="truncate">Alamat & Peta Lokasi</span>
+                            </a>
+
+                            <a href="{{ route('admin.beranda.footer') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.beranda.footer') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.beranda.footer') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                <span class="truncate">Footer & Media Sosial</span>
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- SECTION 6: PENGATURAN SISTEM -->
+                    @if(auth()->user()->isAdmin())
+                    <div class="space-y-1" x-data="{ open: {{ request()->routeIs('admin.navigation.*') || request()->routeIs('admin.kategori.*') || request()->routeIs('admin.media.*') || request()->routeIs('admin.activity-log.*') || request()->routeIs('admin.operator.*') || request()->routeIs('admin.pengaturan.*') ? 'true' : 'false' }} }">
+                        <button @click="open = !open" type="button" class="w-full flex items-center justify-between px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition">
+                            <span>Pengaturan Sistem</span>
+                            <svg class="w-3 h-3 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="open" x-collapse class="space-y-1 mt-1">
+                            <a href="{{ route('admin.operator.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.operator.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.operator.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                <span class="truncate">Operator & Hak Akses</span>
+                            </a>
+
+                            <a href="{{ route('admin.activity-log.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.activity-log.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.activity-log.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="truncate">Log Aktivitas Sistem</span>
+                            </a>
+
+                            <a href="{{ route('admin.kategori.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.kategori.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.kategori.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                <span>Master Kategori</span>
+                            </a>
+
+                            <a href="{{ route('admin.media.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.media.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.media.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                                <span>File Manager & Media</span>
+                            </a>
+
+                            <a href="{{ route('admin.navigation.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.navigation.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.navigation.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                                <span>Kelola Navigasi Menu</span>
+                            </a>
+
+                            <a href="{{ route('admin.pengaturan.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2 rounded-xl font-semibold text-xs transition {{ request()->routeIs('admin.pengaturan.*') ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                <svg class="w-4 h-4 {{ request()->routeIs('admin.pengaturan.*') ? 'text-white' : 'text-slate-400' }} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span class="truncate">Konfigurasi Sistem & SEO</span>
+                            </a>
+                        </div>
+                    </div>
+                    @endif

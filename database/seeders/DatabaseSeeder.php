@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             VillageDataSeeder::class,
+            MenuPageSeeder::class,
         ]);
 
         User::updateOrCreate(

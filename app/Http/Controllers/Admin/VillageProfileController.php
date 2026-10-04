@@ -171,12 +171,6 @@ class VillageProfileController extends Controller
         return view('admin.beranda.identitas-sambutan', compact('profile'));
     }
 
-    public function sotk()
-    {
-        $profile = self::getProfileData();
-        return view('admin.beranda.sotk', compact('profile'));
-    }
-
     public function visiMisiSejarah()
     {
         $profile = self::getProfileData();
@@ -499,7 +493,7 @@ class VillageProfileController extends Controller
     public function storeApbdYear(Request $request)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         
         $newYear = [
             "year" => $request->input("year"),
@@ -525,7 +519,7 @@ class VillageProfileController extends Controller
     public function updateApbdYear(Request $request, $yearIndex)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
 
         if (isset($apbd[$yearIndex])) {
             $apbd[$yearIndex]["year"] = $request->input("year", $apbd[$yearIndex]["year"]);
@@ -553,7 +547,7 @@ class VillageProfileController extends Controller
     public function destroyApbdYear($yearIndex)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
 
         if (isset($apbd[$yearIndex])) {
             if (!empty($apbd[$yearIndex]["thumbnail"])) {
@@ -572,7 +566,7 @@ class VillageProfileController extends Controller
     public function storeApbdIncome(Request $request, $yearIndex)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex])) {
             $apbd[$yearIndex]["incomes"] = $apbd[$yearIndex]["incomes"] ?? [];
             $apbd[$yearIndex]["incomes"][] = [
@@ -590,7 +584,7 @@ class VillageProfileController extends Controller
     public function updateApbdIncome(Request $request, $yearIndex, $index)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex]["incomes"][$index])) {
             $apbd[$yearIndex]["incomes"][$index] = [
                 "category" => $request->input("apbd_income_category", ""),
@@ -607,7 +601,7 @@ class VillageProfileController extends Controller
     public function destroyApbdIncome($yearIndex, $index)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex]["incomes"][$index])) {
             array_splice($apbd[$yearIndex]["incomes"], $index, 1);
             $existingData["apbd"] = $apbd;
@@ -619,7 +613,7 @@ class VillageProfileController extends Controller
     public function storeApbd(Request $request, $yearIndex)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex])) {
             $apbd[$yearIndex]["allocations"] = $apbd[$yearIndex]["allocations"] ?? [];
             $apbd[$yearIndex]["allocations"][] = [
@@ -637,7 +631,7 @@ class VillageProfileController extends Controller
     public function updateApbd(Request $request, $yearIndex, $index)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex]["allocations"][$index])) {
             $apbd[$yearIndex]["allocations"][$index] = [
                 "category" => $request->input("apbd_alloc_category", ""),
@@ -654,7 +648,7 @@ class VillageProfileController extends Controller
     public function destroyApbd($yearIndex, $index)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex]["allocations"][$index])) {
             array_splice($apbd[$yearIndex]["allocations"], $index, 1);
             $existingData["apbd"] = $apbd;
@@ -666,7 +660,7 @@ class VillageProfileController extends Controller
     public function storeApbdFinancing(Request $request, $yearIndex)
     {
         $existingData = self::getProfileData();
-        $apbd = $existingData["apbd"] ?? [];
+        $apbd = array_values($existingData["apbd"] ?? []);
         if (isset($apbd[$yearIndex])) {
             $apbd[$yearIndex]["financings"] = $apbd[$yearIndex]["financings"] ?? [];
             $apbd[$yearIndex]["financings"][] = [
