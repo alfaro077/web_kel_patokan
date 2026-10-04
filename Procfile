@@ -1,1 +1,1 @@
-web: mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/app/public storage/logs && php artisan storage:link && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
+web: bash start.sh
