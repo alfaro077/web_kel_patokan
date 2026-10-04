@@ -27,27 +27,14 @@ use Illuminate\Support\Facades\Route;
 // ==========================================
 // PUBLIC ROUTES
 // ==========================================
-Route::get('/setup-symlink', function () {
-    try {
-        if (file_exists(public_path('storage'))) {
-            if (is_link(public_path('storage'))) {
-                unlink(public_path('storage'));
-            } else {
-                \Illuminate\Support\Facades\File::deleteDirectory(public_path('storage'));
-            }
-        }
-        \Illuminate\Support\Facades\Artisan::call('storage:link', ['--force' => true]);
-        
-        $target = '';
-        if (is_link(public_path('storage'))) {
-            $target = readlink(public_path('storage'));
-        }
-        
-        return "Symlink created successfully!<br>Target: " . $target . "<br>Please check your images now.";
-    } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+// SOLUSI PAMUNGKAS: Melayani file langsung dari Route tanpa perlu Symlink!
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    if (!file_exists($filePath)) {
+        abort(404);
     }
-});
+    return response()->file($filePath);
+})->where('path', '.*');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/visi-misi', [HomeController::class, 'visiMisi'])->name('visi-misi');
