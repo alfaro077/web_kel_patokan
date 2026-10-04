@@ -27,6 +27,28 @@ use Illuminate\Support\Facades\Route;
 // ==========================================
 // PUBLIC ROUTES
 // ==========================================
+Route::get('/setup-symlink', function () {
+    try {
+        if (file_exists(public_path('storage'))) {
+            if (is_link(public_path('storage'))) {
+                unlink(public_path('storage'));
+            } else {
+                \Illuminate\Support\Facades\File::deleteDirectory(public_path('storage'));
+            }
+        }
+        \Illuminate\Support\Facades\Artisan::call('storage:link', ['--force' => true]);
+        
+        $target = '';
+        if (is_link(public_path('storage'))) {
+            $target = readlink(public_path('storage'));
+        }
+        
+        return "Symlink created successfully!<br>Target: " . $target . "<br>Please check your images now.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/visi-misi', [HomeController::class, 'visiMisi'])->name('visi-misi');
 Route::get('/struktur-organisasi', [HomeController::class, 'strukturOrganisasi'])->name('struktur-organisasi');
